@@ -133,7 +133,9 @@ class _CartScreenState extends State<CartScreen> {
                     itemBuilder: (context, index) {
                       final item = shopProvider.cart[index];
                       final product = item['product'];
+                      final quantity = item['quantity'];
 
+                      // TODO: Add quantity selector
                       return Card(
                         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         child: ListTile(
@@ -147,7 +149,7 @@ class _CartScreenState extends State<CartScreen> {
                             ),
                           ),
                           title: Text(product.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-                          subtitle: Text('Size: ${item['size']} | ${product.price} HUF'),
+                          subtitle: Text('Quantity: $quantity | ${(double.tryParse(product.price) ?? 0.0) * quantity} HUF'),
                           trailing: IconButton(
                             icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
                             onPressed: () {
@@ -163,7 +165,6 @@ class _CartScreenState extends State<CartScreen> {
                   ),
                 ),
 
-                // 2. Summary Panel & Sticky Call To Action Bottom bar
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
@@ -177,8 +178,10 @@ class _CartScreenState extends State<CartScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text('Total Value:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                            Text('${totalPrice.toStringAsFixed(2)} HUF', style: const TextStyle(fontSize: 20, color: Colors.green, fontWeight: FontWeight.bold)),
+                            // const Text('Total Value:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                            // Text('${totalPrice.toStringAsFixed(2)} HUF', style: const TextStyle(fontSize: 20, color: Colors.green, fontWeight: FontWeight.bold)),
+                            Text('Total Value:', style: Theme.of(context).textTheme.titleMedium),
+                            Text('${totalPrice.toStringAsFixed(2)} HUF', style: Theme.of(context).textTheme.titleMedium),
                           ],
                         ),
                         const SizedBox(height: 16),

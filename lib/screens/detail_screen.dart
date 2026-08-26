@@ -96,7 +96,6 @@ class _DetailScreenState extends State<DetailScreen> {
               // shopProvider.addToCart(widget.product, _selectedSize);
               shopProvider.addToCart(widget.product, _selectedQuantity);
               
-              //? Might want to change cnack bar color
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   // content: Text('${widget.product.title} ($_selectedSize) added to bag!'),

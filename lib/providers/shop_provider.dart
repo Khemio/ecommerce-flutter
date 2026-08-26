@@ -6,7 +6,7 @@ import '../app_config.dart';
 
 class ShopProvider with ChangeNotifier {
   List<Product> _products = [];
-  List<Map<String, dynamic>> _cart = [];
+  final List<Map<String, dynamic>> _cart = [];
   bool _isLoading = false;
 
   List<Product> get products => _products;
@@ -70,18 +70,22 @@ class ShopProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // TODO: Remove size, add quantity
-  // void addToCart(Product product, String selectedSize) {
   void addToCart(Product product, int selectedQuantity) {
-    _cart.add({
-      'product': product,
-      // 'size': selectedSize,
-      'quantity': selectedQuantity,
-    });
+    final index = _cart.indexWhere((item) => item['product'] == product);
+
+    if (index != -1) {
+      final currentQty = (_cart[index]['quantity'] as num).toInt();
+      _cart[index]['quantity'] = currentQty + selectedQuantity;
+    } else {
+      _cart.add({
+        'product': product,
+        // 'size': selectedSize,
+        'quantity': selectedQuantity,
+      });
+    }
     notifyListeners(); // Updates the cart badge instantly
   }
 
-  // 3. Clear cart after successful demo purchase
   void clearCart() {
     _cart.clear();
     notifyListeners();
