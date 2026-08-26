@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class QuantitySelector extends StatelessWidget {
+class QuantitySelector extends StatefulWidget {
   final int value;
   final ValueChanged<int> onChanged;
   final int min;
@@ -15,6 +15,36 @@ class QuantitySelector extends StatelessWidget {
   });
 
   @override
+  State<QuantitySelector> createState() => _QuantitySelectorState();
+}
+class _QuantitySelectorState extends State<QuantitySelector> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: '${widget.value}');
+  }
+
+  @override
+  void didUpdateWidget(covariant QuantitySelector oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Sync external value changes into the field
+    if (oldWidget.value != widget.value && _controller.text != '${widget.value}') {
+      _controller.text = '${widget.value}';
+      _controller.selection = TextSelection.fromPosition(
+        TextPosition(offset: _controller.text.length),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: 200,
@@ -22,7 +52,7 @@ class QuantitySelector extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           GestureDetector(
-            onTap: value > min ? () => onChanged(value - 1) : null,
+            onTap: widget.value > widget.min ? () => widget.onChanged(widget.value - 1) : null,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               decoration: BoxDecoration(
@@ -36,12 +66,12 @@ class QuantitySelector extends StatelessWidget {
           SizedBox(
             width: 60,
             child: TextField(
-              controller: TextEditingController(text: '$value'),
+              controller: TextEditingController(text: '${widget.value}'),
               keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               maxLength: 3,
-              onChanged: (v) => onChanged(int.tryParse(v) ?? min),
+              onChanged: (v) => widget.onChanged(int.tryParse(v) ?? widget.min),
               decoration: const InputDecoration(
                 border: InputBorder.none,
                 counterText: '',
@@ -52,7 +82,7 @@ class QuantitySelector extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           GestureDetector(
-            onTap: value < max ? () => onChanged(value + 1) : null,
+            onTap: widget.value < widget.max ? () => widget.onChanged(widget.value + 1) : null,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               decoration: BoxDecoration(

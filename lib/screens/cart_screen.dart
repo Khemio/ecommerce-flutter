@@ -50,31 +50,16 @@ class _CartScreenState extends State<CartScreen> {
         final String checkoutUrl = responseData['checkoutUrl'] ?? '';
 
         if (checkoutUrl.isNotEmpty && mounted) {
-          // 4. Wipe your app memory cart track clean on successful handoff
-
-          // 5. Instantly route the user into your functional Webview screen frame
           Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => CheckoutScreen(checkoutUrl: checkoutUrl),
-          ),
-        ).then((_) {
-          // OPTIONAL: Clear the cart ONLY after the user returns from checkout
-          provider.clearCart();
-        });
+            context,
+            MaterialPageRoute(
+              builder: (_) => CheckoutScreen(checkoutUrl: checkoutUrl),
+            ),
+          ).then((_) {
+            // OPTIONAL: Clear the cart ONLY after the user returns from checkout
+            provider.clearCart();
+          });
 
-          // provider.clearCart();
-        //   final Uri url = Uri.parse(checkoutUrl);
-        //   if (await canLaunchUrl(url)) {
-        //     // await launchUrl(url, mode: LaunchMode.externalApplication);
-        //     await launchUrl(
-        //       url, 
-        //       mode: LaunchMode.platformDefault, // Default behavior handles web redirection smoothly
-        //       webOnlyWindowName: '_self',       // Forces Chrome to load it in the active viewport
-        //     );
-        //   } else {
-        //     throw 'Could not open checkout page link $checkoutUrl';
-        //   }
         } else {
           throw Exception('Checkout URL was empty in response');
         }
