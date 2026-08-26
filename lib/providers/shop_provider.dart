@@ -19,11 +19,7 @@ class ShopProvider with ChangeNotifier {
   String get selectedVendorFilter => _selectedVendorFilter;
   String get selectedSortOrder => _selectedSortOrder;
 
-  // 1. Get a unique list of all brands/vendors present in your Shopify payload data stream
   List<String> get uniqueVendors {
-    // final vendors = _products.map((p) => p.productType).toSet().toList();
-    // return ['All', ...vendors];
-
     // The '??' safely protects against Null crashes if a productType is missing in JSON
     final vendors = _products
         .map((p) => p.productType.trim()) 
@@ -33,22 +29,12 @@ class ShopProvider with ChangeNotifier {
     return ['All', ...vendors];
   }
 
-  // 2. Computes the output list on the fly based on filter settings
   List<Product> get filteredProducts {
     List<Product> output = List.from(_products);
 
-    // Apply Brand Vendor Filter
     if (_selectedVendorFilter != 'All') {
-      // output = output.where((p) => p.productType == _selectedVendorFilter).toList();
       output = output.where((p) => p.productType.trim() == _selectedVendorFilter).toList();
     }
-
-    // Apply Price Sorting Logic
-    // if (_selectedSortOrder == 'LowToHigh') {
-    //   output.sort((a, b) => (double.tryParse(a.price) ?? 0.0).compareTo(double.tryParse(b.price) ?? 0.0));
-    // } else if (_selectedSortOrder == 'HighToLow') {
-    //   output.sort((a, b) => (double.tryParse(b.price) ?? 0.0).compareTo(double.tryParse(a.price) ?? 0.0));
-    // }
 
     if (_selectedSortOrder == 'LowToHigh') {
       output.sort((a, b) => (double.tryParse(a.price) ?? 0.0)
@@ -61,18 +47,15 @@ class ShopProvider with ChangeNotifier {
     return output;
   }
 
-  // 3. Setter update controls that force the UI grids to refresh automatically
   void updateFilters({required String vendor, required String sort}) {
     _selectedVendorFilter = vendor;
     _selectedSortOrder = sort;
-    notifyListeners(); // Redraws screen layout panels instantly
+    notifyListeners();
   }
 
-  // 1. Fetch mystery boxes from your Shopify proxy
   Future<void> fetchProducts() async {
     _isLoading = true;
-    notifyListeners(); // Tells the UI to show a loading spinner
-
+    notifyListeners();
     try {
       final response = await http.get(AppConfig.productsEndpoint);
       if (response.statusCode == 200) {
@@ -84,15 +67,16 @@ class ShopProvider with ChangeNotifier {
     }
 
     _isLoading = false;
-    notifyListeners(); // Tells the UI to hide the spinner and show products
+    notifyListeners();
   }
 
-  // 2. Add an item to the cart
-  void addToCart(Product product, String selectedSize) {
+  // TODO: Remove size, add quantity
+  // void addToCart(Product product, String selectedSize) {
+  void addToCart(Product product, int selectedQuantity) {
     _cart.add({
       'product': product,
-      'size': selectedSize,
-      'quantity': 1,
+      // 'size': selectedSize,
+      'quantity': selectedQuantity,
     });
     notifyListeners(); // Updates the cart badge instantly
   }
