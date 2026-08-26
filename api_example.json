@@ -1,0 +1,49 @@
+{
+    "checkout": {
+        "id": "gid://shopify/Cart/hWNFZ6jqb3mDCqyEIZQq00kV?key=6ade0daec3bd",
+        "checkoutUrl": "https://test-store.myshopify.com/cart/c/hWNFZ6jqb3mDCqyEIZQq00kV?key=ZXqHdcZl_y",
+        "totalQuantity": 1
+    },
+    "products": [        
+        {
+            "description": "",
+            "id": "gid://shopify/Product/9830813663",
+                "images": [
+                {
+                    "url": "https://cdn.shopify.com/s/files/1/0827/5627/2345/files/snowboard_purple_hydrogen.png?v=1785944822"
+                }
+            ],
+            "productType": "snowboard",
+            "title": "The Inventory Not Tracked Snowboard",
+            "variants": [
+                {
+                    "id": "gid://shopify/ProductVariant/49042404",
+                    "price": {
+                    "amount": "949.95"
+                    },
+                    "sku": "sku-untracked-1"
+                }
+            ]
+        },
+        {
+            "description": "This is a gift card for the store",
+            "id": "gid://shopify/Product/98308136",
+            "images": [
+                {
+                    "url": "https://cdn.shopify.com/s/files/1/0827/5627/2345/files/gift_card.png?v=1785944822"
+                }
+            ],
+            "productType": "giftcard",
+            "title": "Gift Card",
+            "variants": [
+                {
+                    "id": "gid://shopify/ProductVariant/49042403",
+                    "price": {
+                    "amount": "10.0"
+                    },
+                    "sku": null
+                }
+            ]
+        }
+    ]
+}

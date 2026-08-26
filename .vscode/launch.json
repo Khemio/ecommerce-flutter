@@ -1,0 +1,38 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Build APK with Env",
+      "type": "dart",
+      "request": "launch",
+      "preLaunchTask": "flutter: flutter build apk",
+      "program": "${workspaceFolder}/lib/main.dart",
+      "toolArgs": [
+          "--dart-define",
+          "BASE_URL=http://192.168.100.46:8080/api/v1"
+      ]
+    },
+    {
+      "name": "Run on Emulator",
+      "program": "${workspaceFolder}/lib/main.dart",
+      "request": "launch",
+      "deviceId": "emulator-5554",
+      "type": "dart",
+      "toolArgs": [
+        "--dart-define",
+        "BASE_URL=http://10.0.2.2:8080/api/v1"
+      ]
+    },
+    {
+      "name": "Run on Chrome",
+      "program": "${workspaceFolder}/lib/main.dart",
+      "request": "launch",
+      "type": "dart",
+      "args": ["-d", "chrome"],
+      "toolArgs": [
+        "--dart-define",
+        "BASE_URL=http://127.0.0.1:8080/api/v1"
+      ]
+    }
+  ],
+}
