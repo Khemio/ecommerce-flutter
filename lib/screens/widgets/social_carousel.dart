@@ -1,5 +1,6 @@
 // lib/screens/social_carousel.dart
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 // import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
@@ -115,8 +116,14 @@ class SocialCarousel extends StatelessWidget {
                         child: Container(
                           padding: const EdgeInsets.all(4),
                           decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
-                          child: Icon(
-                            item.isTikTok ? Icons.play_circle_fill : Icons.camera_alt,
+                          child: item.isTikTok
+                          ? Icon(
+                            Icons.tiktok,
+                            color: Colors.white,
+                            size: 18,
+                          ) 
+                          : FaIcon(
+                            FontAwesomeIcons.instagram,
                             color: Colors.white,
                             size: 18,
                           ),

@@ -11,7 +11,6 @@ import '../app_config.dart';
 import '../providers/shop_provider.dart';
 import 'checkout_screen.dart';
 
-// TODO: Handle repeated additions of the same item (aggregate in provider)
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
 
