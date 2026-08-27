@@ -2,20 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:async';
 
 import '../models/product.dart';
 import '../models/user_profile.dart';
 import '../models/order_history.dart';
 import '../app_config.dart';
-
-// class CartItem {
-//   final Product product;
-//   int quantity;
-
-//   CartItem({required this.product, required this.quantity});
-// }
-
-// TODO: Convert _orders to Map
 class ShopProvider with ChangeNotifier {
   List<Product> _products = [];
   final Map<String, CartItem> _cart = {};
@@ -23,6 +15,7 @@ class ShopProvider with ChangeNotifier {
   final Map<String, OrderHistoryItem> _orders = {};
   UserProfile? _profile;
   bool _isLoading = false;
+  Timer? _cartSaveTimer;
 
   List<Product> get products => _products;
   List<CartItem> get cart => _cart.values.toList();
@@ -151,7 +144,7 @@ class ShopProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  //TODO: Test order history cahcing
+  //TODO: Test order history caching
   // 🟢 NEW ARCHITECTURE HOOK: Converts active CartItems directly to OrderItems on successful checkout
   Future<void> archiveCartToCompletedOrder(String totalAmount) async {
     final String generatedOrderId = "AZK-${DateTime.now().millisecondsSinceEpoch}";
@@ -192,8 +185,16 @@ class ShopProvider with ChangeNotifier {
       _cart[trackingKey] = CartItem(product: product, quantity: quantity);
     }
 
-    _saveCartToDisk();
-    notifyListeners();
+     notifyListeners(); //Update the screen UI instantly so the user sees no lag!
+
+    //Cancel any pending file writes if the user clicks again quickly
+    _cartSaveTimer?.cancel(); 
+    
+    // Schedule the file save to happen exactly 1 second AFTER the user stops interacting
+    _cartSaveTimer = Timer(const Duration(seconds: 1), () {
+      _saveCartToDisk(); 
+      print("💾 Cart successfully synchronized to disk storage!");
+    });
   }
 
   void updateQuantity(String variantId, int newQty) {
@@ -204,8 +205,18 @@ class ShopProvider with ChangeNotifier {
       _cart[variantId]!.quantity = newQty;
     }
 
-    _saveCartToDisk();
-    notifyListeners();
+    // _saveCartToDisk();
+    // notifyListeners();
+    notifyListeners(); //Update the screen UI instantly so the user sees no lag!
+
+    //Cancel any pending file writes if the user clicks again quickly
+    _cartSaveTimer?.cancel(); 
+    
+    // Schedule the file save to happen exactly 1 second AFTER the user stops interacting
+    _cartSaveTimer = Timer(const Duration(seconds: 1), () {
+      _saveCartToDisk(); 
+      print("💾 Cart successfully synchronized to disk storage!");
+    });
   }
 
   void removeFromCart(String variantId) {
