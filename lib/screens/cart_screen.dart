@@ -9,6 +9,7 @@ import '../app_config.dart';
 
 import '../providers/shop_provider.dart';
 import 'checkout_screen.dart';
+import 'widgets/quantity_selector.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -123,13 +124,33 @@ class _CartScreenState extends State<CartScreen> {
                             ),
                           ),
                           title: Text(product.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-                          subtitle: Text('Quantity: ${item.quantity} | ${(double.tryParse(product.price) ?? 0.0) * item.quantity} HUF'),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                            onPressed: () {
-                              shopProvider.removeFromCart(product.variantId);
-                            },
-                          ),
+                          // subtitle: Text('Quantity: ${item.quantity} | ${(double.tryParse(product.price) ?? 0.0) * item.quantity} HUF'),
+                          // trailing: IconButton(
+                          //   icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                          //   onPressed: () {
+                          //     shopProvider.removeFromCart(product.variantId);
+                          //   },
+                          subtitle: Text('${((double.tryParse(product.price) ?? 0.0) * item.quantity).toStringAsFixed(2)} HUF'),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              QuantitySelector(
+                                value: item.quantity,
+                                min: 1,
+                                max: 99,
+                                onChanged: (newQty) {
+                                  shopProvider.updateQuantity(product.variantId, newQty);
+                                },
+                              ),
+
+                              IconButton(
+                                icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                                onPressed: () {
+                                  shopProvider.removeFromCart(product.variantId);
+                                },
+                              ),
+                            ],
+                          )
                         ),
                       );
                     },

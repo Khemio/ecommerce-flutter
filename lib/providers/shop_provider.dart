@@ -91,6 +91,10 @@ class ShopProvider with ChangeNotifier {
     notifyListeners(); // Updates the cart badge instantly
   }
 
+  void updateQuantity(String id, int newQty) {
+    // TODO: Implement this
+  }
+
   void removeFromCart(String variantId) {
     _cart.remove(variantId);
     notifyListeners();
