@@ -101,16 +101,13 @@ class _CartScreenState extends State<CartScreen> {
             )
           : Column(
               children: [
-                // 1. Dynamic Shopping Cart List View
                 Expanded(
                   child: ListView.builder(
                     itemCount: shopProvider.cart.length,
                     itemBuilder: (context, index) {
                       final item = shopProvider.cart[index];
                       final product = item.product;
-                      // final quantity = item.quantity;
 
-                      // TODO: Add quantity selector
                       return Card(
                         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         child: ListTile(
@@ -124,12 +121,6 @@ class _CartScreenState extends State<CartScreen> {
                             ),
                           ),
                           title: Text(product.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-                          // subtitle: Text('Quantity: ${item.quantity} | ${(double.tryParse(product.price) ?? 0.0) * item.quantity} HUF'),
-                          // trailing: IconButton(
-                          //   icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                          //   onPressed: () {
-                          //     shopProvider.removeFromCart(product.variantId);
-                          //   },
                           subtitle: Text('${((double.tryParse(product.price) ?? 0.0) * item.quantity).toStringAsFixed(2)} HUF'),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -138,6 +129,7 @@ class _CartScreenState extends State<CartScreen> {
                                 value: item.quantity,
                                 min: 1,
                                 max: 99,
+                                compact: true,
                                 onChanged: (newQty) {
                                   shopProvider.updateQuantity(product.variantId, newQty);
                                 },

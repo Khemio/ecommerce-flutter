@@ -5,6 +5,7 @@ class QuantitySelector extends StatefulWidget {
   final ValueChanged<int> onChanged;
   final int min;
   final int max;
+  final bool compact;
 
   const QuantitySelector({
     super.key,
@@ -12,6 +13,7 @@ class QuantitySelector extends StatefulWidget {
     required this.onChanged,
     this.min = 1,
     this.max = 99,
+    this.compact = false,
   });
 
   @override
@@ -46,30 +48,30 @@ class _QuantitySelectorState extends State<QuantitySelector> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isCompact = widget.compact;
+
+    final double fieldWidth = isCompact ? 36 : 60;
+    final double fieldFontSize = isCompact ? 13 : 16;
+    final double spacing = isCompact ? 4 : 8;
+
     return SizedBox(
-      width: 200,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          GestureDetector(
+          _SelectorButton(
+            label: '-',
+            compact: widget.compact, 
             onTap: widget.value > widget.min ? () => widget.onChanged(widget.value - 1) : null,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Text('−', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-            ),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: spacing),
+
           SizedBox(
-            width: 60,
+            width: fieldWidth,
             child: TextField(
-              controller: TextEditingController(text: '${widget.value}'),
+              controller: _controller,
               keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: fieldFontSize),
               maxLength: 3,
               onChanged: (v) => widget.onChanged(int.tryParse(v) ?? widget.min),
               decoration: const InputDecoration(
@@ -80,19 +82,54 @@ class _QuantitySelectorState extends State<QuantitySelector> {
               ),
             ),
           ),
-          const SizedBox(width: 8),
-          GestureDetector(
+
+          SizedBox(width: spacing),
+          _SelectorButton(
+            label: '+',
+            compact: widget.compact, 
             onTap: widget.value < widget.max ? () => widget.onChanged(widget.value + 1) : null,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Text('+', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-            ),
           ),
         ],
+      ),
+    );
+  }
+}  
+
+class _SelectorButton extends StatelessWidget {
+  final String label;
+  final bool compact;
+  final VoidCallback? onTap;
+
+  const _SelectorButton({
+    required this.label,
+    required this.compact,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final double buttonPaddingH = compact ? 14 : 24;
+    final double buttonPaddingV = compact ? 6 : 12;
+    final double fontSize = compact ? 14 : 18;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: buttonPaddingH,
+          vertical: buttonPaddingV,
+        ),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: fontSize,
+          ),
+        ),
       ),
     );
   }
