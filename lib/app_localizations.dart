@@ -10,7 +10,6 @@ class AppLocalizations {
       'cart_title': 'A Kosarad',
       'checkout': 'TOVÁBB A FIZETÉSHEZ',
       'select_size': 'VÁLASSZ MÉRETET',
-
       'box_image': 'REJTÉLYES DOBOZ KÉP',
       'how_much': 'MENNYIT AKARSZ TE?',
       'description': 'LEÍRÁSA',
@@ -20,6 +19,11 @@ class AppLocalizations {
       'cart_empty': 'A kosarad jelenleg üres.\nMenj, adj hozzá néhány rejtélyes dobozt!',
       'total': 'Összérték:',
       'socials_title': '#AZKOMOLY · OSSZA MEG',
+
+      'sort_default': 'Rendezés: Alapértelmezett',
+      'price_low_high': 'Ár: Alacsonytól a Magasig',
+      'price_high_low': 'Ár: Magastól az Alacsonyig',
+      'all_vendors': 'MINDEN MÁRKA',
     },
     'en': {
       'title': 'AzKomoly Mystery Boxes',
@@ -28,7 +32,6 @@ class AppLocalizations {
       'cart_title': 'Your Cart Bag',
       'checkout': 'PROCEED TO CHECKOUT',
       'select_size': 'SELECT BOX SIZE',
-
       'box_image': 'MYSTERY BOX IMAGE',
       'how_much': 'HOW MUCH DO YOU WANT?',
       'description': 'DESCRIPTION',
@@ -38,6 +41,11 @@ class AppLocalizations {
       'cart_empty': 'Your cart is currently empty.\nGo add some mystery boxes!',
       'total': 'Total Value:',
       'socials_title': '#AZKOMOLY · SHARE IT',
+
+      'sort_default': 'Sort: Default',
+      'price_low_high': 'Price: Low to High',
+      'price_high_low': 'Price: High to Low',
+      'all_vendors': 'ALL BRANDS',
     },
   };
 

@@ -130,14 +130,37 @@ class _HomeScreenState extends State<HomeScreen> {
                     DropdownButton<String>(
                       value: shopProvider.selectedSortOrder,
                       icon: const Icon(Icons.sort, color: Color(0xFFFFFFFF),),
+                      dropdownColor: AppTheme.brandViolet,
                       underline: const SizedBox(),
                       onChanged: (String? newSort) {
                         shopProvider.updateFilters(vendor: shopProvider.selectedVendorFilter, sort: newSort ?? 'None');
                       },
-                      items: const [
-                        DropdownMenuItem(value: 'None', child: Text('Sort: Default', style: TextStyle(color: AppTheme.backgroundWhite))),
-                        DropdownMenuItem(value: 'LowToHigh', child: Text('Price: Low to High', style: TextStyle(color: AppTheme.backgroundWhite))),
-                        DropdownMenuItem(value: 'HighToLow', child: Text('Price: High to Low', style: TextStyle(color: AppTheme.backgroundWhite))),
+                      items: [
+                        DropdownMenuItem(
+                          value: 'None', 
+                          child: Text(
+                            // 'Sort: Default', 
+                            AppLocalizations.translate('sort_default'),
+                            style: TextStyle(color: AppTheme.backgroundWhite)
+                          )
+                        ),
+                        DropdownMenuItem(
+                          value: 'LowToHigh', 
+                          child: Text(
+                            // 'Price: Low to High', 
+                            AppLocalizations.translate('price_low_high'),
+                            style: TextStyle(color: AppTheme.backgroundWhite)
+                          )
+                        ),
+                        DropdownMenuItem(
+                          value: 'HighToLow', 
+                          
+                          child: Text(
+                            // 'Price: High to Low',
+                            AppLocalizations.translate('price_high_low'),
+                            style: TextStyle(color: AppTheme.backgroundWhite)
+                          )
+                        ),
                       ],
                     ),
 
@@ -145,12 +168,21 @@ class _HomeScreenState extends State<HomeScreen> {
                     DropdownButton<String>(
                       value: shopProvider.selectedVendorFilter,
                       icon: const Icon(Icons.filter_alt_outlined, color: AppTheme.backgroundWhite),
+                      dropdownColor: AppTheme.brandViolet,
                       underline: const SizedBox(),
                       onChanged: (String? newVendor) {
                         shopProvider.updateFilters(vendor: newVendor ?? 'All', sort: shopProvider.selectedSortOrder);
                       },
                       items: shopProvider.uniqueVendors.map((String vendor) {
-                        return DropdownMenuItem(value: vendor, child: Text(vendor.toUpperCase(), style: TextStyle(color: AppTheme.backgroundWhite)));
+                        // return DropdownMenuItem(value: vendor, child: Text(vendor.toUpperCase(), style: TextStyle(color: AppTheme.backgroundWhite)));
+                        final String displayTitle = vendor == 'All' 
+                          ? AppLocalizations.translate('all_vendors') 
+                          : vendor.toUpperCase();
+
+                        return DropdownMenuItem(
+                          value: vendor, 
+                          child: Text(displayTitle, style: const TextStyle(color: AppTheme.backgroundWhite)),
+                        );
                       }).toList(),
                     ),
                   ],
