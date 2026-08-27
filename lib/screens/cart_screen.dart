@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../app_config.dart';
 
+import '../app_localizations.dart';
 import '../providers/shop_provider.dart';
 import 'checkout_screen.dart';
 import 'widgets/quantity_selector.dart';
@@ -88,12 +89,14 @@ class _CartScreenState extends State<CartScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Your Cart Bag'),
+        // title: const Text('Your Cart Bag'),
+        title: Text(AppLocalizations.translate('cart_title')),
       ),
       body: shopProvider.cart.isEmpty
           ? Center(
               child: Text(
-                'Your cart is currently empty.\nGo add some mystery boxes!',
+                // 'Your cart is currently empty.\nGo add some mystery boxes!',
+                AppLocalizations.translate('cart_empty'),
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 16, color: Colors.grey),
                 // style: Theme.of(context).textTheme.bodyMedium,
@@ -164,7 +167,8 @@ class _CartScreenState extends State<CartScreen> {
                           children: [
                             // const Text('Total Value:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                             // Text('${totalPrice.toStringAsFixed(2)} HUF', style: const TextStyle(fontSize: 20, color: Colors.green, fontWeight: FontWeight.bold)),
-                            Text('Total Value:', style: Theme.of(context).textTheme.titleMedium),
+                            // Text('Total Value:', style: Theme.of(context).textTheme.titleMedium),
+                            Text(AppLocalizations.translate('total'), style: Theme.of(context).textTheme.titleMedium),
                             Text('${totalPrice.toStringAsFixed(2)} HUF', style: Theme.of(context).textTheme.titleMedium),
                           ],
                         ),
@@ -188,8 +192,9 @@ class _CartScreenState extends State<CartScreen> {
                                   strokeWidth: 2.5, // Thinner spinner to look clean inside a button
                                 ),
                               )
-                            : const Text(
-                                'PROCEED TO CHECKOUT', 
+                            : Text(
+                                // 'PROCEED TO CHECKOUT', 
+                                AppLocalizations.translate('checkout'),
                                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                         ),

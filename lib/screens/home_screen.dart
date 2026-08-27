@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart'; 
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:flutter_app/app_theme.dart';
+import '../app_localizations.dart';
 import '../providers/shop_provider.dart';
 import 'detail_screen.dart';
 import 'cart_screen.dart';
@@ -42,6 +43,18 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         actions: [
+          TextButton(
+            child: Text(
+              AppLocalizations.currentLanguage == 'hu' ? 'EN' : 'HU',
+              style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+            ),
+            onPressed: () {
+              setState(() {
+                // Toggle the translation engine string parameters instantly
+                AppLocalizations.currentLanguage = AppLocalizations.currentLanguage == 'hu' ? 'en' : 'hu';
+              });
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.shopping_cart),
             onPressed: () => Navigator.push(
@@ -99,7 +112,8 @@ class _HomeScreenState extends State<HomeScreen> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 child: Text(
-                  'CHOOSE YOUR MYSTERY BOX', 
+                  // 'CHOOSE YOUR MYSTERY BOX', 
+                  AppLocalizations.translate('choose_box'),
                   style: Theme.of(context).textTheme.headlineLarge
                   // style: AppTheme.textStyle.headlineLarge
                   // style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2, color: Colors.white),
@@ -191,7 +205,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                             const Icon(Icons.inventory_2_outlined, size: 40, color: AppTheme.brandViolet),
                                             const SizedBox(height: 8),
                                             Text(
-                                              'MYSTERY BOX IMAGE',
+                                              // 'MYSTERY BOX IMAGE',
+                                              AppLocalizations.translate('box_image'),
                                               style: TextStyle(
                                                 fontFamily: 'Anton',
                                                 color: AppTheme.brandViolet.withValues(alpha: 0.6),

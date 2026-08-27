@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../app_localizations.dart';
 import '../models/product.dart';
 import '../providers/shop_provider.dart';
 import 'widgets/quantity_selector.dart';
@@ -56,7 +57,8 @@ class _DetailScreenState extends State<DetailScreen> {
                   const SizedBox(height: 16),
 
                   Text(
-                    'HOW MUCH DO YOU WANT?',
+                    // 'HOW MUCH DO YOU WANT?',
+                    AppLocalizations.translate('how_much'),
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 10),
@@ -68,14 +70,16 @@ class _DetailScreenState extends State<DetailScreen> {
                   const SizedBox(height: 24),
 
                   Text(
-                    'DESCRIPTION',
+                    // 'DESCRIPTION',
+                    AppLocalizations.translate('description'),
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 8),
 
                   Text(
                     widget.product.description.isEmpty 
-                        ? "This exclusive mystery box features highly curated street clothing and rare items matching premium drops." 
+                        // ? "This exclusive mystery box features highly curated street clothing and rare items matching premium drops." 
+                        ? AppLocalizations.translate('default_description')
                         : widget.product.description,
                     style: const TextStyle(fontSize: 16, height: 1.5),
                   ),
@@ -99,12 +103,17 @@ class _DetailScreenState extends State<DetailScreen> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   // content: Text('${widget.product.title} ($_selectedSize) added to bag!'),
+                  // TODO: Add this to translation map
                   content: Text('$_selectedQuantity ${widget.product.title + (_selectedQuantity > 1 ? 's' : '')} added to bag!'),
                   duration: const Duration(seconds: 2),
                 ),
               );
             },
-            child: const Text('ADD MYSTERY BOX TO BAG', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            child: Text(
+              // 'ADD MYSTERY BOX TO BAG', 
+              AppLocalizations.translate('add_to_bag'),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)
+            ),
           ),
         ),
       ),
