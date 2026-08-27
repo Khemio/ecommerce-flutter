@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../app_config.dart';
-// import 'package:url_launcher/url_launcher.dart';
 
 import '../providers/shop_provider.dart';
 import 'checkout_screen.dart';
@@ -21,21 +20,17 @@ class CartScreen extends StatefulWidget {
 class _CartScreenState extends State<CartScreen> {
   bool _isCheckingOut = false;
 
-  // Simulate calling your proxy server to get a Shopify checkout URL
   Future<void> _handleCheckout(ShopProvider provider) async {
     setState(() => _isCheckingOut = true);
 
     try {
-      // 1. Map your internal provider cart format directly to your API's expected payload
-      final List<Map<String, dynamic>> checkoutPayload = provider.cart.map((item) {
-        final product = item['product'];
+      final checkoutPayload = provider.cart.map((item) {
         return {
-          "variantId": product.variantId, // Pulls the exact variant ID from your model
-          "quantity": item['quantity'],
+          "variantId": item.product.variantId,
+          "quantity": item.quantity,
         };
-      }).toList();
+      }).toList();   
 
-      // 2. Fire the live POST request down to your proxy server
       final response = await http.post(
         AppConfig.checkoutEndpoint,
         headers: {
@@ -45,7 +40,6 @@ class _CartScreenState extends State<CartScreen> {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        // 3. Extract the real checkoutUrl from the proxy response body
         final Map<String, dynamic> responseData = json.decode(response.body);
         final String checkoutUrl = responseData['checkoutUrl'] ?? '';
 
@@ -74,7 +68,6 @@ class _CartScreenState extends State<CartScreen> {
           SnackBar(
             content: Text('Checkout failed. Check terminal error log.'),
             backgroundColor: AppTheme.errorColor
-            // behavior: SnackBarBehavior.floating, 
           ),
         );
       }
@@ -85,27 +78,24 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // We listen to changes here to redraw totals dynamically
     final shopProvider = Provider.of<ShopProvider>(context); 
-    
-    // Calculate the total basket value
-    double totalPrice = 0;
-    for (var item in shopProvider.cart) {
-      final product = item['product'];
-      final double priceParsed = double.tryParse(product.price) ?? 0.0;
-      totalPrice += priceParsed * item['quantity'];
-    }
+
+    double totalPrice = shopProvider.cart.fold(0, (total, item) {
+      final price = double.tryParse(item.product.price) ?? 0.0;
+      return total + price * item.quantity;
+    });
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your Cart Bag'),
       ),
       body: shopProvider.cart.isEmpty
-          ? const Center(
+          ? Center(
               child: Text(
                 'Your cart is currently empty.\nGo add some mystery boxes!',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 16, color: Colors.grey),
+                // style: Theme.of(context).textTheme.bodyMedium,
               ),
             )
           : Column(
@@ -116,8 +106,8 @@ class _CartScreenState extends State<CartScreen> {
                     itemCount: shopProvider.cart.length,
                     itemBuilder: (context, index) {
                       final item = shopProvider.cart[index];
-                      final product = item['product'];
-                      final quantity = item['quantity'];
+                      final product = item.product;
+                      // final quantity = item.quantity;
 
                       // TODO: Add quantity selector
                       return Card(
@@ -133,14 +123,11 @@ class _CartScreenState extends State<CartScreen> {
                             ),
                           ),
                           title: Text(product.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-                          subtitle: Text('Quantity: $quantity | ${(double.tryParse(product.price) ?? 0.0) * quantity} HUF'),
+                          subtitle: Text('Quantity: ${item.quantity} | ${(double.tryParse(product.price) ?? 0.0) * item.quantity} HUF'),
                           trailing: IconButton(
                             icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
                             onPressed: () {
-                              // Access provider directly without a listener to perform the deletion
-                              setState(() {
-                                shopProvider.cart.removeAt(index);
-                              });
+                              shopProvider.removeFromCart(product.variantId);
                             },
                           ),
                         ),

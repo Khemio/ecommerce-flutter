@@ -4,13 +4,23 @@ import 'dart:convert';
 import '../models/product.dart';
 import '../app_config.dart';
 
+class CartItem {
+  final Product product;
+  int quantity;
+
+  CartItem({required this.product, required this.quantity});
+}
+
 class ShopProvider with ChangeNotifier {
   List<Product> _products = [];
-  final List<Map<String, dynamic>> _cart = [];
+  // final List<Map<String, dynamic>> _cart = [];
+  final Map<String, CartItem> _cart = {}; // keyed by variantId
   bool _isLoading = false;
 
   List<Product> get products => _products;
-  List<Map<String, dynamic>> get cart => _cart;
+  // List<Map<String, dynamic>> get cart => _cart;
+  List<CartItem> get cart => _cart.values.toList();
+  int get cartCount => _cart.values.fold(0, (sum, i) => sum + i.quantity);
   bool get isLoading => _isLoading;
 
   String _selectedVendorFilter = 'All';
@@ -70,20 +80,20 @@ class ShopProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void addToCart(Product product, int selectedQuantity) {
-    final index = _cart.indexWhere((item) => item['product'] == product);
-
-    if (index != -1) {
-      final currentQty = (_cart[index]['quantity'] as num).toInt();
-      _cart[index]['quantity'] = currentQty + selectedQuantity;
+  void addToCart(Product product, int quantity) {
+    final existing = _cart[product.variantId];
+    if (existing != null) {
+      existing.quantity += quantity;
     } else {
-      _cart.add({
-        'product': product,
-        // 'size': selectedSize,
-        'quantity': selectedQuantity,
-      });
+      _cart[product.variantId] = CartItem(product: product, quantity: quantity);
     }
+
     notifyListeners(); // Updates the cart badge instantly
+  }
+
+  void removeFromCart(String variantId) {
+    _cart.remove(variantId);
+    notifyListeners();
   }
 
   void clearCart() {
