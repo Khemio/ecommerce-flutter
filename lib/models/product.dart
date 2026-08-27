@@ -19,6 +19,29 @@ class Product {
     required this.sku,
   });
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'description': description,
+      'productType': productType,
+      // Wrap your url back inside an array maps tree block
+      'images': [
+        {'url': imageUrl}
+      ],
+      // Re-nest your single variants values to look like Shopify GraphQL structures
+      'variants': [
+        {
+          'id': variantId,
+          'sku': sku,
+          'price': {
+            'amount': price,
+          }
+        }
+      ]
+    };
+  }
+
   // Map the JSON keys cleanly to flat properties your UI can read effortlessly
   factory Product.fromJson(Map<String, dynamic> json) {
     // Safely extract the first image URL or fall back to an empty placeholder string

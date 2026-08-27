@@ -53,6 +53,8 @@ class _CartScreenState extends State<CartScreen> {
           ).then((_) {
             // OPTIONAL: Clear the cart ONLY after the user returns from checkout
             provider.clearCart();
+            // TODO: implement this correctly.
+            // await provider.archiveCartToCompletedOrder("${totalPrice.toStringAsFixed(2)} HUF");
           });
 
         } else {

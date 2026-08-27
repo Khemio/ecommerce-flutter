@@ -5,27 +5,29 @@ import 'dart:convert';
 
 import '../models/product.dart';
 import '../models/user_profile.dart';
+import '../models/order_history.dart';
 import '../app_config.dart';
 
-class CartItem {
-  final Product product;
-  int quantity;
+// class CartItem {
+//   final Product product;
+//   int quantity;
 
-  CartItem({required this.product, required this.quantity});
-}
+//   CartItem({required this.product, required this.quantity});
+// }
 
-// TODO: Convert _orderHistory to Map
+// TODO: Convert _orders to Map
 class ShopProvider with ChangeNotifier {
   List<Product> _products = [];
   final Map<String, CartItem> _cart = {};
-  List<Map<String, dynamic>> _orderHistory = []; 
+  // List<Map<String, dynamic>> _orderHistory = []; 
+  final Map<String, OrderHistoryItem> _orders = {};
   UserProfile? _profile;
   bool _isLoading = false;
 
   List<Product> get products => _products;
   List<CartItem> get cart => _cart.values.toList();
   int get cartCount => _cart.values.fold(0, (sum, i) => sum + i.quantity);
-  List<Map<String, dynamic>> get orderHistory => _orderHistory;
+  List<OrderHistoryItem> get orderHistory => _orders.values.toList();
   UserProfile? get profile => _profile;
   bool get isLoading => _isLoading;
 
@@ -40,52 +42,36 @@ class ShopProvider with ChangeNotifier {
   }
 
   Future<void> _loadDataFromStorage() async {
-    final prefs = await SharedPreferences.getInstance();
-    
-    // Restore User Profile Info
-    final profileStr = prefs.getString('user_profile');
-    if (profileStr != null) {
-      _profile = UserProfile.fromJson(json.decode(profileStr));
+    try {
+      final prefs = await SharedPreferences.getInstance();
+
+      final String? cachedCartString = prefs.getString('user_cart_cache');
+      if (cachedCartString != null) {
+        final Map<String, dynamic> decodedMap = json.decode(cachedCartString);
+        decodedMap.forEach((key, value) {
+          _cart[key] = CartItem.fromJson(value);
+        });
+      }
+
+      final String? cachedOrdersString = prefs.getString('user_orders_cache');
+      if (cachedOrdersString != null) {
+        final Map<String, dynamic> decodedMap = json.decode(cachedOrdersString);
+        decodedMap.forEach((key, value) {
+          _orders[key] = OrderHistoryItem.fromJson(value);
+        });
+      }
+      
+      // Restore User Profile Info
+      final profileStr = prefs.getString('user_profile');
+      if (profileStr != null) {
+        _profile = UserProfile.fromJson(json.decode(profileStr));
+      }
+
+      notifyListeners();
+    } catch (e) {
+      print("🚨 Caching Engine Read Fault: $e");
     }
-
-    // Restore Order History
-    final orderStr = prefs.getString('order_history');
-    if (orderStr != null) {
-      _orderHistory = List<Map<String, dynamic>>.from(json.decode(orderStr));
-    }
-
-    // Restore Cart
-    final cartStr = prefs.getString('cart');
-    if (orderStr != null) {
-      // _cart = Map<String, CartItem>.from(json.decode(cartStr));
-    }
-
-    notifyListeners();
   }
-
-  Future<void> saveProfile(String name, String email) async {
-    _profile = UserProfile(name: name, email: email);
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('user_profile', json.encode(_profile!.toJson()));
-    notifyListeners();
-  }
-
-  // 3. Cache a Completed Checkout Session Order
-  Future<void> cacheCompletedOrder(String total, List<Map<String, dynamic>> items) async {
-    final newOrder = {
-      'orderId': 'AZK-${DateTime.now().millisecondsSinceEpoch}',
-      'timestamp': DateTime.now().toIso8601String(),
-      'total': total,
-      'items': items.map((i) => {'title': i['product'].title, 'quantity': i['quantity']}).toList(),
-    };
-
-    _orderHistory.insert(0, newOrder); // Put newest order at the top
-    
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('order_history', json.encode(_orderHistory));
-    notifyListeners();
-  }
-
 
   List<String> get uniqueVendors {
     // The '??' safely protects against Null crashes if a productType is missing in JSON
@@ -138,19 +124,78 @@ class ShopProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // TODO: Update cached cart
-  void addToCart(Product product, int quantity) {
-    final existing = _cart[product.variantId];
-    if (existing != null) {
-      existing.quantity += quantity;
-    } else {
-      _cart[product.variantId] = CartItem(product: product, quantity: quantity);
-    }
-
-    notifyListeners(); // Updates the cart badge instantly
+// Persists the current cart map configuration onto memory disk storage
+  Future<void> _saveCartToDisk() async {
+    final prefs = await SharedPreferences.getInstance();
+    final Map<String, dynamic> cartJsonMap = _cart.map((key, value) => MapEntry(key, value.toJson()));
+    await prefs.setString('user_cart_cache', json.encode(cartJsonMap));
   }
 
-  // TODO: Update cached cart
+  // Persists the current orders map configuration onto memory disk storage
+  Future<void> _saveOrdersToDisk() async {
+    final prefs = await SharedPreferences.getInstance();
+    final Map<String, dynamic> ordersJsonMap = _orders.map((key, value) => MapEntry(key, value.toJson()));
+    await prefs.setString('user_orders_cache', json.encode(ordersJsonMap));
+  }
+
+  Future<void> _saveProfileToDisk() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user_profile', json.encode(_profile!.toJson()));
+  }
+
+  // State mutations
+  //TODO: Test profile saving
+  Future<void> saveProfile(String name, String email) async {
+    _profile = UserProfile(name: name, email: email);
+    await _saveProfileToDisk();
+    notifyListeners();
+  }
+
+  //TODO: Test order history cahcing
+  // 🟢 NEW ARCHITECTURE HOOK: Converts active CartItems directly to OrderItems on successful checkout
+  Future<void> archiveCartToCompletedOrder(String totalAmount) async {
+    final String generatedOrderId = "AZK-${DateTime.now().millisecondsSinceEpoch}";
+    
+    // Map active cart items smoothly over to structural order tracking models
+    // List<CartItem> transactionLines = _cart.values.map((cartItem) {
+    //   return CartItem(
+    //     product: cartItem.product,
+    //     quantity: cartItem.quantity,
+    //     // selectedSize: cartItem.size,
+    //   );
+    // }).toList();
+
+    // Create the finalized OrderHistoryItem summary node 
+    final newOrderRecord = OrderHistoryItem(
+      orderId: generatedOrderId,
+      timestamp: DateTime.now().toIso8601String(),
+      totalAmount: totalAmount,
+      items: cart,
+    );
+
+    // Save into our persistent map using the generated ID as the key mapping anchor
+    _orders[generatedOrderId] = newOrderRecord;
+
+    _cart.clear(); // Flush out current cart bag
+    
+    // Atomically synchronize both updated database blocks onto device disk space
+    await _saveCartToDisk();
+    await _saveOrdersToDisk();
+    notifyListeners();
+  }
+
+  void addToCart(Product product, int quantity) {
+    final String trackingKey = product.variantId; // Might be useful: "${product.variantId}_$selectedSize"
+    if (_cart.containsKey(trackingKey)) {
+      _cart[trackingKey]!.quantity += quantity;
+    } else {
+      _cart[trackingKey] = CartItem(product: product, quantity: quantity);
+    }
+
+    _saveCartToDisk();
+    notifyListeners();
+  }
+
   void updateQuantity(String variantId, int newQty) {
     if (_cart.containsKey(variantId)) {
       if (newQty <= 0) {
@@ -159,18 +204,21 @@ class ShopProvider with ChangeNotifier {
       _cart[variantId]!.quantity = newQty;
     }
 
+    _saveCartToDisk();
     notifyListeners();
   }
 
-  // TODO: Update cached cart
   void removeFromCart(String variantId) {
     _cart.remove(variantId);
+
+    _saveCartToDisk();
     notifyListeners();
   }
 
-  // TODO: Clear cached cart
   void clearCart() {
     _cart.clear();
+
+    _saveCartToDisk();
     notifyListeners();
   }
 }
