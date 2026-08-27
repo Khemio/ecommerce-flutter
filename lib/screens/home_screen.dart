@@ -101,8 +101,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Text(
                   'CHOOSE YOUR MYSTERY BOX', 
                   style: Theme.of(context).textTheme.headlineLarge
-                  // style: AppTheme.textStyle.headlineLarge
-                  // style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2, color: Colors.white),
                   
                 ),
               ),
@@ -171,36 +169,34 @@ class _HomeScreenState extends State<HomeScreen> {
                           Expanded(
                             child: SizedBox(
                               width: double.infinity,
-                              child: CachedNetworkImage(
-                                imageUrl: product.imageUrl,
-                                fit: BoxFit.cover,
-                                placeholder: (context, url) => const Center(
-                                  child: CircularProgressIndicator(),
-                                ),
-                                // errorWidget: (context, url, error) => const Icon(
-                                //   Icons.broken_image, 
-                                //   size: 50, 
-                                //   color: Colors.grey,
-                                // ),
-                                errorWidget: (context, url, error) => Container(
-                                  color: const Color(0xFFE8DDFF), // Soft neon purple background tint
-                                  child: Center(
-                                  child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            const Icon(Icons.inventory_2_outlined, size: 40, color: AppTheme.brandViolet),
-                                            const SizedBox(height: 8),
-                                            Text(
-                                              'MYSTERY BOX IMAGE',
-                                              style: TextStyle(
-                                                fontFamily: 'Anton',
-                                                color: AppTheme.brandViolet.withValues(alpha: 0.6),
-                                                fontSize: 12,
-                                              ),
+                              child: Hero(
+                                tag: 'box_${product.id}', 
+                                child: CachedNetworkImage(
+                                  imageUrl: product.imageUrl,
+                                  fit: BoxFit.cover,
+                                  placeholder: (context, url) => const Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                  errorWidget: (context, url, error) => Container(
+                                    color: const Color(0xFFE8DDFF), // Soft neon purple background tint
+                                    child: Center(
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          const Icon(Icons.inventory_2_outlined, size: 40, color: AppTheme.brandViolet),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            'MYSTERY BOX IMAGE',
+                                            style: TextStyle(
+                                              fontFamily: 'Anton',
+                                              color: AppTheme.brandViolet.withValues(alpha: 0.6),
+                                              fontSize: 12,
                                             ),
-                                          ],
-                                        ),
-                                  )
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  ),
                                 ),
                               ),
                             ),
