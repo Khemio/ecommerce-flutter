@@ -44,7 +44,7 @@ class _CartScreenState extends State<CartScreen> {
         final Map<String, dynamic> responseData = json.decode(response.body);
         final String checkoutUrl = responseData['checkoutUrl'] ?? '';
 
-        //? Look throught this, cleanupmshould probably be after successful checkout
+        //? Look throught this, cleanup should probably be after successful checkout with date from proxy
         if (checkoutUrl.isNotEmpty && mounted) {
           await provider.archiveCartToCompletedOrder();
           Navigator.push(
