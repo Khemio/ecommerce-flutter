@@ -143,11 +143,18 @@ class ShopProvider with ChangeNotifier {
     await _saveProfileToDisk();
     notifyListeners();
   }
-
-  //TODO: Test order history caching
   // 🟢 NEW ARCHITECTURE HOOK: Converts active CartItems directly to OrderItems on successful checkout
-  Future<void> archiveCartToCompletedOrder(String totalAmount) async {
+  // Future<void> archiveCartToCompletedOrder(String totalAmount) async {
+  Future<void> archiveCartToCompletedOrder() async {
+    //TODO: Think about the shape of the data
     final String generatedOrderId = "AZK-${DateTime.now().millisecondsSinceEpoch}";
+
+    double totalPrice = cart.fold(0, (total, item) {
+      final price = double.tryParse(item.product.price) ?? 0.0;
+      return total + price * item.quantity;
+    });
+
+    String totalAmount = "${totalPrice.toStringAsFixed(2)} HUF";
     
     // Map active cart items smoothly over to structural order tracking models
     // List<CartItem> transactionLines = _cart.values.map((cartItem) {
