@@ -5,6 +5,8 @@ import 'package:url_launcher/url_launcher.dart';
 // import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 
+import '../../app_localizations.dart';
+
 class SocialReviewItem {
   final String thumbnailUrl;
   final String videoUrl;
@@ -13,7 +15,6 @@ class SocialReviewItem {
   SocialReviewItem({required this.thumbnailUrl, required this.videoUrl, required this.isTikTok});
 }
 
-// TODO: change icons on items to actual platform logos
 class SocialCarousel extends StatelessWidget {
   final List<SocialReviewItem> reviews = [
     SocialReviewItem(
@@ -67,7 +68,8 @@ class SocialCarousel extends StatelessWidget {
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
           child: Text(
-            '#AZKOMOLY · SHARE IT',
+            // '#AZKOMOLY · SHARE IT',
+            AppLocalizations.translate('socials_title'),
             // style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16, letterSpacing: 1.5),
             style: Theme.of(context).textTheme.headlineLarge,
           ),

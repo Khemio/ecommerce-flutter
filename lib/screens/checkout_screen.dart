@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter_app/app_theme.dart';
+
+import '../app_localizations.dart';
 // import '../providers/shop_provider.dart';
 
 class CheckoutScreen extends StatefulWidget {
@@ -26,8 +28,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             // Shopify success redirection tracking rule
             if (url.contains('thank_you') || url.contains('orders')) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('🎉 Order Placed Successfully!'),
+                SnackBar(
+                  content: Text(
+                    // '🎉 Order Placed Successfully!'
+                    AppLocalizations.translate('order_success'),
+                  ),
                   backgroundColor: AppTheme.successColor,
                   // behavior: SnackBarBehavior.floating, 
                 ),
@@ -57,7 +62,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Secure Shopify Checkout'),
+        title: Text(
+          // 'Secure Shopify Checkout'
+          AppLocalizations.translate('secure_checkout'),
+        ),
       ),
       body: WebViewWidget(controller: _controller),
     );
