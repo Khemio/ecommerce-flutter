@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter_app/app_theme.dart';
 
 import '../app_localizations.dart';
+import '../providers/shop_provider.dart';
 // import '../providers/shop_provider.dart';
 
 class CheckoutScreen extends StatefulWidget {
@@ -19,6 +21,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   @override
   void initState() {
+    final shopProvider = Provider.of<ShopProvider>(context); 
     super.initState();
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -31,7 +34,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 SnackBar(
                   content: Text(
                     // '🎉 Order Placed Successfully!'
-                    AppLocalizations.translate('order_success'),
+                    AppLocalizations.translate('order_success', shopProvider.appLanguage),
                   ),
                   backgroundColor: AppTheme.successColor,
                   // behavior: SnackBarBehavior.floating, 
@@ -60,11 +63,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final shopProvider = Provider.of<ShopProvider>(context); 
+    
     return Scaffold(
       appBar: AppBar(
         title: Text(
           // 'Secure Shopify Checkout'
-          AppLocalizations.translate('secure_checkout'),
+          AppLocalizations.translate('secure_checkout', shopProvider.appLanguage),
         ),
       ),
       body: WebViewWidget(controller: _controller),

@@ -1,11 +1,11 @@
 class AppLocalizations {
-  static String currentLanguage = 'en'; // Global active flag ('hu' or 'en')
+  // static String currentLanguage = 'en'; // Global active flag ('hu' or 'en')
 
   static const _keys = {
     'title', 'choose_box', 'add_to_bag', 'cart_title', 'checkout', 'select_size', 
     'box_image', 'how_much', 'description', 'default_description', 'order_success', 
     'secure_checkout', 'cart_empty', 'total', 'socials_title', 'sort_default', 
-    'price_low_high', 'price_high_low', 'all_vendors',
+    'price_low_high', 'price_high_low', 'all_vendors', 'lang_label',
 };
 
   // Dictionary database matrix
@@ -26,11 +26,11 @@ class AppLocalizations {
       'cart_empty': 'A kosarad jelenleg üres.\nMenj, adj hozzá néhány rejtélyes dobozt!',
       'total': 'Összérték:',
       'socials_title': '#AZKOMOLY · OSSZA MEG',
-
       'sort_default': 'Rendezés: Alapértelmezett',
       'price_low_high': 'Ár: Alacsonytól a Magasig',
       'price_high_low': 'Ár: Magastól az Alacsonyig',
       'all_vendors': 'MINDEN MÁRKA',
+      'lang_label': 'Nyelv',
     },
     'en': {
       'title': 'AzKomoly Mystery Boxes',
@@ -48,17 +48,16 @@ class AppLocalizations {
       'cart_empty': 'Your cart is currently empty.\nGo add some mystery boxes!',
       'total': 'Total Value:',
       'socials_title': '#AZKOMOLY · SHARE IT',
-
       'sort_default': 'Sort: Default',
       'price_low_high': 'Price: Low to High',
       'price_high_low': 'Price: High to Low',
       'all_vendors': 'ALL BRANDS',
+      'lang_label': 'Language',
     },
   };
 
-  // Static helper methods to retrieve translations instantly on any widget page
-  static String translate(String key) {
+  static String translate(String key, String languageCode) {
     assert(_keys.contains(key), 'Unknown translation key: $key');
-    return _localizedValues[currentLanguage]?[key] ?? key;
+    return _localizedValues[languageCode]?[key] ?? key;
   }
 }

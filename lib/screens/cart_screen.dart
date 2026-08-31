@@ -69,7 +69,7 @@ class _CartScreenState extends State<CartScreen> {
         throw Exception('Server error: ${response.statusCode} - ${response.body}');
       }
     } catch (e) {
-      print("CHECKOUT ERROR LOG: $e"); // Watch your terminal/debug console for this!
+      debugPrint("CHECKOUT ERROR LOG: $e"); // Watch your terminal/debug console for this!
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -95,13 +95,13 @@ class _CartScreenState extends State<CartScreen> {
     return Scaffold(
       appBar: AppBar(
         // title: const Text('Your Cart Bag'),
-        title: Text(AppLocalizations.translate('cart_title')),
+        title: Text(AppLocalizations.translate('cart_title', shopProvider.appLanguage)),
       ),
       body: shopProvider.cart.isEmpty
           ? Center(
               child: Text(
                 // 'Your cart is currently empty.\nGo add some mystery boxes!',
-                AppLocalizations.translate('cart_empty'),
+                AppLocalizations.translate('cart_empty', shopProvider.appLanguage),
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 16, color: Colors.grey),
                 // style: Theme.of(context).textTheme.bodyMedium,
@@ -173,7 +173,7 @@ class _CartScreenState extends State<CartScreen> {
                             // const Text('Total Value:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                             // Text('${totalPrice.toStringAsFixed(2)} HUF', style: const TextStyle(fontSize: 20, color: Colors.green, fontWeight: FontWeight.bold)),
                             // Text('Total Value:', style: Theme.of(context).textTheme.titleMedium),
-                            Text(AppLocalizations.translate('total'), style: Theme.of(context).textTheme.titleMedium),
+                            Text(AppLocalizations.translate('total', shopProvider.appLanguage), style: Theme.of(context).textTheme.titleMedium),
                             Text('${totalPrice.toStringAsFixed(2)} HUF', style: Theme.of(context).textTheme.titleMedium),
                           ],
                         ),
@@ -199,7 +199,7 @@ class _CartScreenState extends State<CartScreen> {
                               )
                             : Text(
                                 // 'PROCEED TO CHECKOUT', 
-                                AppLocalizations.translate('checkout'),
+                                AppLocalizations.translate('checkout', shopProvider.appLanguage),
                                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                         ),

@@ -61,7 +61,7 @@ class _DetailScreenState extends State<DetailScreen> {
 
                   Text(
                     // 'HOW MUCH DO YOU WANT?',
-                    AppLocalizations.translate('how_much'),
+                    AppLocalizations.translate('how_much', shopProvider.appLanguage),
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 10),
@@ -74,7 +74,7 @@ class _DetailScreenState extends State<DetailScreen> {
 
                   Text(
                     // 'DESCRIPTION',
-                    AppLocalizations.translate('description'),
+                    AppLocalizations.translate('description', shopProvider.appLanguage),
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 8),
@@ -82,7 +82,7 @@ class _DetailScreenState extends State<DetailScreen> {
                   Text(
                     widget.product.description.isEmpty 
                         // ? "This exclusive mystery box features highly curated street clothing and rare items matching premium drops." 
-                        ? AppLocalizations.translate('default_description')
+                        ? AppLocalizations.translate('default_description', shopProvider.appLanguage)
                         : widget.product.description,
                     style: const TextStyle(fontSize: 16, height: 1.5),
                   ),
@@ -114,7 +114,7 @@ class _DetailScreenState extends State<DetailScreen> {
             },
             child: Text(
               // 'ADD MYSTERY BOX TO BAG', 
-              AppLocalizations.translate('add_to_bag'),
+              AppLocalizations.translate('add_to_bag', shopProvider.appLanguage),
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)
             ),
           ),

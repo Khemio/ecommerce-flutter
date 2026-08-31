@@ -1,11 +1,13 @@
 // lib/screens/social_carousel.dart
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 // import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 
 import '../../app_localizations.dart';
+import '../../providers/shop_provider.dart';
 
 class SocialReviewItem {
   final String thumbnailUrl;
@@ -86,6 +88,7 @@ class SocialCarousel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final shopProvider = Provider.of<ShopProvider>(context); 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -93,7 +96,7 @@ class SocialCarousel extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
           child: Text(
             // '#AZKOMOLY · SHARE IT',
-            AppLocalizations.translate('socials_title'),
+            AppLocalizations.translate('socials_title', shopProvider.appLanguage),
             // style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16, letterSpacing: 1.5),
             style: Theme.of(context).textTheme.headlineLarge,
           ),

@@ -1,6 +1,7 @@
 // lib/screens/profile_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../app_localizations.dart';
 import '../providers/shop_provider.dart';
 import 'order_history_screen.dart';
 
@@ -46,6 +47,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Container(
+              margin: const EdgeInsets.only(bottom: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFF0D0D0D), width: 2.5), // Thick Neo-Brutalism border
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    AppLocalizations.translate('lang_label', shopProvider.appLanguage),
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black),
+                  ),
+                  DropdownButton<String>(
+                    value: shopProvider.appLanguage,
+                    style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                    underline: const SizedBox(), // Removes the default ugly line
+                    dropdownColor: Colors.white,
+                    onChanged: (String? newValue) {
+                      if (newValue != null) {
+                        shopProvider.updateLanguage(newValue);
+                      }
+                    },
+                    items: const [
+                      DropdownMenuItem(value: 'hu', child: Text('Magyar (HU)')),
+                      DropdownMenuItem(value: 'en', child: Text('English (EN)')),
+                    ],
+                  ),
+                ],
+              ),
+            ),
             // 1. Personal Information Input Card (Neo-Brutalism Wrapper)
             Card(
               child: Padding(

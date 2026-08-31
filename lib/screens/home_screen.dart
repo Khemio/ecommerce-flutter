@@ -43,25 +43,43 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         actions: [
-          TextButton(
-            child: Text(
-              AppLocalizations.currentLanguage == 'hu' ? 'EN' : 'HU',
-              style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-            ),
-            onPressed: () {
-              setState(() {
-                // Toggle the translation engine string parameters instantly
-                AppLocalizations.currentLanguage = AppLocalizations.currentLanguage == 'hu' ? 'en' : 'hu';
-              });
-            },
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.shopping_bag_outlined, color: Colors.black, size: 28),
+                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CartScreen())),
+              ),
+              // 🟢 THE PRO BADGE: Only draw the notification circle if items actually exist in the cart map
+              if (shopProvider.cart.isNotEmpty)
+                Positioned(
+                  right: 4,
+                  top: 4,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: const BoxDecoration(
+                      color: Colors.redAccent, // High-contrast notification indicator badge
+                      shape: BoxShape.circle,
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 18,
+                      minHeight: 18,
+                    ),
+                    child: Text(
+                      '${shopProvider.cart.length}', // Dynamically prints item counts out of memory cache
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
           ),
-          IconButton(
-            icon: const Icon(Icons.shopping_cart),
-            onPressed: () => Navigator.push(
-              context, 
-              MaterialPageRoute(builder: (_) => const CartScreen())
-            ),
-          )
+          const SizedBox(width: 8),
+        
         ],
       ),
       body: shopProvider.isLoading
@@ -78,7 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     aspectRatio: 16 / 9,
                     autoPlayInterval: const Duration(seconds: 4),
                   ),
-                  items: [
+                  items: [ //TODO: add a check for item existance
                     shopProvider.products[0].imageUrl,
                     shopProvider.products[1].imageUrl,
                     shopProvider.products[2].imageUrl,
@@ -113,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 child: Text(
                   // 'CHOOSE YOUR MYSTERY BOX', 
-                  AppLocalizations.translate('choose_box'),
+                  AppLocalizations.translate('choose_box', shopProvider.appLanguage),
                   style: Theme.of(context).textTheme.headlineLarge
                   
                 ),
@@ -138,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           value: 'None', 
                           child: Text(
                             // 'Sort: Default', 
-                            AppLocalizations.translate('sort_default'),
+                            AppLocalizations.translate('sort_default', shopProvider.appLanguage),
                             style: TextStyle(color: AppTheme.backgroundWhite)
                           )
                         ),
@@ -146,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           value: 'LowToHigh', 
                           child: Text(
                             // 'Price: Low to High', 
-                            AppLocalizations.translate('price_low_high'),
+                            AppLocalizations.translate('price_low_high', shopProvider.appLanguage),
                             style: TextStyle(color: AppTheme.backgroundWhite)
                           )
                         ),
@@ -155,7 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           
                           child: Text(
                             // 'Price: High to Low',
-                            AppLocalizations.translate('price_high_low'),
+                            AppLocalizations.translate('price_high_low', shopProvider.appLanguage),
                             style: TextStyle(color: AppTheme.backgroundWhite)
                           )
                         ),
@@ -174,7 +192,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       items: shopProvider.uniqueVendors.map((String vendor) {
                         // return DropdownMenuItem(value: vendor, child: Text(vendor.toUpperCase(), style: TextStyle(color: AppTheme.backgroundWhite)));
                         final String displayTitle = vendor == 'All' 
-                          ? AppLocalizations.translate('all_vendors') 
+                          ? AppLocalizations.translate('all_vendors', shopProvider.appLanguage) 
                           : vendor.toUpperCase();
 
                         return DropdownMenuItem(
@@ -233,7 +251,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           const SizedBox(height: 8),
                                           Text(
                                             // 'MYSTERY BOX IMAGE',
-                                              AppLocalizations.translate('box_image'),
+                                              AppLocalizations.translate('box_image', shopProvider.appLanguage),
                                             style: TextStyle(
                                               fontFamily: 'Anton',
                                               color: AppTheme.brandViolet.withValues(alpha: 0.6),

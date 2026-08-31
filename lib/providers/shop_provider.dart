@@ -3,12 +3,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
+import 'dart:ui' as ui;
 
 import '../models/product.dart';
 import '../models/user_profile.dart';
 import '../models/order_history.dart';
 import '../app_config.dart';
 class ShopProvider with ChangeNotifier {
+  String _appLanguage = 'en'; // Safe default parameter
   List<Product> _products = [];
   final Map<String, CartItem> _cart = {};
   // List<Map<String, dynamic>> _orderHistory = []; 
@@ -17,6 +19,8 @@ class ShopProvider with ChangeNotifier {
   bool _isLoading = false;
   Timer? _cartSaveTimer;
 
+
+  String get appLanguage => _appLanguage;
   List<Product> get products => _products;
   List<CartItem> get cart => _cart.values.toList();
   int get cartCount => _cart.values.fold(0, (sum, i) => sum + i.quantity);
@@ -37,6 +41,16 @@ class ShopProvider with ChangeNotifier {
   Future<void> _loadDataFromStorage() async {
     try {
       final prefs = await SharedPreferences.getInstance();
+
+      final String? cachedLang = prefs.getString('user_language_pref');
+    
+      if (cachedLang != null) {
+        _appLanguage = cachedLang;
+      } else {
+        final String systemLocaleCode = ui.PlatformDispatcher.instance.locale.languageCode.toLowerCase();
+
+        _appLanguage = (systemLocaleCode == 'hu') ? 'hu' : 'en';
+      }
 
       final String? cachedCartString = prefs.getString('user_cart_cache');
       if (cachedCartString != null) {
@@ -62,7 +76,7 @@ class ShopProvider with ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      print("🚨 Caching Engine Read Fault: $e");
+      debugPrint("🚨 Caching Engine Read Fault: $e");
     }
   }
 
@@ -110,7 +124,7 @@ class ShopProvider with ChangeNotifier {
         _products = data.map((item) => Product.fromJson(item)).toList();
       }
     } catch (error) {
-      print("Error fetching products: $error");
+      debugPrint("Error fetching products: $error");
     }
 
     _isLoading = false;
@@ -136,14 +150,24 @@ class ShopProvider with ChangeNotifier {
     await prefs.setString('user_profile', json.encode(_profile!.toJson()));
   }
 
+  Future<void> _saveLangToDisk() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user_language_pref', _appLanguage);
+  }
+
   // State mutations
-  //TODO: Test profile saving
   Future<void> saveProfile(String name, String email) async {
     _profile = UserProfile(name: name, email: email);
     await _saveProfileToDisk();
     notifyListeners();
   }
-  // 🟢 NEW ARCHITECTURE HOOK: Converts active CartItems directly to OrderItems on successful checkout
+
+  Future<void> updateLanguage(String newLangCode) async {
+    _appLanguage = newLangCode;
+    await _saveLangToDisk();
+    notifyListeners();
+  }
+
   // Future<void> archiveCartToCompletedOrder(String totalAmount) async {
   Future<void> archiveCartToCompletedOrder() async {
     //TODO: Think about the shape of the data
@@ -155,15 +179,6 @@ class ShopProvider with ChangeNotifier {
     });
 
     String totalAmount = "${totalPrice.toStringAsFixed(2)} HUF";
-    
-    // Map active cart items smoothly over to structural order tracking models
-    // List<CartItem> transactionLines = _cart.values.map((cartItem) {
-    //   return CartItem(
-    //     product: cartItem.product,
-    //     quantity: cartItem.quantity,
-    //     // selectedSize: cartItem.size,
-    //   );
-    // }).toList();
 
     // Create the finalized OrderHistoryItem summary node 
     final newOrderRecord = OrderHistoryItem(
@@ -200,7 +215,6 @@ class ShopProvider with ChangeNotifier {
     // Schedule the file save to happen exactly 1 second AFTER the user stops interacting
     _cartSaveTimer = Timer(const Duration(seconds: 1), () {
       _saveCartToDisk(); 
-      print("💾 Cart successfully synchronized to disk storage!");
     });
   }
 
@@ -212,9 +226,7 @@ class ShopProvider with ChangeNotifier {
       _cart[variantId]!.quantity = newQty;
     }
 
-    // _saveCartToDisk();
-    // notifyListeners();
-    notifyListeners(); //Update the screen UI instantly so the user sees no lag!
+    notifyListeners();
 
     //Cancel any pending file writes if the user clicks again quickly
     _cartSaveTimer?.cancel(); 
@@ -222,7 +234,6 @@ class ShopProvider with ChangeNotifier {
     // Schedule the file save to happen exactly 1 second AFTER the user stops interacting
     _cartSaveTimer = Timer(const Duration(seconds: 1), () {
       _saveCartToDisk(); 
-      print("💾 Cart successfully synchronized to disk storage!");
     });
   }
 
