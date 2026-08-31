@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/string_extenstions.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart'; 
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
@@ -38,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Row(
           children: [
             Image.asset(
-              'assets/images/azkomoly_new_logo.webp',
+              'azkomoly_new_logo.webp'.toAssetPath(),
               height: 32,
               fit: BoxFit.contain,
               errorBuilder: (context, error, stackTrace) => const Text('AZKOMOLY', style: TextStyle(fontWeight: FontWeight.bold)),
