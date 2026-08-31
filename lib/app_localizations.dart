@@ -1,6 +1,13 @@
 class AppLocalizations {
   static String currentLanguage = 'en'; // Global active flag ('hu' or 'en')
 
+  static const _keys = {
+    'title', 'choose_box', 'add_to_bag', 'cart_title', 'checkout', 'select_size', 
+    'box_image', 'how_much', 'description', 'default_description', 'order_success', 
+    'secure_checkout', 'cart_empty', 'total', 'socials_title', 'sort_default', 
+    'price_low_high', 'price_high_low', 'all_vendors',
+};
+
   // Dictionary database matrix
   static const Map<String, Map<String, String>> _localizedValues = {
     'hu': {
@@ -51,6 +58,7 @@ class AppLocalizations {
 
   // Static helper methods to retrieve translations instantly on any widget page
   static String translate(String key) {
+    assert(_keys.contains(key), 'Unknown translation key: $key');
     return _localizedValues[currentLanguage]?[key] ?? key;
   }
 }
