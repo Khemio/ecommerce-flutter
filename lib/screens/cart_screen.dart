@@ -104,14 +104,15 @@ class _CartScreenState extends State<CartScreen> {
               icon: const Icon(Icons.delete_sweep_outlined, color: Colors.redAccent, size: 26),
               onPressed: () {
                 // 💡 Surface a safety confirmation dialog before wiping memory caches
+                //TODO: Add translations
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
                       // title: const Text('Kosár ürítése?', style: TextStyle(fontWeight: FontWeight.bold)),
                       // content: const Text('Biztosan törölni szeretnéd az összes elemet a kosárból?'),
-                      title: const Text('Kosár ürítése?', style: TextStyle(fontWeight: FontWeight.bold)),
-                      content: const Text('Biztosan törölni szeretnéd az összes elemet a kosárból?'),
+                      title: const Text('Clear the basket?', style: TextStyle(fontWeight: FontWeight.bold)),
+                      content: const Text('Are you sure you want to delete all items from the cart?'),
                       actions: [
                         TextButton(
                           // child: const Text('Mégse / Cancel', style: TextStyle(color: Colors.grey)),
