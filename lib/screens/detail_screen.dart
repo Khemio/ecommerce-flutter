@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../app_localizations.dart';
 import '../models/product.dart';
 import '../providers/shop_provider.dart';
+import 'cart_screen.dart';
 import 'widgets/quantity_selector.dart';
 
 class DetailScreen extends StatefulWidget {
@@ -24,6 +25,41 @@ class _DetailScreenState extends State<DetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.product.productType.toUpperCase()),
+        actions: [
+        // 🟢 Dynamic reactive badge mirroring home screen logic
+        Consumer<ShopProvider>(
+          builder: (context, shopProvider, child) {
+            return Stack(
+              alignment: Alignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.shopping_bag_outlined, color: Colors.black, size: 28),
+                  onPressed: () => Navigator.push(
+                    context, 
+                    MaterialPageRoute(builder: (_) => const CartScreen())
+                  ),
+                ),
+                if (shopProvider.cart.isNotEmpty)
+                  Positioned(
+                    right: 4,
+                    top: 4,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(color: Colors.redAccent, shape: BoxShape.circle),
+                      constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                      child: Text(
+                        '${shopProvider.cart.length}',
+                        style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          },
+        ),
+        const SizedBox(width: 8),
+      ],
       ),
       body: SingleChildScrollView(
         child: Column(

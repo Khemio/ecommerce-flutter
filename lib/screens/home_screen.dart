@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Row(
           children: [
             Image.asset(
-              'images/azkomoly_new_logo.webp',
+              'assets/images/azkomoly_new_logo.webp',
               height: 32,
               fit: BoxFit.contain,
               errorBuilder: (context, error, stackTrace) => const Text('AZKOMOLY', style: TextStyle(fontWeight: FontWeight.bold)),
