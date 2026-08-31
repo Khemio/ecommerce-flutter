@@ -20,7 +20,8 @@ class OrderHistoryScreen extends StatelessWidget {
       body: orders.isEmpty
           ? const Center(
               child: Text(
-                'Nincsenek korábbi rendelések.\nNo order history found.',
+                // 'Nincsenek korábbi rendelések.\nNo order history found.',
+                'No order history found.',
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.white, fontSize: 16),
               ),
@@ -63,7 +64,7 @@ class OrderHistoryScreen extends StatelessWidget {
                               children: [
                                 Expanded(
                                   child: Text(
-                                    '${item.product.title} (${item.quantity})',
+                                    item.product.title,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(color: Colors.black87),

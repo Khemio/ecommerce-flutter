@@ -39,7 +39,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('PROFIL'),
+        title: const Text('PROFILE'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
@@ -54,7 +54,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'SZEMÉLYES ADATOK / PROFILE INFO',
+                      // 'SZEMÉLYES ADATOK / PROFILE INFO',
+                      'PROFILE INFO',
                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                     ),
                     const SizedBox(height: 16),
@@ -62,7 +63,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       controller: _nameController,
                       style: const TextStyle(color: Colors.black),
                       decoration: const InputDecoration(
-                        labelText: 'Név / Name',
+                        // labelText: 'Név / Name',
+                        labelText: 'Name',
                         labelStyle: TextStyle(color: Colors.black54),
                         border: OutlineInputBorder(),
                       ),
@@ -86,10 +88,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       onPressed: () {
                         shopProvider.saveProfile(_nameController.text, _emailController.text);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Profil sikeresen mentve! / Profile saved!')),
+                          // const SnackBar(content: Text('Profil sikeresen mentve! / Profile saved!')),
+                          const SnackBar(content: Text('Profile saved!')),
                         );
                       },
-                      child: const Text('MENTÉS / SAVE'),
+                      // child: const Text('MENTÉS / SAVE'),
+                      child: const Text('SAVE'),
                     ),
                   ],
                 ),
@@ -102,8 +106,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: ListTile(
                 contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 leading: const Icon(Icons.history_toggle_off, color: Colors.black, size: 28),
-                title: const Text('RENDELÉSI ELŐZMÉNYEK', style: TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: Text('${shopProvider.orderHistory.length} db korábbi rendelés'),
+                title: const Text('ORDER HISTORY', style: TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: Text('${shopProvider.orderHistory.length} previous order${shopProvider.orderHistory.length == 1 ? '' : 's'}'),
+                // title: const Text('RENDELÉSI ELŐZMÉNYEK', style: TextStyle(fontWeight: FontWeight.bold)),
+                // subtitle: Text('${shopProvider.orderHistory.length} db korábbi rendelés'),
                 trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black),
                 onTap: () {
                   Navigator.push(
