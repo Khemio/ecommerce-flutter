@@ -31,11 +31,14 @@ class _DetailScreenState extends State<DetailScreen> {
             SizedBox(
               height: 350,
               width: double.infinity,
-              child: CachedNetworkImage(
-                imageUrl: widget.product.imageUrl,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
-                errorWidget: (context, url, error) => const Icon(Icons.broken_image, size: 80),
+              child: Hero(
+                tag: 'box_${widget.product.id}', 
+                child: CachedNetworkImage(
+                  imageUrl: widget.product.imageUrl,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+                  errorWidget: (context, url, error) => const Icon(Icons.broken_image, size: 80),
+                ),
               ),
             ),
 
