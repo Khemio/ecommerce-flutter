@@ -1,7 +1,8 @@
-// lib/screens/main_layout.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_app/screens/profile_screen.dart';
 import 'home_screen.dart';
 import 'cart_screen.dart';
+// import 'profile_screen.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
@@ -17,7 +18,8 @@ class _MainLayoutState extends State<MainLayout> {
   final List<Widget> _screens = [
     const HomeScreen(),
     const CartScreen(),
-    const Scaffold(body: Center(child: Text('Profile & Orders (Coming Soon)'))),
+    const ProfileScreen(),
+    // const Scaffold(body: Center(child: Text('Profile & Orders (Coming Soon)'))),
   ];
 
   @override
