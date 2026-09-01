@@ -2,12 +2,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/shop_provider.dart';
-import 'screens/home_screen.dart';
+// import 'screens/home_screen.dart';
+import 'screens/main_layout.dart';
 import 'app_theme.dart';
 
 void main() {
   runApp(
-    // 1. Wrap the entire application in your dynamic shop provider state
     ChangeNotifierProvider(
       create: (context) => ShopProvider(),
       child: const MyApp(),
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
       title: 'Azkomoly Demo App',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.brandTheme,
-      home: const HomeScreen(),
+      home: const MainLayout(),
     );
   }
 }

@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../app_config.dart';
 
+import '../app_localizations.dart';
 import '../providers/shop_provider.dart';
 import 'checkout_screen.dart';
 import 'widgets/quantity_selector.dart';
@@ -44,15 +45,20 @@ class _CartScreenState extends State<CartScreen> {
         final Map<String, dynamic> responseData = json.decode(response.body);
         final String checkoutUrl = responseData['checkoutUrl'] ?? '';
 
+        //? Look throught this, cleanup should probably be after successful checkout with date from proxy
         if (checkoutUrl.isNotEmpty && mounted) {
+          await provider.archiveCartToCompletedOrder();
           Navigator.push(
+            // ignore: use_build_context_synchronously
             context,
             MaterialPageRoute(
               builder: (_) => CheckoutScreen(checkoutUrl: checkoutUrl),
             ),
           ).then((_) {
             // OPTIONAL: Clear the cart ONLY after the user returns from checkout
-            provider.clearCart();
+            // provider.clearCart();
+            // await provider.archiveCartToCompletedOrder();
+            // await provider.archiveCartToCompletedOrder("${totalPrice.toStringAsFixed(2)} HUF");
           });
 
         } else {
@@ -63,7 +69,7 @@ class _CartScreenState extends State<CartScreen> {
         throw Exception('Server error: ${response.statusCode} - ${response.body}');
       }
     } catch (e) {
-      print("CHECKOUT ERROR LOG: $e"); // Watch your terminal/debug console for this!
+      debugPrint("CHECKOUT ERROR LOG: $e"); // Watch your terminal/debug console for this!
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -88,12 +94,59 @@ class _CartScreenState extends State<CartScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Your Cart Bag'),
+        // title: const Text('Your Cart Bag'),
+        title: Text(AppLocalizations.translate('cart_title', shopProvider.appLanguage)),
+
+        actions: [
+          // 🟢 ONLY show the clear button if the cart actually contains items
+          if (shopProvider.cart.isNotEmpty)
+            IconButton(
+              icon: const Icon(Icons.delete_sweep_outlined, color: Colors.redAccent, size: 26),
+              onPressed: () {
+                // 💡 Surface a safety confirmation dialog before wiping memory caches
+                //TODO: Add translations
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      // title: const Text('Kosár ürítése?', style: TextStyle(fontWeight: FontWeight.bold)),
+                      // content: const Text('Biztosan törölni szeretnéd az összes elemet a kosárból?'),
+                      title: const Text('Clear the basket?', style: TextStyle(fontWeight: FontWeight.bold)),
+                      content: const Text('Are you sure you want to delete all items from the cart?'),
+                      actions: [
+                        TextButton(
+                          // child: const Text('Mégse / Cancel', style: TextStyle(color: Colors.grey)),
+                          child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+                          onPressed: () => Navigator.of(context).pop(), // Closes the alert box safely
+                        ),
+                        TextButton(
+                          // child: const Text('Törlés / Clear', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
+                          child: const Text('Clear', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
+                          onPressed: () {
+                            shopProvider.clearCart(); // Triggers your built-in provider wipe code
+                            Navigator.of(context).pop(); // Closes the alert dialog box frame
+                            
+                            // Notify the customer with a quick confirmation toast
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              // const SnackBar(content: Text('Kosár kiürítve! / Cart cleared!')),
+                              const SnackBar(content: Text('Cart cleared!')),
+                            );
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: shopProvider.cart.isEmpty
           ? Center(
               child: Text(
-                'Your cart is currently empty.\nGo add some mystery boxes!',
+                // 'Your cart is currently empty.\nGo add some mystery boxes!',
+                AppLocalizations.translate('cart_empty', shopProvider.appLanguage),
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 16, color: Colors.grey),
                 // style: Theme.of(context).textTheme.bodyMedium,
@@ -164,7 +217,8 @@ class _CartScreenState extends State<CartScreen> {
                           children: [
                             // const Text('Total Value:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                             // Text('${totalPrice.toStringAsFixed(2)} HUF', style: const TextStyle(fontSize: 20, color: Colors.green, fontWeight: FontWeight.bold)),
-                            Text('Total Value:', style: Theme.of(context).textTheme.titleMedium),
+                            // Text('Total Value:', style: Theme.of(context).textTheme.titleMedium),
+                            Text(AppLocalizations.translate('total', shopProvider.appLanguage), style: Theme.of(context).textTheme.titleMedium),
                             Text('${totalPrice.toStringAsFixed(2)} HUF', style: Theme.of(context).textTheme.titleMedium),
                           ],
                         ),
@@ -188,8 +242,9 @@ class _CartScreenState extends State<CartScreen> {
                                   strokeWidth: 2.5, // Thinner spinner to look clean inside a button
                                 ),
                               )
-                            : const Text(
-                                'PROCEED TO CHECKOUT', 
+                            : Text(
+                                // 'PROCEED TO CHECKOUT', 
+                                AppLocalizations.translate('checkout', shopProvider.appLanguage),
                                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                         ),

@@ -9,7 +9,7 @@
       "program": "${workspaceFolder}/lib/main.dart",
       "toolArgs": [
         "--dart-define",
-        "BASE_URL=https://ecommerce-proxy.fly.dev"
+        "BASE_URL=https://ecommerce-proxy.fly.dev/api/v1"
       ]
     },
     {
