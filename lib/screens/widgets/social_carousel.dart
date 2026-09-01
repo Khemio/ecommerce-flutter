@@ -1,19 +1,46 @@
 // lib/screens/social_carousel.dart
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 // import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
+
+import '../../app_localizations.dart';
+import '../../providers/shop_provider.dart';
 
 class SocialReviewItem {
   final String thumbnailUrl;
   final String videoUrl;
   final bool isTikTok; // True = TikTok icon badge, False = Instagram icon badge
 
-  SocialReviewItem({required this.thumbnailUrl, required this.videoUrl, required this.isTikTok});
+  SocialReviewItem({
+    required String thumbnailUrl,
+    required this.videoUrl,
+    required this.isTikTok,
+  }) : thumbnailUrl = _normalizeUrl(thumbnailUrl);
+
+  static String _normalizeUrl(String url) {
+    if (url.startsWith('assets/')) {
+      return url;
+    }
+    if (url.startsWith('images/')) {
+      return 'assets/$url';
+    }
+    // Fallback if only the file name was provided (e.g., 'review1.webp')
+    return 'assets/images/$url'; 
+  }
+
+  factory SocialReviewItem.fromJson(Map<String, dynamic> json) {
+  return SocialReviewItem(
+    thumbnailUrl: json['thumbnailUrl'] ?? '',
+    videoUrl: json['videoUrl'] ?? '',
+    isTikTok: json['isTikTok'] ?? false,
+  );
 }
 
-// TODO: change icons on items to actual platform logos
+}
+
 class SocialCarousel extends StatelessWidget {
   final List<SocialReviewItem> reviews = [
     SocialReviewItem(
@@ -61,13 +88,15 @@ class SocialCarousel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final shopProvider = Provider.of<ShopProvider>(context); 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
           child: Text(
-            '#AZKOMOLY · SHARE IT',
+            // '#AZKOMOLY · SHARE IT',
+            AppLocalizations.translate('socials_title', shopProvider.appLanguage),
             // style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16, letterSpacing: 1.5),
             style: Theme.of(context).textTheme.headlineLarge,
           ),
@@ -103,6 +132,7 @@ class SocialCarousel extends StatelessWidget {
                         //   errorWidget: (c, u, e) => const Icon(Icons.broken_image, size: 50),
                         // ),
                         child: Image.asset(
+                          // 'assets/${item.thumbnailUrl}',
                           item.thumbnailUrl,
                           height: double.infinity,
                           width: double.infinity,
