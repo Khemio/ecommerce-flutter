@@ -6,8 +6,8 @@ import 'dart:async';
 import 'dart:ui' as ui;
 
 import '../models/product.dart';
-import '../../models/user_profile.dart';
-import '../../models/order_history.dart';
+import '../../features/profile/models/user_profile.dart';
+import '../../features/profile/models/order_history.dart';
 import '../../app_config.dart';
 class ShopProvider with ChangeNotifier {
   String _appLanguage = 'en'; // Safe default parameter

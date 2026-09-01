@@ -6,8 +6,8 @@ import 'package:url_launcher/url_launcher.dart';
 // import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 
-import '../../app_localizations.dart';
-import '../../core/providers/shop_provider.dart';
+import '../../../app_localizations.dart';
+import '../../../core/providers/shop_provider.dart';
 
 class SocialReviewItem {
   final String thumbnailUrl;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/screens/profile_screen.dart';
-import 'home_screen.dart';
-import 'cart_screen.dart';
+import 'package:flutter_app/features/profile/profile_screen.dart';
+import 'home/home_screen.dart';
+import 'cart/cart_screen.dart';
 // import 'profile_screen.dart';
 
 class MainLayout extends StatefulWidget {

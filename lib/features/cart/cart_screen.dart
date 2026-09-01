@@ -5,12 +5,12 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../app_config.dart';
+import '../../app_config.dart';
 
-import '../app_localizations.dart';
-import '../core/providers/shop_provider.dart';
+import '../../app_localizations.dart';
+import '../../core/providers/shop_provider.dart';
 import 'checkout_screen.dart';
-import 'widgets/quantity_selector.dart';
+import '../../core/widgets/quantity_selector.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});

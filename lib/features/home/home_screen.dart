@@ -4,10 +4,10 @@ import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart'; 
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:flutter_app/app_theme.dart';
-import '../app_localizations.dart';
-import '../core/providers/shop_provider.dart';
-import 'detail_screen.dart';
-import 'cart_screen.dart';
+import '../../app_localizations.dart';
+import '../../core/providers/shop_provider.dart';
+import '../details/detail_screen.dart';
+import '../cart/cart_screen.dart';
 import 'widgets/social_carousel.dart';
 
 class HomeScreen extends StatefulWidget {

@@ -1,7 +1,7 @@
 // lib/screens/order_history_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../core/providers/shop_provider.dart';
+import '../../core/providers/shop_provider.dart';
 // import '../app_localizations.dart';
 
 class OrderHistoryScreen extends StatelessWidget {

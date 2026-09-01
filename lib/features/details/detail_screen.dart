@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../app_localizations.dart';
-import '../core/models/product.dart';
-import '../core/providers/shop_provider.dart';
-import 'cart_screen.dart';
-import 'widgets/quantity_selector.dart';
+import '../../app_localizations.dart';
+import '../../core/models/product.dart';
+import '../../core/providers/shop_provider.dart';
+import '../cart/cart_screen.dart';
+import '../../core/widgets/quantity_selector.dart';
 
 class DetailScreen extends StatefulWidget {
   final Product product;
