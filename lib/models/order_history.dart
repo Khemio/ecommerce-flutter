@@ -1,5 +1,4 @@
-// lib/models/order_history_item.dart
-import 'product.dart';
+import '../core/models/product.dart';
 
 class CartItem {
   final Product product;

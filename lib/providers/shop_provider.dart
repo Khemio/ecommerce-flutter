@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'dart:async';
 import 'dart:ui' as ui;
 
-import '../models/product.dart';
+import '../core/models/product.dart';
 import '../models/user_profile.dart';
 import '../models/order_history.dart';
 import '../app_config.dart';
