@@ -1,6 +1,6 @@
-// lib/screens/cart_screen.dart
 import 'dart:convert';
 import 'package:flutter_app/app_theme.dart';
+import 'package:flutter_app/features/cart/widgets/clear_cart_btn.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -94,51 +94,9 @@ class _CartScreenState extends State<CartScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        // title: const Text('Your Cart Bag'),
         title: Text(AppLocalizations.translate('cart_title', shopProvider.appLanguage)),
-
         actions: [
-          // 🟢 ONLY show the clear button if the cart actually contains items
-          if (shopProvider.cart.isNotEmpty)
-            IconButton(
-              icon: const Icon(Icons.delete_sweep_outlined, color: Colors.redAccent, size: 26),
-              onPressed: () {
-                // 💡 Surface a safety confirmation dialog before wiping memory caches
-                //TODO: Add translations
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      // title: const Text('Kosár ürítése?', style: TextStyle(fontWeight: FontWeight.bold)),
-                      // content: const Text('Biztosan törölni szeretnéd az összes elemet a kosárból?'),
-                      title: const Text('Clear the basket?', style: TextStyle(fontWeight: FontWeight.bold)),
-                      content: const Text('Are you sure you want to delete all items from the cart?'),
-                      actions: [
-                        TextButton(
-                          // child: const Text('Mégse / Cancel', style: TextStyle(color: Colors.grey)),
-                          child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
-                          onPressed: () => Navigator.of(context).pop(), // Closes the alert box safely
-                        ),
-                        TextButton(
-                          // child: const Text('Törlés / Clear', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
-                          child: const Text('Clear', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
-                          onPressed: () {
-                            shopProvider.clearCart(); // Triggers your built-in provider wipe code
-                            Navigator.of(context).pop(); // Closes the alert dialog box frame
-                            
-                            // Notify the customer with a quick confirmation toast
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              // const SnackBar(content: Text('Kosár kiürítve! / Cart cleared!')),
-                              const SnackBar(content: Text('Cart cleared!')),
-                            );
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-            ),
+          if (shopProvider.cart.isNotEmpty) ClearCartBtn(),
           const SizedBox(width: 8),
         ],
       ),

@@ -5,7 +5,6 @@ import 'package:flutter_app/app_theme.dart';
 
 import '../../app_localizations.dart';
 import '../../core/providers/shop_provider.dart';
-// import '../providers/shop_provider.dart';
 
 class CheckoutScreen extends StatefulWidget {
   final String checkoutUrl;
@@ -33,18 +32,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                    // '🎉 Order Placed Successfully!'
                     AppLocalizations.translate('order_success', shopProvider.appLanguage),
                   ),
                   backgroundColor: AppTheme.successColor,
-                  // behavior: SnackBarBehavior.floating, 
                 ),
               );
               // Pops back to the HomeScreen and clears navigation stack
               Navigator.popUntil(context, (route) => route.isFirst);
             }
           },
-          // 💡 THE FIX: Intercept Shopify's "Continue Shopping" button click
+          
           onNavigationRequest: (NavigationRequest request) {
             final url = request.url.toLowerCase();
             
