@@ -4,7 +4,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter_app/app_theme.dart';
 
 import '../app_localizations.dart';
-import '../providers/shop_provider.dart';
+import '../core/providers/shop_provider.dart';
 // import '../providers/shop_provider.dart';
 
 class CheckoutScreen extends StatefulWidget {

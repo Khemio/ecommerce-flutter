@@ -1,7 +1,7 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'providers/shop_provider.dart';
+import 'core/providers/shop_provider.dart';
 // import 'screens/home_screen.dart';
 import 'screens/main_layout.dart';
 import 'app_theme.dart';
