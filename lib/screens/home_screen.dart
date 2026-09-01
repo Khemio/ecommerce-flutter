@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/string_extenstions.dart';
+import 'package:flutter_app/core/utils/string_extenstions.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart'; 
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
