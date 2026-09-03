@@ -1,11 +1,10 @@
 class AppLocalizations {
-  // static String currentLanguage = 'en'; // Global active flag ('hu' or 'en')
-
   static const _keys = {
     'title', 'choose_box', 'add_to_bag', 'cart_title', 'checkout', 'select_size', 
     'box_image', 'how_much', 'description', 'default_description', 'order_success', 
     'secure_checkout', 'cart_empty', 'total', 'socials_title', 'sort_default', 
-    'price_low_high', 'price_high_low', 'all_vendors', 'lang_label',
+    'price_low_high', 'price_high_low', 'all_vendors', 'lang_label','added_to_bag_msg',
+
 };
 
   // Dictionary database matrix
@@ -31,6 +30,8 @@ class AppLocalizations {
       'price_high_low': 'Ár: Magastól az Alacsonyig',
       'all_vendors': 'MINDEN MÁRKA',
       'lang_label': 'Nyelv',
+      'added_to_bag_msg': 'Tasakhoz hozzáadva: {quantity} x {title}',
+      // 'added_to_bag_msg': '{quantity} db tétel ({title}) hozzáadva a tasakhoz!',
     },
     'en': {
       'title': 'AzKomoly Mystery Boxes',
@@ -53,6 +54,9 @@ class AppLocalizations {
       'price_high_low': 'Price: High to Low',
       'all_vendors': 'ALL BRANDS',
       'lang_label': 'Language',
+      'added_to_bag_msg': 'Added to bag: {quantity} x {title}',
+      // 'added_to_bag_msg_singular': '{quantity} item ({title}) added to bag!',
+      // 'added_to_bag_msg_plural': '{quantity} items ({title}) added to bag!',
     },
   };
 

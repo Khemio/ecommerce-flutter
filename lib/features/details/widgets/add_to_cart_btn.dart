@@ -26,11 +26,15 @@ class AddToCartBtn extends StatelessWidget {
             style: Theme.of(context).elevatedButtonTheme.style,
             onPressed: () {
               onPressed(product, _selectedQuantity);
+
+              final String basePattern = AppLocalizations.translate('added_to_bag_msg', appLanguage);
+              final String snackBarMessage = basePattern
+                  .replaceAll('{quantity}', '$_selectedQuantity')
+                  .replaceAll('{title}', product.title);
               
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  // TODO: Add translation and  evaluate if we need to add 's' at the end 
-                  content: Text('$_selectedQuantity ${product.title + (_selectedQuantity > 1 ? 's' : '')} added to bag!'),
+                  content: Text(snackBarMessage),
                   duration: const Duration(seconds: 2),
                 ),
               );
