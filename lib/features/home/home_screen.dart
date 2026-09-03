@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/core/utils/string_extenstions.dart';
+import 'package:flutter_app/core/widgets/cart_btn.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart'; 
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
-import 'package:flutter_app/app_theme.dart';
-import '../../app_localizations.dart';
-import '../../core/providers/shop_provider.dart';
-import '../details/detail_screen.dart';
-import '../cart/cart_screen.dart';
-import 'widgets/social_carousel.dart';
 
+import 'package:flutter_app/app_localizations.dart';
+import 'package:flutter_app/core/providers/shop_provider.dart';
+import 'package:flutter_app/features/cart/cart.dart' show CartScreen;
+import 'package:flutter_app/features/details/details.dart' show DetailScreen;
+import 'package:flutter_app/app_theme.dart';
+import 'package:flutter_app/core/utils/string_extenstions.dart';
+
+import 'widgets/social_carousel.dart';
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -48,50 +50,14 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         actions: [
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.shopping_bag_outlined, color: Colors.black, size: 28),
-                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CartScreen())),
-              ),
-              // 🟢 THE PRO BADGE: Only draw the notification circle if items actually exist in the cart map
-              if (shopProvider.cart.isNotEmpty)
-                Positioned(
-                  right: 4,
-                  top: 4,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                      color: Colors.redAccent, // High-contrast notification indicator badge
-                      shape: BoxShape.circle,
-                    ),
-                    constraints: const BoxConstraints(
-                      minWidth: 18,
-                      minHeight: 18,
-                    ),
-                    child: Text(
-                      '${shopProvider.cart.length}', // Dynamically prints item counts out of memory cache
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(width: 8),
-        
-        ],
+          CartButton(), const SizedBox(width: 8),],
       ),
       body: RefreshIndicator(
         onRefresh: () => _onRefresh(context),
         child: shopProvider.isLoading
           ? const Center(child: CircularProgressIndicator())
           : shopProvider.products.isEmpty
+            // Recconect screen
             ? ListView(
               physics: const AlwaysScrollableScrollPhysics(),
               children: [
@@ -137,11 +103,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             )
+            // Body 
             : ListView(
                physics: const AlwaysScrollableScrollPhysics(), // Ensures drag pull handles correctly
               children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
+
+                  // Promo Carousel
                   child: CarouselSlider(
                     options: CarouselOptions(
                       height: 180.0,
@@ -184,13 +153,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                   child: Text(
-                    // 'CHOOSE YOUR MYSTERY BOX', 
                     AppLocalizations.translate('choose_box', shopProvider.appLanguage),
                     style: Theme.of(context).textTheme.headlineLarge
                     
                   ),
                 ),
 
+                // Sorting / Filters
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Row(
@@ -259,6 +228,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 
+                // Product Grid
                 GridView.builder(
                   shrinkWrap: true,                  // 💡 CRITICAL: Allows Grid to live inside a ListView
                   physics: const NeverScrollableScrollPhysics(),

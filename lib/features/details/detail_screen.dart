@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/core/widgets/cart_btn.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter_app/core/models/product.dart';
@@ -25,7 +26,7 @@ class _DetailScreenState extends State<DetailScreen> {
       appBar: AppBar(
         //? Is is product type what we should be displaying?
         title: Text(widget.product.productType.toUpperCase()),
-        actions: [DetailCartButton(), const SizedBox(width: 8),],
+        actions: [CartButton(), const SizedBox(width: 8),],
       ),
       body: SingleChildScrollView(
         child: Column(
