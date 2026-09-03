@@ -1,15 +1,15 @@
 import 'dart:convert';
-import 'package:flutter_app/app_theme.dart';
-import 'package:flutter_app/features/cart/widgets/cart_items_list.dart';
-import 'package:flutter_app/features/cart/widgets/clear_cart_btn.dart';
-import 'package:flutter_app/features/cart/widgets/summary_panel.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../app_config.dart';
 
-import '../../app_localizations.dart';
-import '../../core/providers/shop_provider.dart';
+import 'package:flutter_app/app_config.dart';
+import 'package:flutter_app/app_localizations.dart';
+import 'package:flutter_app/app_theme.dart';
+import 'package:flutter_app/core/providers/shop_provider.dart';
+import 'package:flutter_app/features/cart/widgets/cart_items_list.dart';
+import 'package:flutter_app/features/cart/widgets/clear_cart_btn.dart';
+import 'package:flutter_app/features/cart/widgets/summary_panel.dart';
 import 'checkout_screen.dart';
 
 class CartScreen extends StatefulWidget {
@@ -106,7 +106,6 @@ class _CartScreenState extends State<CartScreen> {
                 AppLocalizations.translate('cart_empty', shopProvider.appLanguage),
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 16, color: Colors.grey),
-                // style: Theme.of(context).textTheme.bodyMedium,
               ),
             )
           : Column(

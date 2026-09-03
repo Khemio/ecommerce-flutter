@@ -20,61 +20,58 @@ class SummaryPanel extends StatelessWidget {
     final shopProvider = Provider.of<ShopProvider>(context); 
     
     return Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                  ),
-                  child: SafeArea(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            //TODO: Add translation
-                            // const Text('Total Value:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                            // Text('${totalPrice.toStringAsFixed(2)} HUF', style: const TextStyle(fontSize: 20, color: Colors.green, fontWeight: FontWeight.bold)),
-                            // Text('Total Value:', style: Theme.of(context).textTheme.titleMedium),
-                            Text(
-                              AppLocalizations.translate('total', shopProvider.appLanguage), 
-                              style: Theme.of(context).textTheme.titleMedium
-                            ),
-                            Text(
-                              '${_totalPrice.toStringAsFixed(2)} HUF', 
-                              style: Theme.of(context).textTheme.titleMedium
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.deepPurple,
-                            foregroundColor: Colors.white,
-                            minimumSize: const Size(double.infinity, 54),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          ),
-                          onPressed: _isCheckingOut 
-                            ? null 
-                            : () => _onCheckoutPressed(shopProvider),
-                          child: _isCheckingOut
-                              ? const SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2.5,
-                                ),
-                              )
-                            : Text(
-                                AppLocalizations.translate('checkout', shopProvider.appLanguage),
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                              ),
-                        ),
-                      ],
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  AppLocalizations.translate('total', shopProvider.appLanguage), 
+                  style: Theme.of(context).textTheme.titleMedium
+                ),
+                Text(
+                  //TODO: Create and apply extention for price formatting
+                  '${_totalPrice.toStringAsFixed(2)} HUF', 
+                  style: Theme.of(context).textTheme.titleMedium
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.deepPurple,
+                foregroundColor: Colors.white,
+                minimumSize: const Size(double.infinity, 54),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              onPressed: _isCheckingOut 
+                ? null 
+                : () => _onCheckoutPressed(shopProvider),
+              child: _isCheckingOut
+                  ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2.5,
                     ),
+                  )
+                : Text(
+                    AppLocalizations.translate('checkout', shopProvider.appLanguage),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                );
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
 }

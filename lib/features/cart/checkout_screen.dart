@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:flutter_app/app_theme.dart';
 
-import '../../app_localizations.dart';
-import '../../core/providers/shop_provider.dart';
+import 'package:flutter_app/app_localizations.dart';
+import 'package:flutter_app/core/providers/shop_provider.dart';
+import 'package:flutter_app/app_theme.dart';
 
 class CheckoutScreen extends StatefulWidget {
   final String checkoutUrl;

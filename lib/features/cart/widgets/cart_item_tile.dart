@@ -31,6 +31,7 @@ class CartItemTile extends StatelessWidget{
           ),
         ),
         title: Text(product.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+        //TODO: Create and apply extention for price formatting
         subtitle: Text('${((double.tryParse(product.price) ?? 0.0) * item.quantity).toStringAsFixed(2)} HUF'),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,

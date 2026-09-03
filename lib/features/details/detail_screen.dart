@@ -26,7 +26,6 @@ class _DetailScreenState extends State<DetailScreen> {
       appBar: AppBar(
         title: Text(widget.product.productType.toUpperCase()),
         actions: [
-        // 🟢 Dynamic reactive badge mirroring home screen logic
         Consumer<ShopProvider>(
           builder: (context, shopProvider, child) {
             return Stack(
@@ -90,13 +89,13 @@ class _DetailScreenState extends State<DetailScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
+                    //TODO: Create and apply extention for price formatting
                     '${widget.product.price} HUF',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 16),
 
                   Text(
-                    // 'HOW MUCH DO YOU WANT?',
                     AppLocalizations.translate('how_much', shopProvider.appLanguage),
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
@@ -109,7 +108,6 @@ class _DetailScreenState extends State<DetailScreen> {
                   const SizedBox(height: 24),
 
                   Text(
-                    // 'DESCRIPTION',
                     AppLocalizations.translate('description', shopProvider.appLanguage),
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
@@ -117,7 +115,6 @@ class _DetailScreenState extends State<DetailScreen> {
 
                   Text(
                     widget.product.description.isEmpty 
-                        // ? "This exclusive mystery box features highly curated street clothing and rare items matching premium drops." 
                         ? AppLocalizations.translate('default_description', shopProvider.appLanguage)
                         : widget.product.description,
                     style: const TextStyle(fontSize: 16, height: 1.5),
@@ -135,14 +132,11 @@ class _DetailScreenState extends State<DetailScreen> {
           child: ElevatedButton(
             style: Theme.of(context).elevatedButtonTheme.style,
             onPressed: () {
-              // Trigger Provider logic instantly
-              // shopProvider.addToCart(widget.product, _selectedSize);
               shopProvider.addToCart(widget.product, _selectedQuantity);
               
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  // content: Text('${widget.product.title} ($_selectedSize) added to bag!'),
-                  // TODO: Add this to translation map
+                  // TODO: Add translation and  evaluate if we need to add 's' at the end 
                   content: Text('$_selectedQuantity ${widget.product.title + (_selectedQuantity > 1 ? 's' : '')} added to bag!'),
                   duration: const Duration(seconds: 2),
                 ),
