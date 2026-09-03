@@ -19,7 +19,6 @@ class _MainLayoutState extends State<MainLayout> {
     const HomeScreen(),
     const CartScreen(),
     const ProfileScreen(),
-    // const Scaffold(body: Center(child: Text('Profile & Orders (Coming Soon)'))),
   ];
 
   @override

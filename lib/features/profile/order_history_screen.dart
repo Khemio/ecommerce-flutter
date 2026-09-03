@@ -1,4 +1,3 @@
-// lib/screens/order_history_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/providers/shop_provider.dart';
@@ -12,6 +11,7 @@ class OrderHistoryScreen extends StatelessWidget {
     final shopProvider = Provider.of<ShopProvider>(context);
     final orders = shopProvider.orderHistory;
 
+    //TODO: Add translations
     return Scaffold(
       appBar: AppBar(
         // title: Text(AppLocalizations.translate('Rendelési Előzmények')), // Add dictionary keys as needed
@@ -77,7 +77,7 @@ class OrderHistoryScreen extends StatelessWidget {
                               ],
                             ),
                           );
-                        }).toList(),
+                        }),
                       ],
                     ),
                   ),

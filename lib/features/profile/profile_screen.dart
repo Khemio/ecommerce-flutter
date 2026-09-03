@@ -1,5 +1,8 @@
 // lib/screens/profile_screen.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_app/features/profile/widgets/info_display_view.dart';
+import 'package:flutter_app/features/profile/widgets/info_edit_form.dart';
+import 'package:flutter_app/features/profile/widgets/language_selector_card.dart';
 import 'package:provider/provider.dart';
 import '../../app_localizations.dart';
 import '../../core/providers/shop_provider.dart';
@@ -69,39 +72,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              margin: const EdgeInsets.only(bottom: 20),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFF0D0D0D), width: 2.5), // Thick Neo-Brutalism border
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    AppLocalizations.translate('lang_label', shopProvider.appLanguage),
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black),
-                  ),
-                  DropdownButton<String>(
-                    value: shopProvider.appLanguage,
-                    style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-                    underline: const SizedBox(), // Removes the default ugly line
-                    dropdownColor: Colors.white,
-                    onChanged: (String? newValue) {
-                      if (newValue != null) {
-                        shopProvider.updateLanguage(newValue);
-                      }
-                    },
-                    items: const [
-                      DropdownMenuItem(value: 'hu', child: Text('Magyar (HU)')),
-                      DropdownMenuItem(value: 'en', child: Text('English (EN)')),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+            LanguageSelectorCard(),
             // 1. Personal Information Input Card (Neo-Brutalism Wrapper)
             Card(
               child: Padding(
@@ -123,70 +94,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     const SizedBox(height: 20),
 
-                    // --- 🟢 TOGGLABLE CONDITIONAL VIEW ENGINE ---
-                    if (!_isEditing) ...[
-                      // READ-ONLY STATIC VIEW DISPLAY
-                      _buildInfoRow('Név / Name', _nameController.text.isEmpty ? '-' : _nameController.text),
-                      const SizedBox(height: 16),
-                      _buildInfoRow('E-mail', _emailController.text.isEmpty ? '-' : _emailController.text),
-                      const SizedBox(height: 16),
-                      _buildInfoRow('Szállítási Cím / Address', _addressController.text.isEmpty ? '-' : _addressController.text),
-                    ] else ...[
-                      TextField(
-                        controller: _nameController,
-                        style: const TextStyle(color: Colors.black),
-                        decoration: const InputDecoration(
-                          // labelText: 'Név / Name',
-                          labelText: 'Name',
-                          labelStyle: TextStyle(color: Colors.black54),
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      TextField(
-                        controller: _emailController,
-                        style: const TextStyle(color: Colors.black),
-                        decoration: const InputDecoration(
-                          labelText: 'E-mail',
-                          labelStyle: TextStyle(color: Colors.black54),
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      TextField(
-                        controller: _addressController,
-                        style: const TextStyle(color: Colors.black),
-                        maxLines: 2,
-                        decoration: const InputDecoration(
-                          // labelText: 'Szállítási Cím / Address', 
-                          labelText: 'Address', 
-                          labelStyle: TextStyle(color: Colors.black54),
-                          border: OutlineInputBorder()),
-                      ),
-                      const SizedBox(height: 20),
-
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF5A24B3),
-                          foregroundColor: Colors.white,
-                        ),
-                        onPressed: () {
-                          shopProvider.saveProfile(
-                            _nameController.text, 
-                            _emailController.text, 
-                            _addressController.text
-                          );
+                    if (!_isEditing)
+                      InfoDisplayView(profile: shopProvider.profile)
+                    else 
+                      InfoEditForm(
+                        onSaved: (name, email, address) {
+                          shopProvider.saveProfile(name, email, address);
                           setState(() => _isEditing = false); // Lock view back up instantly
                           ScaffoldMessenger.of(context).showSnackBar(
                             // const SnackBar(content: Text('Profil sikeresen mentve! / Profile saved!')),
                             const SnackBar(content: Text('Profile saved!')),
                           );
-                        },
-                        // child: const Text('MENTÉS / SAVE'),
-                        child: const Text('SAVE'),
-                      ),
+                        }
+                      )
                     ],
-                  ],
                 ),
               ),
             ),
@@ -213,19 +134,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  // Mini structural layout helper for read-only typography aesthetics
-  Widget _buildInfoRow(String label, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: const TextStyle(fontSize: 12, color: Colors.black54, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 4),
-        Text(value, style: const TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.w600)),
-        const Divider(color: Colors.black12, height: 16),
-      ],
     );
   }
 }
