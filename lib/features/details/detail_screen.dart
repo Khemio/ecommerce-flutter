@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
-import 'package:flutter_app/app_localizations.dart';
 import 'package:flutter_app/core/models/product.dart';
 import 'package:flutter_app/core/providers/shop_provider.dart';
-import 'package:flutter_app/core/widgets/quantity_selector.dart';
-import 'package:flutter_app/features/cart/cart_screen.dart';
+
+import 'details.dart' hide DetailScreen;
 
 class DetailScreen extends StatefulWidget {
   final Product product;
@@ -27,134 +25,31 @@ class _DetailScreenState extends State<DetailScreen> {
       appBar: AppBar(
         //? Is is product type what we should be displaying?
         title: Text(widget.product.productType.toUpperCase()),
-        actions: [
-        // Cart Button
-        Consumer<ShopProvider>(
-          builder: (context, shopProvider, child) {
-            return Stack(
-              alignment: Alignment.center,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.shopping_bag_outlined, color: Colors.black, size: 28),
-                  onPressed: () => Navigator.push(
-                    context, 
-                    MaterialPageRoute(builder: (_) => const CartScreen())
-                  ),
-                ),
-                if (shopProvider.cart.isNotEmpty)
-                  Positioned(
-                    right: 4,
-                    top: 4,
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(color: Colors.redAccent, shape: BoxShape.circle),
-                      constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
-                      child: Text(
-                        '${shopProvider.cart.length}',
-                        style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-              ],
-            );
-          },
-        ),
-        const SizedBox(width: 8),
-      ],
+        actions: [DetailCartButton(), const SizedBox(width: 8),],
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Hero Image
-            SizedBox(
-              height: 350,
-              width: double.infinity,
-              child: Hero(
-                tag: 'box_${widget.product.id}', 
-                child: CachedNetworkImage(
-                  imageUrl: widget.product.imageUrl,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
-                  errorWidget: (context, url, error) => const Icon(Icons.broken_image, size: 80),
-                ),
-              ),
-            ),
-
-            // Detail Body
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.product.title,
-                    style: Theme.of(context).textTheme.headlineLarge,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    //TODO: Create and apply extention for price formatting
-                    '${widget.product.price} HUF',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 16),
-
-                  Text(
-                    AppLocalizations.translate('how_much', shopProvider.appLanguage),
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 10),
-
-                  QuantitySelector(
-                    value: _selectedQuantity,
-                    onChanged: (q) => setState(() => _selectedQuantity = q),
-                  ),
-                  const SizedBox(height: 24),
-
-                  Text(
-                    AppLocalizations.translate('description', shopProvider.appLanguage),
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 8),
-
-                  Text(
-                    widget.product.description.isEmpty 
-                        ? AppLocalizations.translate('default_description', shopProvider.appLanguage)
-                        : widget.product.description,
-                    style: const TextStyle(fontSize: 16, height: 1.5),
-                  ),
-                ],
-              ),
+            DetailHeroImage(product: widget.product),
+            DetailBody(
+              appLanguage: shopProvider.appLanguage,
+              product: widget.product,
+              onQuantityChanged: (newQuant) {
+                setState(() => _selectedQuantity = newQuant);
+              }
             ),
           ],
         ),
       ),
       
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: ElevatedButton(
-            style: Theme.of(context).elevatedButtonTheme.style,
-            onPressed: () {
-              shopProvider.addToCart(widget.product, _selectedQuantity);
-              
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  // TODO: Add translation and  evaluate if we need to add 's' at the end 
-                  content: Text('$_selectedQuantity ${widget.product.title + (_selectedQuantity > 1 ? 's' : '')} added to bag!'),
-                  duration: const Duration(seconds: 2),
-                ),
-              );
-            },
-            child: Text(
-              // 'ADD MYSTERY BOX TO BAG', 
-              AppLocalizations.translate('add_to_bag', shopProvider.appLanguage),
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)
-            ),
-          ),
-        ),
-      ),
+      
+      bottomNavigationBar: AddToCartBtn(
+        selectedQuantity: _selectedQuantity,
+        appLanguage: shopProvider.appLanguage,
+        product: widget.product, 
+        onPressed: shopProvider.addToCart, 
+      )
     );
   }
 }
