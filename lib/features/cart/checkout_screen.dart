@@ -20,8 +20,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   @override
   void initState() {
-    final shopProvider = Provider.of<ShopProvider>(context); 
     super.initState();
+    // final shopProvider = Provider.of<ShopProvider>(context); 
+    final shopProvider = context.read<ShopProvider>(); 
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(

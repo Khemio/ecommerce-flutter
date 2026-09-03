@@ -1,16 +1,16 @@
 import 'dart:convert';
 import 'package:flutter_app/app_theme.dart';
+import 'package:flutter_app/features/cart/widgets/cart_items_list.dart';
 import 'package:flutter_app/features/cart/widgets/clear_cart_btn.dart';
+import 'package:flutter_app/features/cart/widgets/summary_panel.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../../app_config.dart';
 
 import '../../app_localizations.dart';
 import '../../core/providers/shop_provider.dart';
 import 'checkout_screen.dart';
-import '../../core/widgets/quantity_selector.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -103,7 +103,6 @@ class _CartScreenState extends State<CartScreen> {
       body: shopProvider.cart.isEmpty
           ? Center(
               child: Text(
-                // 'Your cart is currently empty.\nGo add some mystery boxes!',
                 AppLocalizations.translate('cart_empty', shopProvider.appLanguage),
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 16, color: Colors.grey),
@@ -112,104 +111,15 @@ class _CartScreenState extends State<CartScreen> {
             )
           : Column(
               children: [
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: shopProvider.cart.length,
-                    itemBuilder: (context, index) {
-                      final item = shopProvider.cart[index];
-                      final product = item.product;
-
-                      return Card(
-                        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        child: ListTile(
-                          leading: SizedBox(
-                            width: 50,
-                            height: 50,
-                            child: CachedNetworkImage(
-                              imageUrl: product.imageUrl,
-                              fit: BoxFit.cover,
-                              errorWidget: (c, u, e) => const Icon(Icons.broken_image),
-                            ),
-                          ),
-                          title: Text(product.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-                          subtitle: Text('${((double.tryParse(product.price) ?? 0.0) * item.quantity).toStringAsFixed(2)} HUF'),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              QuantitySelector(
-                                value: item.quantity,
-                                min: 1,
-                                max: 99,
-                                compact: true,
-                                onChanged: (newQty) {
-                                  shopProvider.updateQuantity(product.variantId, newQty);
-                                },
-                              ),
-
-                              IconButton(
-                                icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                                onPressed: () {
-                                  shopProvider.removeFromCart(product.variantId);
-                                },
-                              ),
-                            ],
-                          )
-                        ),
-                      );
-                    },
-                  ),
+                CartItemsList(
+                  totalPrice: totalPrice, 
                 ),
 
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                  ),
-                  child: SafeArea(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            // const Text('Total Value:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                            // Text('${totalPrice.toStringAsFixed(2)} HUF', style: const TextStyle(fontSize: 20, color: Colors.green, fontWeight: FontWeight.bold)),
-                            // Text('Total Value:', style: Theme.of(context).textTheme.titleMedium),
-                            Text(AppLocalizations.translate('total', shopProvider.appLanguage), style: Theme.of(context).textTheme.titleMedium),
-                            Text('${totalPrice.toStringAsFixed(2)} HUF', style: Theme.of(context).textTheme.titleMedium),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.deepPurple,
-                            foregroundColor: Colors.white,
-                            minimumSize: const Size(double.infinity, 54),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          ),
-                          onPressed: _isCheckingOut 
-                            ? null 
-                            : () => _handleCheckout(shopProvider),
-                          child: _isCheckingOut
-                              ? const SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2.5, // Thinner spinner to look clean inside a button
-                                ),
-                              )
-                            : Text(
-                                // 'PROCEED TO CHECKOUT', 
-                                AppLocalizations.translate('checkout', shopProvider.appLanguage),
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                              ),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
+                SummaryPanel(
+                  isCheckingOut: _isCheckingOut, 
+                  totalPrice: totalPrice, 
+                  onCheckoutPressed: _handleCheckout
+                ),
               ],
             ),
     );
