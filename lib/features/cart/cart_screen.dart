@@ -7,10 +7,9 @@ import 'package:flutter_app/app_config.dart';
 import 'package:flutter_app/app_localizations.dart';
 import 'package:flutter_app/app_theme.dart';
 import 'package:flutter_app/core/providers/shop_provider.dart';
-import 'package:flutter_app/features/cart/widgets/cart_items_list.dart';
-import 'package:flutter_app/features/cart/widgets/clear_cart_btn.dart';
-import 'package:flutter_app/features/cart/widgets/summary_panel.dart';
-import 'checkout_screen.dart';
+
+import 'cart.dart' show CheckoutScreen, ClearCartBtn, CartItemsList, SummaryPanel;
+
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -45,7 +44,7 @@ class _CartScreenState extends State<CartScreen> {
         final Map<String, dynamic> responseData = json.decode(response.body);
         final String checkoutUrl = responseData['checkoutUrl'] ?? '';
 
-        //? Look throught this, cleanup should probably be after successful checkout with date from proxy
+        //TODO: Look throught this, cleanup should probably be after successful checkout with date from proxy
         if (checkoutUrl.isNotEmpty && mounted) {
           await provider.archiveCartToCompletedOrder();
           Navigator.push(
@@ -69,7 +68,7 @@ class _CartScreenState extends State<CartScreen> {
         throw Exception('Server error: ${response.statusCode} - ${response.body}');
       }
     } catch (e) {
-      debugPrint("CHECKOUT ERROR LOG: $e"); // Watch your terminal/debug console for this!
+      debugPrint("CHECKOUT ERROR LOG: $e");
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -110,8 +109,8 @@ class _CartScreenState extends State<CartScreen> {
             )
           : Column(
               children: [
-                CartItemsList(
-                  totalPrice: totalPrice, 
+                Expanded(
+                  child: CartItemsList(totalPrice: totalPrice),
                 ),
 
                 SummaryPanel(

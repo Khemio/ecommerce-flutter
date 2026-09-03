@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'package:flutter_app/app_localizations.dart';
 import 'package:flutter_app/core/providers/shop_provider.dart';
-import 'package:provider/provider.dart';
 
 class SummaryPanel extends StatelessWidget {
   const SummaryPanel({

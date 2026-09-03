@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/core/providers/shop_provider.dart';
 import 'package:provider/provider.dart';
+
+import 'package:flutter_app/core/providers/shop_provider.dart';
 
 class ClearCartBtn extends StatelessWidget {
   const ClearCartBtn({super.key});

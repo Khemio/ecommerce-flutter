@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+
 import 'package:flutter_app/core/widgets/quantity_selector.dart';
 import 'package:flutter_app/features/profile/models/order_history.dart';
 

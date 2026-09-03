@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/core/providers/shop_provider.dart';
-import 'package:flutter_app/features/cart/widgets/cart_item_tile.dart';
 import 'package:provider/provider.dart';
+
+import 'package:flutter_app/core/providers/shop_provider.dart';
+import 'cart_item_tile.dart';
 
 class CartItemsList extends StatelessWidget {
   const CartItemsList({
@@ -15,8 +16,7 @@ class CartItemsList extends StatelessWidget {
   Widget build(BuildContext context) {
     final shopProvider = Provider.of<ShopProvider>(context); 
     
-    return Expanded(
-          child: ListView.builder(
+    return ListView.builder(
             itemCount: shopProvider.cart.length,
             itemBuilder: (context, index) {
               final item = shopProvider.cart[index];
@@ -28,8 +28,6 @@ class CartItemsList extends StatelessWidget {
                 onQuantityChange: shopProvider.updateQuantity,
               );
             },
-          ),
-        // ),
         );
   }
 

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../app_localizations.dart';
-import '../../core/models/product.dart';
-import '../../core/providers/shop_provider.dart';
-import '../cart/cart_screen.dart';
-import '../../core/widgets/quantity_selector.dart';
+
+import 'package:flutter_app/app_localizations.dart';
+import 'package:flutter_app/core/models/product.dart';
+import 'package:flutter_app/core/providers/shop_provider.dart';
+import 'package:flutter_app/core/widgets/quantity_selector.dart';
+import 'package:flutter_app/features/cart/cart_screen.dart';
 
 class DetailScreen extends StatefulWidget {
   final Product product;
@@ -24,8 +25,10 @@ class _DetailScreenState extends State<DetailScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        //? Is is product type what we should be displaying?
         title: Text(widget.product.productType.toUpperCase()),
         actions: [
+        // Cart Button
         Consumer<ShopProvider>(
           builder: (context, shopProvider, child) {
             return Stack(
@@ -64,6 +67,7 @@ class _DetailScreenState extends State<DetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Hero Image
             SizedBox(
               height: 350,
               width: double.infinity,
@@ -78,6 +82,7 @@ class _DetailScreenState extends State<DetailScreen> {
               ),
             ),
 
+            // Detail Body
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
