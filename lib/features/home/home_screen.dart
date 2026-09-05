@@ -56,7 +56,10 @@ class _HomeScreenState extends State<HomeScreen> {
         child: shopProvider.isLoading
           ? const Center(child: CircularProgressIndicator())
           : shopProvider.products.isEmpty
-            ? RefetchWidget(onRefresh: _onRefresh)
+            ? RefetchWidget(
+              appLanguage: shopProvider.appLanguage,
+              onRefresh: _onRefresh
+            )
             // Body 
             : ListView(
                physics: const AlwaysScrollableScrollPhysics(), // Ensures drag pull handles correctly

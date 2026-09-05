@@ -3,19 +3,16 @@ import '../../../core/models/product.dart';
 class CartItem {
   final Product product;
   int quantity;
-  // final String selectedSize;
 
   CartItem({
     required this.product, 
     required this.quantity, 
-    // required this.selectedSize,
   });
 
   // Convert model directly to a Map format for disk storage conversion
   Map<String, dynamic> toJson() => {
     'product': product.toJson(), // Assumes your Product model has a toJson() method
     'quantity': quantity,
-    // 'selectedSize': selectedSize,
   };
 
   // Restore model parameters securely out of data strings
@@ -23,7 +20,6 @@ class CartItem {
     return CartItem(
       product: Product.fromJson(json['product']),
       quantity: json['quantity'] ?? 1,
-      // selectedSize: json['selectedSize'] ?? 'M',
     );
   }
 }

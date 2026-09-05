@@ -10,10 +10,9 @@ import '../../features/profile/models/user_profile.dart';
 import '../../features/profile/models/order_history.dart';
 import '../../app_config.dart';
 class ShopProvider with ChangeNotifier {
-  String _appLanguage = 'en'; // Safe default parameter
+  String _appLanguage = 'en';
   List<Product> _products = [];
   final Map<String, CartItem> _cart = {};
-  // List<Map<String, dynamic>> _orderHistory = []; 
   final Map<String, OrderHistoryItem> _orders = {};
   UserProfile? _profile;
   bool _isLoading = false;
@@ -35,7 +34,7 @@ class ShopProvider with ChangeNotifier {
   String get selectedSortOrder => _selectedSortOrder;
 
   ShopProvider() {
-    _loadDataFromStorage(); // Automatically restore cache when the app boots up!
+    _loadDataFromStorage();
   }
 
   Future<void> _loadDataFromStorage() async {

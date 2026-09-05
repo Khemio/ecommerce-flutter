@@ -38,10 +38,9 @@ class AppLocalizations {
       'choose_box': 'VÁLASSZ REJTÉLYES DOBOZT',
       'socials_title': '#AZKOMOLY · OSSZA MEG',
       'all_vendors': 'MINDEN MÁRKA',
-      //TODO: Shorten
-      'sort_default': 'Rendezés: Alapértelmezett',
-      'price_low_high': 'Ár: Alacsonytól a Magasig',
-      'price_high_low': 'Ár: Magastól az Alacsonyig',
+      'sort_default': 'Rendezés: Alap',
+      'price_low_high': 'Ár: Olcsóbbak elöl',
+      'price_high_low': 'Ár: Drágábbak elöl',
 
       // Detail Screen Page Elements
       'add_to_bag': 'DOBOZ HOZZÁADÁSA A TASAKHOZ',
@@ -80,7 +79,8 @@ class AppLocalizations {
 
       // Critical System Exceptions & Network Fallbacks
       'network_error_title': 'Hálózati kapcsolódási hiba',
-      'network_error_body': 'Nem sikerült betölteni az adatokat.\nEllenőrizd az internetkapcsolatot vagy a helyi szervert.',
+      // 'network_error_body': 'Nem sikerült betölteni az adatokat.\nEllenőrizd az internetkapcsolatot vagy a helyi szervert.',
+      'network_error_body': 'Nem sikerült betölteni az adatokat.\nEllenőrizze az internetkapcsolatot.',
       'checkout_error': 'Hiba történt a fizetési munkamenet indítása során. Kérjük, próbálja újra később.',
     },
     'en': {
@@ -147,7 +147,7 @@ class AppLocalizations {
 
       // Critical System Exceptions & Network Fallbacks
       'network_error_title': 'Network Connection Failure',
-      'network_error_body': 'Could not sync records.\nVerify your internet connectivity or local backend server.',
+      'network_error_body': 'Could not sync records.\nVerify your internet connectivity.',
       'checkout_error': 'An error occurred while establishing your checkout token session. Please try again later.',
     },
   };

@@ -44,20 +44,16 @@ class _CartScreenState extends State<CartScreen> {
         final Map<String, dynamic> responseData = json.decode(response.body);
         final String checkoutUrl = responseData['checkoutUrl'] ?? '';
 
-        //TODO: Look throught this, cleanup should probably be after successful checkout with date from proxy
         if (checkoutUrl.isNotEmpty && mounted) {
-          await provider.archiveCartToCompletedOrder();
+          // await provider.archiveCartToCompletedOrder();
           Navigator.push(
             // ignore: use_build_context_synchronously
             context,
             MaterialPageRoute(
               builder: (_) => CheckoutScreen(checkoutUrl: checkoutUrl),
             ),
-          ).then((_) {
-            // OPTIONAL: Clear the cart ONLY after the user returns from checkout
-            // provider.clearCart();
-            // await provider.archiveCartToCompletedOrder();
-            // await provider.archiveCartToCompletedOrder("${totalPrice.toStringAsFixed(2)} HUF");
+          ).then((_) async {
+            await provider.archiveCartToCompletedOrder();
           });
 
         } else {
@@ -72,8 +68,11 @@ class _CartScreenState extends State<CartScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Checkout failed. Check terminal error log.'),
-            backgroundColor: AppTheme.errorColor
+            // content: Text('Checkout failed. Check terminal error log.'),
+            // content: Text(AppLocalizations.translate('checkout_error', provider.appLanguage)),
+            content: Text(AppLocalizations.translate('checkout_error', provider.appLanguage), style: TextStyle(color: Colors.white),),
+            backgroundColor: AppTheme.errorColor,
+            
           ),
         );
       }
