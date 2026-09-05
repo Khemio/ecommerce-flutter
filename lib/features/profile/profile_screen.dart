@@ -1,12 +1,13 @@
-// lib/screens/profile_screen.dart
 import 'package:flutter/material.dart';
-import 'package:flutter_app/features/profile/widgets/info_display_view.dart';
-import 'package:flutter_app/features/profile/widgets/info_edit_form.dart';
-import 'package:flutter_app/features/profile/widgets/language_selector_card.dart';
 import 'package:provider/provider.dart';
-import '../../app_localizations.dart';
-import '../../core/providers/shop_provider.dart';
+
+import 'package:flutter_app/app_localizations.dart';
+import 'package:flutter_app/core/providers/shop_provider.dart';
+
 import 'order_history_screen.dart';
+import 'widgets/info_display_view.dart';
+import 'widgets/info_edit_form.dart';
+import 'widgets/language_selector_card.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -44,13 +45,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final shopProvider = Provider.of<ShopProvider>(context);
-    final lang = shopProvider.appLanguage;
+
+    String transactionSubtitlePattern = AppLocalizations.translate('orders_count_suffix', shopProvider.appLanguage);
+    String displaySubtitle = transactionSubtitlePattern.replaceAll('{count}', '${shopProvider.orderHistory.length}');
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('PROFILE'),
+        title: Text(AppLocalizations.translate('profile_header', shopProvider.appLanguage),),
         actions: [
-          // 🟢 Toggle Edit Action Icon
           IconButton(
             icon: Icon(_isEditing ? Icons.close : Icons.edit_note, color: Colors.black, size: 28),
             onPressed: () {
@@ -73,7 +75,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             LanguageSelectorCard(),
-            // 1. Personal Information Input Card (Neo-Brutalism Wrapper)
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
@@ -83,9 +84,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          //   // 'SZEMÉLYES ADATOK / PROFILE INFO',
-                          'PROFILE INFO',
+                        Text(
+                          AppLocalizations.translate('profile_info_section', shopProvider.appLanguage),
                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black),
                         ),
                         if (!_isEditing)
@@ -95,15 +95,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const SizedBox(height: 20),
 
                     if (!_isEditing)
-                      InfoDisplayView(profile: shopProvider.profile)
+                      InfoDisplayView(
+                        appLanguage: shopProvider.appLanguage,
+                        profile: shopProvider.profile
+                      )
                     else 
                       InfoEditForm(
+                        appLanguage: shopProvider.appLanguage,
                         onSaved: (name, email, address) {
                           shopProvider.saveProfile(name, email, address);
-                          setState(() => _isEditing = false); // Lock view back up instantly
+                          setState(() => _isEditing = false);
                           ScaffoldMessenger.of(context).showSnackBar(
-                            // const SnackBar(content: Text('Profil sikeresen mentve! / Profile saved!')),
-                            const SnackBar(content: Text('Profile saved!')),
+                            SnackBar(
+                              content: Text(
+                                AppLocalizations.translate('profile_saved_toast', shopProvider.appLanguage), 
+                              )
+                            ),
                           );
                         }
                       )
@@ -113,15 +120,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 24),
 
-            // 2. Navigation Shortcut Card targeting past orders
             Card(
               child: ListTile(
                 contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                leading: const Icon(Icons.history_toggle_off, color: Colors.black, size: 28),
-                title: const Text('ORDER HISTORY', style: TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: Text('${shopProvider.orderHistory.length} previous order${shopProvider.orderHistory.length == 1 ? '' : 's'}'),
-                // title: const Text('RENDELÉSI ELŐZMÉNYEK', style: TextStyle(fontWeight: FontWeight.bold)),
-                // subtitle: Text('${shopProvider.orderHistory.length} db korábbi rendelés'),
+                leading: const Icon(Icons.history_toggle_off, color: Colors.black, size: 28),                // title: const Text('ORDER HISTORY', style: TextStyle(fontWeight: FontWeight.bold)),
+                title: Text(
+                  AppLocalizations.translate('order_history_title', shopProvider.appLanguage), 
+                  style: TextStyle(fontWeight: FontWeight.bold)
+                ),
+                subtitle: Text(displaySubtitle),
                 trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black),
                 onTap: () {
                   Navigator.push(

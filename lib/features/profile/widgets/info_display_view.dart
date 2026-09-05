@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/app_localizations.dart';
 import 'package:flutter_app/features/profile/models/user_profile.dart';
 
 class InfoDisplayView extends StatelessWidget {
   final UserProfile? profile;
+  final String appLanguage;
   
-  const InfoDisplayView({super.key, this.profile});
+  const InfoDisplayView({super.key, this.profile, required this.appLanguage});
 
   @override
   Widget build(BuildContext context) {
@@ -15,11 +17,20 @@ class InfoDisplayView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildInfoRow('Név / Name', name),
+        _buildInfoRow(
+          AppLocalizations.translate('field_name', appLanguage),
+          name
+        ),
         const SizedBox(height: 16),
-        _buildInfoRow('E-mail', email),
+        _buildInfoRow(
+          AppLocalizations.translate('field_email', appLanguage),
+          email
+        ),
         const SizedBox(height: 16),
-        _buildInfoRow('Szállítási Cím / Address', address),
+        _buildInfoRow(
+          AppLocalizations.translate('field_address', appLanguage),
+          address
+        ),
       ],
     );
   }

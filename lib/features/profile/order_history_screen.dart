@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../core/providers/shop_provider.dart';
-// import '../app_localizations.dart';
+
+import 'package:flutter_app/app_localizations.dart';
+import 'package:flutter_app/core/providers/shop_provider.dart';
 
 class OrderHistoryScreen extends StatelessWidget {
   const OrderHistoryScreen({super.key});
@@ -11,17 +12,17 @@ class OrderHistoryScreen extends StatelessWidget {
     final shopProvider = Provider.of<ShopProvider>(context);
     final orders = shopProvider.orderHistory;
 
-    //TODO: Add translations
     return Scaffold(
       appBar: AppBar(
-        // title: Text(AppLocalizations.translate('Rendelési Előzmények')), // Add dictionary keys as needed
-        title: Text('Order History', style: Theme.of(context).textTheme.headlineLarge,), // Add dictionary keys as needed
+        title: Text(
+          AppLocalizations.translate('order_history_title', shopProvider.appLanguage),
+          style: Theme.of(context).textTheme.headlineLarge,
+        ),
       ),
       body: orders.isEmpty
-          ? const Center(
+          ? Center(
               child: Text(
-                // 'Nincsenek korábbi rendelések.\nNo order history found.',
-                'No order history found.',
+                AppLocalizations.translate('empty_orders', shopProvider.appLanguage),
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.white, fontSize: 16),
               ),

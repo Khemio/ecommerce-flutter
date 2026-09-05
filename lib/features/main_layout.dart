@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/features/profile/profile_screen.dart';
+
+import 'package:flutter_app/app_localizations.dart';
+import 'package:flutter_app/core/providers/shop_provider.dart';
+import 'package:provider/provider.dart';
+// import 'package:flutter_app/features/profile/profile_screen.dart';
 import 'home/home_screen.dart';
 import 'cart/cart_screen.dart';
-// import 'profile_screen.dart';
+import 'profile/profile_screen.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
@@ -23,6 +27,8 @@ class _MainLayoutState extends State<MainLayout> {
 
   @override
   Widget build(BuildContext context) {
+    final shopProvider = Provider.of<ShopProvider>(context);
+
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex, // Preserves the scroll position of screens when switching tabs!
@@ -40,10 +46,22 @@ class _MainLayoutState extends State<MainLayout> {
           showSelectedLabels: true,
           showUnselectedLabels: true,
           type: BottomNavigationBarType.fixed,
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.explore_outlined), activeIcon: Icon(Icons.explore), label: 'Explore'),
-            BottomNavigationBarItem(icon: Icon(Icons.shopping_bag_outlined), activeIcon: Icon(Icons.shopping_bag), label: 'Bag'),
-            BottomNavigationBarItem(icon: Icon(Icons.person_outline), activeIcon: Icon(Icons.person), label: 'Profile'),
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.explore_outlined), 
+              activeIcon: Icon(Icons.explore), 
+              label: AppLocalizations.translate('explore_tab', shopProvider.appLanguage),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.shopping_bag_outlined), 
+              activeIcon: Icon(Icons.shopping_bag), 
+              label: AppLocalizations.translate('bag_tab', shopProvider.appLanguage),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline), 
+              activeIcon: Icon(Icons.person), 
+              label: AppLocalizations.translate('profile_tab', shopProvider.appLanguage),
+            ),
           ],
         ),
       ),

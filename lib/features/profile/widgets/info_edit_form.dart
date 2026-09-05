@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/app_localizations.dart';
 import 'package:flutter_app/features/profile/models/user_profile.dart';
 
 class InfoEditForm extends StatefulWidget {
   final UserProfile? initialProfile;
-  final Function(String name, String email, String address) onSaved; // 🟢 Save callback
+  final String appLanguage;
+  final Function(String name, String email, String address) onSaved;
 
-  const InfoEditForm({super.key, this.initialProfile, required this.onSaved});
+  const InfoEditForm({super.key, 
+    this.initialProfile, 
+    required this.appLanguage,
+    required this.onSaved
+  });
 
   @override
   State<InfoEditForm> createState() => _InfoEditFormState();
@@ -19,8 +25,7 @@ class _InfoEditFormState extends State<InfoEditForm> {
   @override
   void initState() {
     super.initState();
-    // Initialize text inputs with existing user cache on mount
-    // final currentProfile = Provider.of<ShopProvider>(context, listen: false).profile;
+
     if (widget.initialProfile != null) {
       _nameController.text = widget.initialProfile!.name;
       _emailController.text = widget.initialProfile!.email;
@@ -42,9 +47,8 @@ class _InfoEditFormState extends State<InfoEditForm> {
         TextField(
           controller: _nameController,
           style: const TextStyle(color: Colors.black),
-          decoration: const InputDecoration(
-            // labelText: 'Név / Name',
-            labelText: 'Name',
+          decoration: InputDecoration(
+            labelText: AppLocalizations.translate('field_name', widget.appLanguage),
             labelStyle: TextStyle(color: Colors.black54),
             border: OutlineInputBorder(),
           ),
@@ -53,8 +57,8 @@ class _InfoEditFormState extends State<InfoEditForm> {
         TextField(
           controller: _emailController,
           style: const TextStyle(color: Colors.black),
-          decoration: const InputDecoration(
-            labelText: 'E-mail',
+          decoration: InputDecoration(
+            labelText: AppLocalizations.translate('field_email', widget.appLanguage),
             labelStyle: TextStyle(color: Colors.black54),
             border: OutlineInputBorder(),
           ),
@@ -64,9 +68,8 @@ class _InfoEditFormState extends State<InfoEditForm> {
           controller: _addressController,
           style: const TextStyle(color: Colors.black),
           maxLines: 2,
-          decoration: const InputDecoration(
-            // labelText: 'Szállítási Cím / Address', 
-            labelText: 'Address', 
+          decoration: InputDecoration(
+            labelText: AppLocalizations.translate('field_address', widget.appLanguage),
             labelStyle: TextStyle(color: Colors.black54),
             border: OutlineInputBorder()),
         ),
@@ -83,14 +86,9 @@ class _InfoEditFormState extends State<InfoEditForm> {
               _emailController.text, 
               _addressController.text
             );
-            // setState(() => _isEditing = false); // Lock view back up instantly
-            // ScaffoldMessenger.of(context).showSnackBar(
-            //   // const SnackBar(content: Text('Profil sikeresen mentve! / Profile saved!')),
-            //   const SnackBar(content: Text('Profile saved!')),
-            // );
           },
-          // child: const Text('MENTÉS / SAVE'),
-          child: const Text('SAVE'),
+
+          child: Text(AppLocalizations.translate('save_btn', widget.appLanguage),),
         )
       ]
     );
