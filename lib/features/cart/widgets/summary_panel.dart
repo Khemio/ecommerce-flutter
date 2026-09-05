@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/core/utils/num_extentions.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter_app/app_localizations.dart';
@@ -38,8 +39,7 @@ class SummaryPanel extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleMedium
                 ),
                 Text(
-                  //TODO: Create and apply extention for price formatting
-                  '${_totalPrice.toStringAsFixed(2)} HUF', 
+                  _totalPrice.toPrice(currency: 'HUF'), 
                   style: Theme.of(context).textTheme.titleMedium
                 ),
               ],

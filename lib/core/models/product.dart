@@ -5,7 +5,7 @@ class Product {
   final String productType;
   final String imageUrl;
   final String variantId;
-  final String price;
+  final double price;
   final String sku;
 
   Product({
@@ -51,7 +51,7 @@ class Product {
     // Safely pull variables out of the first available product variant item
     final List<dynamic> variantsList = json['variants'] ?? [];
     String varId = '';
-    String itemPrice = '0.00';
+    double itemPrice = 0.0;
     String itemSku = '';
 
     if (variantsList.isNotEmpty) {
@@ -60,7 +60,8 @@ class Product {
       itemSku = firstVariant['sku'] ?? '';
       
       final Map<String, dynamic> priceMap = firstVariant['price'] ?? {};
-      itemPrice = priceMap['amount'] ?? '0.00';
+      final String itemPriceString = priceMap['amount'] ?? '0.00';
+      itemPrice = double.tryParse(itemPriceString) ?? 0.0;
     }
 
     return Product(

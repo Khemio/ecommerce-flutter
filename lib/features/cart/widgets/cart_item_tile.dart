@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/core/utils/num_extentions.dart';
 
 import 'package:flutter_app/core/widgets/quantity_selector.dart';
 import 'package:flutter_app/features/profile/models/order_history.dart';
@@ -32,8 +33,7 @@ class CartItemTile extends StatelessWidget{
           ),
         ),
         title: Text(product.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-        //TODO: Create and apply extention for price formatting
-        subtitle: Text('${((double.tryParse(product.price) ?? 0.0) * item.quantity).toStringAsFixed(2)} HUF'),
+        subtitle: Text((product.price * item.quantity).toPrice(currency: 'HUF')),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

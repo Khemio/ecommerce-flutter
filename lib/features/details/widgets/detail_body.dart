@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/app_localizations.dart';
 import 'package:flutter_app/core/models/product.dart';
+import 'package:flutter_app/core/utils/num_extentions.dart';
 import 'package:flutter_app/core/widgets/quantity_selector.dart';
 
 class DetailBody extends StatefulWidget {
@@ -36,8 +37,7 @@ class _DetailBodyState extends State<DetailBody> {
           ),
           const SizedBox(height: 8),
           Text(
-            //TODO: Create and apply extention for price formatting
-            '${widget.product.price} HUF',
+            widget.product.price.toPrice(currency: 'HUF'),
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 16),

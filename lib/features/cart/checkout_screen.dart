@@ -21,7 +21,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   @override
   void initState() {
     super.initState();
-    // final shopProvider = Provider.of<ShopProvider>(context); 
     final shopProvider = context.read<ShopProvider>(); 
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -66,7 +65,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          // 'Secure Shopify Checkout'
           AppLocalizations.translate('secure_checkout', shopProvider.appLanguage),
         ),
       ),

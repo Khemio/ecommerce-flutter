@@ -68,8 +68,6 @@ class _CartScreenState extends State<CartScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            // content: Text('Checkout failed. Check terminal error log.'),
-            // content: Text(AppLocalizations.translate('checkout_error', provider.appLanguage)),
             content: Text(AppLocalizations.translate('checkout_error', provider.appLanguage), style: TextStyle(color: Colors.white),),
             backgroundColor: AppTheme.errorColor,
             
@@ -86,7 +84,7 @@ class _CartScreenState extends State<CartScreen> {
     final shopProvider = Provider.of<ShopProvider>(context); 
 
     double totalPrice = shopProvider.cart.fold(0, (total, item) {
-      final price = double.tryParse(item.product.price) ?? 0.0;
+      final price = item.product.price;
       return total + price * item.quantity;
     });
 

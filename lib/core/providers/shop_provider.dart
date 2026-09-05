@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/core/utils/num_extentions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -97,11 +98,14 @@ class ShopProvider with ChangeNotifier {
     }
 
     if (_selectedSortOrder == 'LowToHigh') {
-      output.sort((a, b) => (double.tryParse(a.price) ?? 0.0)
-          .compareTo(double.tryParse(b.price) ?? 0.0));
+      // output.sort((a, b) => (double.tryParse(a.price) ?? 0.0)
+      output.sort((a, b) => a.price
+          // .compareTo(double.tryParse(b.price) ?? 0.0));
+          .compareTo(b.price));
     } else if (_selectedSortOrder == 'HighToLow') {
-      output.sort((a, b) => (double.tryParse(b.price) ?? 0.0)
-          .compareTo(double.tryParse(a.price) ?? 0.0));
+      // output.sort((a, b) => (double.tryParse(b.price) ?? 0.0)
+      output.sort((a, b) => (b.price).compareTo(a.price));
+          // .compareTo(double.tryParse(a.price) ?? 0.0));
     }
 
     return output;
@@ -170,14 +174,14 @@ class ShopProvider with ChangeNotifier {
   // Future<void> archiveCartToCompletedOrder(String totalAmount) async {
   Future<void> archiveCartToCompletedOrder() async {
     //TODO: Think about the shape of the data
-    final String generatedOrderId = "AZK-${DateTime.now().millisecondsSinceEpoch}";
-
     double totalPrice = cart.fold(0, (total, item) {
-      final price = double.tryParse(item.product.price) ?? 0.0;
+      final price = item.product.price;
       return total + price * item.quantity;
     });
 
-    String totalAmount = "${totalPrice.toStringAsFixed(2)} HUF";
+    String totalAmount = totalPrice.toPrice(currency: 'HUF');
+
+    final String generatedOrderId = "AZK-${DateTime.now().millisecondsSinceEpoch}";
 
     // Create the finalized OrderHistoryItem summary node 
     final newOrderRecord = OrderHistoryItem(
