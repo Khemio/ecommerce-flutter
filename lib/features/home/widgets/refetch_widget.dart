@@ -31,7 +31,7 @@ class RefetchWidget extends StatelessWidget {
                 const SizedBox(height: 8),
                 const Text(
                   // 'Ellenőrizd, hogy fut-e a szerver.\nCheck if your local server is running.',
-                  'Check if your local server is running.',
+                  'Check if your internet connection is fine.',
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.grey, fontSize: 14),
                 ),
