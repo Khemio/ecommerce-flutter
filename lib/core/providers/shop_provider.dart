@@ -144,7 +144,10 @@ class ShopProvider with ChangeNotifier {
       } else {
         _layoutConfig = AppLayoutConfig.defaultConfig(
           promoBanners: products.sublist(0,5).map((product) {
-            return PromoBanner(imageUrl: product.imageUrl);
+            return PromoBanner(
+              imageUrl: product.imageUrl,
+              redirectUrl: 'azkomoly://product/${product.id}'
+            );
           }).toList()
         );
       }
