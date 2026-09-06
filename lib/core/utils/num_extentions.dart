@@ -12,7 +12,7 @@ extension PriceFormatter on num {
       final RegExp regex = RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))');
       String separatedHuf = formattedNumber.replaceAllMapped(regex, (Match m) => '${m[1]} ');
 
-      return "$separatedHuf HUF";
+      return "$separatedHuf Ft";
 
     } else {
       // English standard format with 2 decimal boundaries (e.g., 29.99 USD)

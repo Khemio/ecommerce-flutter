@@ -1,10 +1,12 @@
 // lib/features/profile/widgets/profile_social_buttons.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_app/app_localizations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ProfileSocialButtons extends StatelessWidget {
-  const ProfileSocialButtons({super.key});
+  final String appLanguage;
+  const ProfileSocialButtons({super.key, required this.appLanguage});
 
   Future<void> _launchSocialUrl(String urlString) async {
     final Uri url = Uri.parse(urlString);
@@ -25,8 +27,9 @@ class ProfileSocialButtons extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'KÖVESS MINKET / FOLLOW US',
+          Text(
+            // 'KÖVESS MINKET / FOLLOW US',
+            AppLocalizations.translate('follow_us', appLanguage),
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black),
           ),
           const SizedBox(height: 16),

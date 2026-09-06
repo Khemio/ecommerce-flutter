@@ -3,14 +3,14 @@ class AppLocalizations {
     'title', 'choose_box', 'add_to_bag', 'cart_title', 'checkout', 'select_size', 
     'box_image', 'how_much', 'description', 'default_description', 'order_success', 
     'secure_checkout', 'cart_empty', 'total', 'socials_title', 'sort_default', 
-    'price_low_high', 'price_high_low', 'all_vendors', 'lang_label','added_to_bag_msg',
+    'price_low_high', 'price_high_low', 'all_products', 'all_vendors', 'lang_label','added_to_bag_msg',
     'explore_tab', 'bag_tab', 'profile_tab', 'retry_btn', 'quantity_label', 'no_description',
     'empty_cart', 'total_value', 'checkout_btn', 'clear_cart_title', 'clear_cart_body', 'clear_cart_cancel', 
     'clear_cart_confirm', 'cart_cleared_toast', 'profile_header', 'profile_info_section', 
     'field_name', 'field_email', 'field_address', 'save_btn', 'profile_saved_toast', 
     'order_history_shortcut', 'orders_count_suffix', 'order_history_title', 'sold_out',
     'empty_orders', 'network_error_title', 'network_error_body', 'checkout_error', 
-
+    'follow_us',
 };
 
   // Dictionary database matrix
@@ -37,6 +37,7 @@ class AppLocalizations {
        // Home Screen / Explore View Elements
       'choose_box': 'VÁLASSZ REJTÉLYES DOBOZT',
       'socials_title': '#AZKOMOLY · OSSZA MEG',
+      'all_products': 'MINDEN TERMÉK',
       'all_vendors': 'MINDEN MÁRKA',
       'sort_default': 'Rendezés: Alap',
       'price_low_high': 'Ár: Olcsóbbak elöl',
@@ -73,6 +74,7 @@ class AppLocalizations {
       'profile_saved_toast': 'Profil adatok sikeresen mentve!',
       'order_history_shortcut': 'KORÁBBI RENDELÉSEK ELŐZMÉNYEI',
       'orders_count_suffix': '{count} db korábbi tranzakció',
+      'follow_us': 'KÖVESS MINKET',
 
       // Order History Screen Page Elements
       'order_history_title': 'Rendelési Előzmények',
@@ -109,7 +111,8 @@ class AppLocalizations {
       'sort_default': 'Sort: Default',
       'price_low_high': 'Price: Low to High',
       'price_high_low': 'Price: High to Low',
-      'all_vendors': 'ALL BRANDS',
+      'all_products': 'ALL PRODUCTS',
+      'all_vendors': 'ALL VENDORS',
       'sold_out': 'SOLD OUT',
 
       // Detail Screen Page Elements
@@ -142,6 +145,7 @@ class AppLocalizations {
       'profile_saved_toast': 'Profile updates successfully saved!',
       'order_history_shortcut': 'PAST ORDERS HISTORY TRACKING',
       'orders_count_suffix': '{count} past transaction records',
+      'follow_us': 'FOLLOW US',
 
       // Order History Screen Page Elements
       'order_history_title': 'Order History',

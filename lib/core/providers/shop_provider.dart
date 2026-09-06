@@ -33,20 +33,23 @@ class ShopProvider with ChangeNotifier {
   UserProfile? get profile => _profile;
   bool get isLoading => _isLoading;
 
+  String _selectedTypeFilter = 'All';
   String _selectedVendorFilter = 'All';
+
+  // String _selectedCategoryFilter = 'All';
   String _selectedSortOrder = 'None'; // 'None', 'LowToHigh', 'HighToLow'
 
+  String get selectedTypeFilter => _selectedTypeFilter;
   String get selectedVendorFilter => _selectedVendorFilter;
+
+  // String get selectedCategoryFilter => _selectedCategoryFilter;
   String get selectedSortOrder => _selectedSortOrder;
 
   AppLayoutConfig _layoutConfig = AppLayoutConfig(
     isPromoCarouselEnabled: true,
     isSocialCarouselEnabled: true,
-    promoBanners: [
-      // PromoBanner(imageUrl: 'https://shopify.com'),
-    ],
+    promoBanners: [],
     socialReviews: demoReviews,
-    // socialReviews: [],
   );
 
   AppLayoutConfig get layoutConfig => _layoutConfig;
@@ -97,38 +100,47 @@ class ShopProvider with ChangeNotifier {
     }
   }
 
+  // 1. Isolate clean, unique Product Types out of the catalog payload
+  List<String> get uniqueProductTypes {
+    final types = _products.map((p) => p.productType.trim()).where((t) => t.isNotEmpty).toSet().toList();
+    return ['All', ...types];
+  }
+
+  // 2. Isolate clean, unique Vendor/Brand tags out of the catalog payload
   List<String> get uniqueVendors {
-    // The '??' safely protects against Null crashes if a productType is missing in JSON
-    final vendors = _products
-        .map((p) => p.productType.trim()) 
-        .where((vendor) => vendor.isNotEmpty) // Drops clean blanks from your active filter options
-        .toSet()
-        .toList();
+    // Assumes you add an explicit 'vendor' String field to your Product model later
+    final vendors = _products.map((p) => p.vendor.trim()).where((v) => v.isNotEmpty).toSet().toList();
     return ['All', ...vendors];
   }
 
+  bool get isTypeFilteringEnabled => uniqueProductTypes.length > 1;
+  bool get isVendorFilteringEnabled => uniqueVendors.length > 1;
+
   List<Product> get filteredProducts {
     List<Product> output = List.from(_products);
+    if (_selectedTypeFilter != 'All') {
+      output = output.where((p) => p.productType.trim() == _selectedTypeFilter).toList();
+    }
 
     if (_selectedVendorFilter != 'All') {
-      output = output.where((p) => p.productType.trim() == _selectedVendorFilter).toList();
+      output = output.where((p) => p.vendor.trim() == _selectedVendorFilter).toList();
     }
 
     if (_selectedSortOrder == 'LowToHigh') {
-      // output.sort((a, b) => (double.tryParse(a.price) ?? 0.0)
-      output.sort((a, b) => a.price
-          // .compareTo(double.tryParse(b.price) ?? 0.0));
-          .compareTo(b.price));
+      output.sort((a, b) => a.price.compareTo(b.price));
     } else if (_selectedSortOrder == 'HighToLow') {
-      // output.sort((a, b) => (double.tryParse(b.price) ?? 0.0)
       output.sort((a, b) => (b.price).compareTo(a.price));
-          // .compareTo(double.tryParse(a.price) ?? 0.0));
     }
 
     return output;
   }
 
-  void updateFilters({required String vendor, required String sort}) {
+  void updateFilters({
+    required String productType,
+    required String vendor,
+    required String sort
+  }) {
+    _selectedTypeFilter = productType;
     _selectedVendorFilter = vendor;
     _selectedSortOrder = sort;
     notifyListeners();
@@ -163,7 +175,6 @@ class ShopProvider with ChangeNotifier {
   Future<void> fetchProducts() async {
     _isLoading = true;
     notifyListeners();
-
 
     try {
       final response = await http.get(AppConfig.productsEndpoint);

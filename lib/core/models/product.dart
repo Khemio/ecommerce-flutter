@@ -3,6 +3,7 @@ class Product {
   final String title;
   final String description;
   final String productType;
+  final String vendor;
   final String imageUrl;
   final String variantId;
   final double price;
@@ -14,6 +15,7 @@ class Product {
     required this.title,
     required this.description,
     required this.productType,
+    required this.vendor,
     required this.imageUrl,
     required this.variantId,
     required this.price,
@@ -27,6 +29,7 @@ class Product {
       'title': title,
       'description': description,
       'productType': productType,
+      'vendor': vendor,
       // Wrap your url back inside an array maps tree block
       'images': [
         {'url': imageUrl}
@@ -74,6 +77,7 @@ class Product {
       title: json['title'] ?? 'Unnamed Product',
       description: json['description'] ?? '',
       productType: json['productType'] ?? '',
+      vendor: json['vendor'] ?? '',
       imageUrl: firstImageUrl,
       variantId: varId,
       price: itemPrice,
