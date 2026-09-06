@@ -8,6 +8,7 @@ import 'order_history_screen.dart';
 import 'widgets/info_display_view.dart';
 import 'widgets/info_edit_form.dart';
 import 'widgets/language_selector_card.dart';
+import 'widgets/profile_social_btns.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -138,6 +139,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 },
               ),
             ),
+
+            const SizedBox(height: 24),
+
+            const ProfileSocialButtons(), 
           ],
         ),
       ),

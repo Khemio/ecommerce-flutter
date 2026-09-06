@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
-import 'package:flutter_app/app_theme.dart';
-import 'package:flutter_app/app_localizations.dart';
 import 'package:flutter_app/core/models/product.dart';
 import 'package:flutter_app/core/providers/shop_provider.dart';
 import 'package:flutter_app/core/utils/num_extentions.dart';
@@ -17,9 +14,6 @@ class ProductGrid extends StatelessWidget {
   Widget build(BuildContext context) {
       final List<Product> filteredProducts = context.select<ShopProvider, List<Product>>(
         (provider) => provider.filteredProducts,
-      );
-      final String appLanguage = context.select<ShopProvider, String>(
-        (provider) => provider.appLanguage,
       );
 
     return GridView.builder(

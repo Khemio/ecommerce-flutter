@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/banner_config.dart';
-import 'package:flutter_app/core/models/banner_items.dart';
-import 'package:flutter_app/core/utils/num_extentions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -9,9 +6,14 @@ import 'dart:async';
 import 'dart:ui' as ui;
 
 import '../models/product.dart';
-import '../../features/profile/models/user_profile.dart';
-import '../../features/profile/models/order_history.dart';
-import '../../app_config.dart';
+
+import 'package:flutter_app/banner_config.dart';
+import 'package:flutter_app/app_config.dart';
+import 'package:flutter_app/core/models/banner_items.dart';
+import 'package:flutter_app/core/utils/num_extentions.dart';
+
+import 'package:flutter_app/features/profile/models/user_profile.dart';
+import 'package:flutter_app/features/profile/models/order_history.dart';
 import 'package:flutter_app/features/home/models/social_review_data.dart';
 class ShopProvider with ChangeNotifier {
   String _appLanguage = 'en';
