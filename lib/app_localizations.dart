@@ -8,7 +8,7 @@ class AppLocalizations {
     'empty_cart', 'total_value', 'checkout_btn', 'clear_cart_title', 'clear_cart_body', 'clear_cart_cancel', 
     'clear_cart_confirm', 'cart_cleared_toast', 'profile_header', 'profile_info_section', 
     'field_name', 'field_email', 'field_address', 'save_btn', 'profile_saved_toast', 
-    'order_history_shortcut', 'orders_count_suffix', 'order_history_title', 
+    'order_history_shortcut', 'orders_count_suffix', 'order_history_title', 'sold_out',
     'empty_orders', 'network_error_title', 'network_error_body', 'checkout_error', 
 
 };
@@ -41,6 +41,7 @@ class AppLocalizations {
       'sort_default': 'Rendezés: Alap',
       'price_low_high': 'Ár: Olcsóbbak elöl',
       'price_high_low': 'Ár: Drágábbak elöl',
+      'sold_out': 'ELFOGYOTT',
 
       // Detail Screen Page Elements
       'add_to_bag': 'DOBOZ HOZZÁADÁSA A TASAKHOZ',
@@ -109,6 +110,7 @@ class AppLocalizations {
       'price_low_high': 'Price: Low to High',
       'price_high_low': 'Price: High to Low',
       'all_vendors': 'ALL BRANDS',
+      'sold_out': 'SOLD OUT',
 
       // Detail Screen Page Elements
       'add_to_bag': 'ADD MYSTERY BOX TO BAG',

@@ -19,13 +19,16 @@ class AddToCartBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool canPurchase = product.isAvailable;
+    
     return SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: ElevatedButton(
             style: Theme.of(context).elevatedButtonTheme.style,
-            onPressed: () {
-              onPressed(product, _selectedQuantity);
+            onPressed: product.isAvailable
+              ? () {
+                onPressed(product, _selectedQuantity);
 
               final String basePattern = AppLocalizations.translate('added_to_bag_msg', appLanguage);
               final String snackBarMessage = basePattern
@@ -38,9 +41,11 @@ class AddToCartBtn extends StatelessWidget {
                   duration: const Duration(seconds: 2),
                 ),
               );
-            },
+            } : null,
             child: Text(
-              AppLocalizations.translate('add_to_bag', appLanguage),
+              canPurchase
+                ? AppLocalizations.translate('add_to_bag', appLanguage)
+                : AppLocalizations.translate('sold_out', appLanguage),
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)
             ),
           ),

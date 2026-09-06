@@ -7,6 +7,7 @@ class Product {
   final String variantId;
   final double price;
   final String sku;
+  final bool isAvailable;
 
   Product({
     required this.id,
@@ -16,7 +17,8 @@ class Product {
     required this.imageUrl,
     required this.variantId,
     required this.price,
-    required this.sku,
+    required this.sku, 
+    required this.isAvailable,
   });
 
   Map<String, dynamic> toJson() {
@@ -34,6 +36,7 @@ class Product {
         {
           'id': variantId,
           'sku': sku,
+          'availableForSale': isAvailable,
           'price': {
             'amount': price,
           }
@@ -53,12 +56,14 @@ class Product {
     String varId = '';
     double itemPrice = 0.0;
     String itemSku = '';
+    bool availableStatus = true;
 
     if (variantsList.isNotEmpty) {
       final Map<String, dynamic> firstVariant = variantsList[0] ?? {};
       varId = firstVariant['id'] ?? '';
       itemSku = firstVariant['sku'] ?? '';
       
+      availableStatus = firstVariant['availableForSale'] ?? firstVariant['isAvailable'] ?? true;
       final Map<String, dynamic> priceMap = firstVariant['price'] ?? {};
       final String itemPriceString = priceMap['amount'] ?? '0.00';
       itemPrice = double.tryParse(itemPriceString) ?? 0.0;
@@ -73,6 +78,7 @@ class Product {
       variantId: varId,
       price: itemPrice,
       sku: itemSku,
+      isAvailable: availableStatus,
     );
   }
 }
