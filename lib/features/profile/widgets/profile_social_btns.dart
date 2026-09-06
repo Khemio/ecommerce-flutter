@@ -1,5 +1,6 @@
 // lib/features/profile/widgets/profile_social_buttons.dart
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ProfileSocialButtons extends StatelessWidget {
@@ -29,41 +30,39 @@ class ProfileSocialButtons extends StatelessWidget {
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black),
           ),
           const SizedBox(height: 16),
+          // Wrap(
+            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            // spacing: 10.0,       // Horizontal gap spacing between pills
+            // runSpacing: 10.0,    // Vertical gap spacing if an element wraps to line 2
+            // alignment: WrapAlignment.start,
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               // 🎵 TikTok Button Target
               _buildSocialPill(
-                icon: Icons.tiktok,
-                label: 'TikTok',
+                icon: FontAwesomeIcons.tiktok,
+                // label: 'TikTok',
                 color: Colors.black,
                 onTap: () => _launchSocialUrl('https://www.tiktok.com/@azkomoly.hu'),
               ),
-              // 📸 Instagram Button Target
               _buildSocialPill(
-                // FaIcon(
-                //             FontAwesomeIcons.instagram,
-                //             color: Colors.white,
-                //             size: 18,
-                //           ),
-                icon: Icons.camera_alt,
-                label: 'Instagram',
+                icon: FontAwesomeIcons.instagram,
+                // label: 'Instagram',
                 color: const Color(0xFFE1306C),
                 onTap: () => _launchSocialUrl('https://www.instagram.com/azkomoly.hu'),
               ),
-              // 🔵 Facebook Button Target
               _buildSocialPill(
-                icon: Icons.facebook,
-                label: 'Facebook',
+                icon: FontAwesomeIcons.facebook,
+                // label: 'Facebook',
                 color: const Color(0xFF1877F2),
                 onTap: () => _launchSocialUrl('https://www.facebook.com/people/AZKOMOLYhu/61590505527795/'),
               ),
-              // _buildSocialPill(
-              //   icon: Icons.facebook,
-              //   label: 'Youtube',
-              //   color: const Color(0xFF1877F2),
-              //   onTap: () => _launchSocialUrl('https://www.youtube.com/@AzKomolyHungary'),
-              // ),
+              _buildSocialPill(
+                icon: FontAwesomeIcons.youtube,
+                // label: 'Youtube',
+                color: Colors.red,
+                onTap: () => _launchSocialUrl('https://www.youtube.com/@AzKomolyHungary'),
+              ),
             ],
           ),
         ],
@@ -72,8 +71,8 @@ class ProfileSocialButtons extends StatelessWidget {
   }
 
   Widget _buildSocialPill({
-    required IconData icon, 
-    required String label, 
+    required FaIconData icon, 
+    String? label, 
     required Color color, 
     required VoidCallback onTap,
   }) {
@@ -88,12 +87,14 @@ class ProfileSocialButtons extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, color: color, size: 20),
-            const SizedBox(width: 6),
-            Text(
-              label,
-              style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12),
-            ),
+            FaIcon(icon, color: color, size: 20),
+            ?label != null ? const SizedBox(width: 6) : null,
+            ?label != null 
+              ? Text(
+                label,
+                style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12),
+              )
+              : null,
           ],
         ),
       ),
