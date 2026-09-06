@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/banner_config.dart';
+import 'package:flutter_app/core/models/banner_items.dart';
+import 'package:flutter_app/core/utils/num_extentions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -6,14 +9,14 @@ import 'dart:async';
 import 'dart:ui' as ui;
 
 import '../models/product.dart';
-import '../models/user_profile.dart';
-import '../models/order_history.dart';
-import '../app_config.dart';
+import '../../features/profile/models/user_profile.dart';
+import '../../features/profile/models/order_history.dart';
+import '../../app_config.dart';
+import 'package:flutter_app/features/home/models/social_review_data.dart';
 class ShopProvider with ChangeNotifier {
-  String _appLanguage = 'en'; // Safe default parameter
+  String _appLanguage = 'en';
   List<Product> _products = [];
   final Map<String, CartItem> _cart = {};
-  // List<Map<String, dynamic>> _orderHistory = []; 
   final Map<String, OrderHistoryItem> _orders = {};
   UserProfile? _profile;
   bool _isLoading = false;
@@ -34,8 +37,20 @@ class ShopProvider with ChangeNotifier {
   String get selectedVendorFilter => _selectedVendorFilter;
   String get selectedSortOrder => _selectedSortOrder;
 
+  AppLayoutConfig _layoutConfig = AppLayoutConfig(
+    isPromoCarouselEnabled: true,
+    isSocialCarouselEnabled: true,
+    promoBanners: [
+      // PromoBanner(imageUrl: 'https://shopify.com'),
+    ],
+    socialReviews: demoReviews,
+    // socialReviews: [],
+  );
+
+  AppLayoutConfig get layoutConfig => _layoutConfig;
+
   ShopProvider() {
-    _loadDataFromStorage(); // Automatically restore cache when the app boots up!
+    _loadDataFromStorage();
   }
 
   Future<void> _loadDataFromStorage() async {
@@ -98,11 +113,14 @@ class ShopProvider with ChangeNotifier {
     }
 
     if (_selectedSortOrder == 'LowToHigh') {
-      output.sort((a, b) => (double.tryParse(a.price) ?? 0.0)
-          .compareTo(double.tryParse(b.price) ?? 0.0));
+      // output.sort((a, b) => (double.tryParse(a.price) ?? 0.0)
+      output.sort((a, b) => a.price
+          // .compareTo(double.tryParse(b.price) ?? 0.0));
+          .compareTo(b.price));
     } else if (_selectedSortOrder == 'HighToLow') {
-      output.sort((a, b) => (double.tryParse(b.price) ?? 0.0)
-          .compareTo(double.tryParse(a.price) ?? 0.0));
+      // output.sort((a, b) => (double.tryParse(b.price) ?? 0.0)
+      output.sort((a, b) => (b.price).compareTo(a.price));
+          // .compareTo(double.tryParse(a.price) ?? 0.0));
     }
 
     return output;
@@ -114,14 +132,44 @@ class ShopProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> fetchRemoteConfiguration() async {
+    try {
+      final response = await http.get(AppConfig.configEndpoint).timeout(const Duration(seconds: 3));
+      
+      if (response.statusCode == 200) {
+        final decodedData = json.decode(response.body);
+        _layoutConfig = AppLayoutConfig.fromJson(decodedData);
+        notifyListeners();
+        debugPrint("🌐 Remote app config synchronized successfully!");
+      } else {
+        _layoutConfig = AppLayoutConfig.defaultConfig(
+          promoBanners: products.sublist(0,5).map((product) {
+            return PromoBanner(
+              imageUrl: product.imageUrl,
+              redirectUrl: 'azkomoly://product/${product.id}'
+            );
+          }).toList()
+        );
+      }
+    } catch (e) {
+      // Bypasses crashing completely! Falls back gracefully to your local parameters
+
+      debugPrint("⚠️ Server config fetch failed. Using local hardware asset fallbacks. Error: $e");
+    }
+  }
+
   Future<void> fetchProducts() async {
     _isLoading = true;
     notifyListeners();
+
+
     try {
       final response = await http.get(AppConfig.productsEndpoint);
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         _products = data.map((item) => Product.fromJson(item)).toList();
+
+        await fetchRemoteConfiguration();
       }
     } catch (error) {
       debugPrint("Error fetching products: $error");
@@ -168,17 +216,16 @@ class ShopProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // Future<void> archiveCartToCompletedOrder(String totalAmount) async {
+  //TODO: Think about the shape of the data
   Future<void> archiveCartToCompletedOrder() async {
-    //TODO: Think about the shape of the data
-    final String generatedOrderId = "AZK-${DateTime.now().millisecondsSinceEpoch}";
-
     double totalPrice = cart.fold(0, (total, item) {
-      final price = double.tryParse(item.product.price) ?? 0.0;
+      final price = item.product.price;
       return total + price * item.quantity;
     });
 
-    String totalAmount = "${totalPrice.toStringAsFixed(2)} HUF";
+    String totalAmount = totalPrice.toPrice(currency: 'HUF');
+
+    final String generatedOrderId = "AZK-${DateTime.now().millisecondsSinceEpoch}";
 
     // Create the finalized OrderHistoryItem summary node 
     final newOrderRecord = OrderHistoryItem(

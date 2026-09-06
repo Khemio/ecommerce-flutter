@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:flutter_app/app_theme.dart';
 
-import '../app_localizations.dart';
-import '../providers/shop_provider.dart';
-// import '../providers/shop_provider.dart';
+import 'package:flutter_app/app_localizations.dart';
+import 'package:flutter_app/core/providers/shop_provider.dart';
+import 'package:flutter_app/app_theme.dart';
 
 class CheckoutScreen extends StatefulWidget {
   final String checkoutUrl;
@@ -21,8 +20,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   @override
   void initState() {
-    final shopProvider = Provider.of<ShopProvider>(context); 
     super.initState();
+    final shopProvider = context.read<ShopProvider>(); 
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
@@ -33,18 +32,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                    // '🎉 Order Placed Successfully!'
                     AppLocalizations.translate('order_success', shopProvider.appLanguage),
                   ),
                   backgroundColor: AppTheme.successColor,
-                  // behavior: SnackBarBehavior.floating, 
                 ),
               );
               // Pops back to the HomeScreen and clears navigation stack
               Navigator.popUntil(context, (route) => route.isFirst);
             }
           },
-          // 💡 THE FIX: Intercept Shopify's "Continue Shopping" button click
+          
           onNavigationRequest: (NavigationRequest request) {
             final url = request.url.toLowerCase();
             
@@ -68,7 +65,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          // 'Secure Shopify Checkout'
           AppLocalizations.translate('secure_checkout', shopProvider.appLanguage),
         ),
       ),

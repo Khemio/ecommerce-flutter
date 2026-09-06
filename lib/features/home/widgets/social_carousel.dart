@@ -1,79 +1,18 @@
-// lib/screens/social_carousel.dart
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-// import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
+// import 'package:cached_network_image/cached_network_image.dart';
 
-import '../../app_localizations.dart';
-import '../../providers/shop_provider.dart';
+import 'package:flutter_app/app_localizations.dart';
+import 'package:flutter_app/core/providers/shop_provider.dart';
 
-class SocialReviewItem {
-  final String thumbnailUrl;
-  final String videoUrl;
-  final bool isTikTok; // True = TikTok icon badge, False = Instagram icon badge
+import '../models/social_review_data.dart';
 
-  SocialReviewItem({
-    required String thumbnailUrl,
-    required this.videoUrl,
-    required this.isTikTok,
-  }) : thumbnailUrl = _normalizeUrl(thumbnailUrl);
-
-  static String _normalizeUrl(String url) {
-    if (url.startsWith('assets/')) {
-      return url;
-    }
-    if (url.startsWith('images/')) {
-      return 'assets/$url';
-    }
-    // Fallback if only the file name was provided (e.g., 'review1.webp')
-    return 'assets/images/$url'; 
-  }
-
-  factory SocialReviewItem.fromJson(Map<String, dynamic> json) {
-  return SocialReviewItem(
-    thumbnailUrl: json['thumbnailUrl'] ?? '',
-    videoUrl: json['videoUrl'] ?? '',
-    isTikTok: json['isTikTok'] ?? false,
-  );
-}
-
-}
 
 class SocialCarousel extends StatelessWidget {
-  final List<SocialReviewItem> reviews = [
-    SocialReviewItem(
-      thumbnailUrl: 'images/review1.webp',
-      videoUrl: 'https://www.instagram.com/reel/DbOVwukMheu/?utm_source=ig_web_button_share_sheet&igsh=MzRlODBiNWFlZA==',
-      isTikTok: false,
-    ),
-    SocialReviewItem(
-      thumbnailUrl: 'images/review2.webp',
-      videoUrl: 'https://www.instagram.com/reel/DbAyYwQO_z9/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==',
-      isTikTok: false,
-    ),
-    SocialReviewItem(
-      thumbnailUrl: 'images/review3.webp',
-      videoUrl: 'https://www.instagram.com/reel/DanS3tFsao4/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==',
-      isTikTok: false,
-    ),
-    SocialReviewItem(
-      thumbnailUrl: 'images/review4.webp',
-      videoUrl: 'https://www.instagram.com/reel/DaLM-yzsLz_/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==',
-      isTikTok: false,
-    ),
-    SocialReviewItem(
-      thumbnailUrl: 'images/review5.webp',
-      videoUrl: 'https://www.instagram.com/reel/DaFsFjgKlCR/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==',
-      isTikTok: false,
-    ),
-    SocialReviewItem(
-      thumbnailUrl: 'images/review6.webp',
-      videoUrl: 'https://www.tiktok.com/@azkomoly.hu/video/7670098419981110550?is_from_webapp=1&sender_device=pc&web_id=7644208246575662593',
-      isTikTok: true,
-    ),
-  ];
+  final reviews = demoReviews;  
 
   SocialCarousel({super.key});
 
@@ -89,15 +28,20 @@ class SocialCarousel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final shopProvider = Provider.of<ShopProvider>(context); 
+    final config = shopProvider.layoutConfig;
+
+    if (!config.isSocialCarouselEnabled || config.socialReviews.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
           child: Text(
-            // '#AZKOMOLY · SHARE IT',
             AppLocalizations.translate('socials_title', shopProvider.appLanguage),
-            // style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16, letterSpacing: 1.5),
             style: Theme.of(context).textTheme.headlineLarge,
           ),
         ),
