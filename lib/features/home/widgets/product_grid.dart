@@ -5,6 +5,7 @@ import 'package:flutter_app/app_theme.dart';
 import 'package:flutter_app/app_localizations.dart';
 import 'package:flutter_app/core/models/product.dart';
 import 'package:flutter_app/core/providers/shop_provider.dart';
+import 'package:flutter_app/core/utils/num_extentions.dart';
 import 'package:flutter_app/features/details/details.dart' show DetailScreen;
 import 'package:provider/provider.dart';
 
@@ -91,8 +92,10 @@ class ProductGrid extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 4),
-                      //TODO: Create and apply extention for price formatting
-                      Text('${product.price} HUF', style: Theme.of(context).textTheme.bodyMedium,),
+                      Text(
+                        product.price.toPrice(currency: 'HUF'), 
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
                     ],
                   ),
                 ),

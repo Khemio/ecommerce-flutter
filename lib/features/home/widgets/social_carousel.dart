@@ -8,7 +8,7 @@ import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:flutter_app/app_localizations.dart';
 import 'package:flutter_app/core/providers/shop_provider.dart';
 
-import '../models/social_review_item.dart';
+import '../models/social_review_data.dart';
 
 
 class SocialCarousel extends StatelessWidget {
@@ -28,6 +28,13 @@ class SocialCarousel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final shopProvider = Provider.of<ShopProvider>(context); 
+    final config = shopProvider.layoutConfig;
+
+    if (!config.isSocialCarouselEnabled || config.socialReviews.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
