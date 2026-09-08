@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/app_localizations.dart';
+import 'package:azkomoly_app/app_localizations.dart';
 
-import 'package:flutter_app/core/models/product.dart';
-import 'package:flutter_app/core/providers/shop_provider.dart';
-import 'package:flutter_app/core/utils/num_extentions.dart';
-import 'package:flutter_app/core/widgets/custom_image.dart';
-import 'package:flutter_app/features/details/details.dart' show DetailScreen;
+import 'package:azkomoly_app/core/models/product.dart';
+import 'package:azkomoly_app/core/providers/shop_provider.dart';
+import 'package:azkomoly_app/core/utils/num_extentions.dart';
+import 'package:azkomoly_app/core/widgets/custom_image.dart';
+import 'package:azkomoly_app/features/details/details.dart' show DetailScreen;
 import 'package:provider/provider.dart';
 
 class ProductGrid extends StatelessWidget {

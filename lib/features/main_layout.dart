@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_app/app_localizations.dart';
-import 'package:flutter_app/core/providers/shop_provider.dart';
+import 'package:azkomoly_app/app_localizations.dart';
+import 'package:azkomoly_app/core/providers/shop_provider.dart';
 import 'package:provider/provider.dart';
 // import 'package:flutter_app/features/profile/profile_screen.dart';
 import 'home/home_screen.dart';

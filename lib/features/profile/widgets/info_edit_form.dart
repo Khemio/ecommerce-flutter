@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/app_localizations.dart';
-import 'package:flutter_app/core/models/user_profile.dart';
+import 'package:azkomoly_app/app_localizations.dart';
+import 'package:azkomoly_app/core/models/user_profile.dart';
 
 class InfoEditForm extends StatefulWidget {
   final UserProfile? initialProfile;

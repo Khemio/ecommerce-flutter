@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_app/app_localizations.dart';
-import 'package:flutter_app/core/models/product.dart';
+import 'package:azkomoly_app/app_localizations.dart';
+import 'package:azkomoly_app/core/models/product.dart';
 
 class AddToCartBtn extends StatelessWidget {
   final int _selectedQuantity;

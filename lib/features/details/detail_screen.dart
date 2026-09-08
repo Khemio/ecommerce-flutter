@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/core/widgets/cart_btn.dart';
+import 'package:azkomoly_app/core/widgets/cart_btn.dart';
 import 'package:provider/provider.dart';
 
-import 'package:flutter_app/core/models/product.dart';
-import 'package:flutter_app/core/providers/shop_provider.dart';
+import 'package:azkomoly_app/core/models/product.dart';
+import 'package:azkomoly_app/core/providers/shop_provider.dart';
 
 import 'details.dart' hide DetailScreen;
 

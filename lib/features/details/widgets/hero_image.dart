@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_app/core/models/product.dart';
-import 'package:flutter_app/core/widgets/custom_image.dart';
+import 'package:azkomoly_app/core/models/product.dart';
+import 'package:azkomoly_app/core/widgets/custom_image.dart';
 
 class DetailHeroImage extends StatelessWidget {
   final Product product;

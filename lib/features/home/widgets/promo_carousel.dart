@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 
-import 'package:flutter_app/core/models/product.dart';
-import 'package:flutter_app/core/providers/shop_provider.dart';
-import 'package:flutter_app/core/utils/redirect_router.dart';
-import 'package:flutter_app/core/widgets/custom_image.dart';
+import 'package:azkomoly_app/core/models/product.dart';
+import 'package:azkomoly_app/core/providers/shop_provider.dart';
+import 'package:azkomoly_app/core/utils/redirect_router.dart';
+import 'package:azkomoly_app/core/widgets/custom_image.dart';
 import 'package:provider/provider.dart';
 
 class PromoCarousel extends StatelessWidget {

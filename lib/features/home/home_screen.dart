@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:flutter_app/app_localizations.dart';
-import 'package:flutter_app/core/widgets/cart_btn.dart';
-import 'package:flutter_app/core/providers/shop_provider.dart';
-import 'package:flutter_app/core/utils/string_extenstions.dart';
+import 'package:azkomoly_app/app_localizations.dart';
+import 'package:azkomoly_app/core/widgets/cart_btn.dart';
+import 'package:azkomoly_app/core/providers/shop_provider.dart';
+import 'package:azkomoly_app/core/utils/string_extenstions.dart';
 
 import 'widgets/product_grid.dart';
 import 'widgets/promo_carousel.dart';

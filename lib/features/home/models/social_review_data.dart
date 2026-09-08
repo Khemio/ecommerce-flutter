@@ -1,5 +1,5 @@
 
-import 'package:flutter_app/core/models/banner_items.dart';
+import 'package:azkomoly_app/core/models/banner_items.dart';
 
 final List<SocialReviewItem> demoReviews = [
     SocialReviewItem(

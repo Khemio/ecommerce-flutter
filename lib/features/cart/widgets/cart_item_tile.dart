@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/core/utils/num_extentions.dart';
-import 'package:flutter_app/core/widgets/custom_image.dart';
+import 'package:azkomoly_app/core/utils/num_extentions.dart';
+import 'package:azkomoly_app/core/widgets/custom_image.dart';
 
-import 'package:flutter_app/core/widgets/quantity_selector.dart';
-import 'package:flutter_app/features/profile/models/order_history.dart';
+import 'package:azkomoly_app/core/widgets/quantity_selector.dart';
+import 'package:azkomoly_app/features/profile/models/order_history.dart';
 
 class CartItemTile extends StatelessWidget{
   final CartItem item;
