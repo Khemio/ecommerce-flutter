@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/app_localizations.dart';
-import 'package:flutter_app/features/profile/models/user_profile.dart';
+import 'package:flutter_app/core/models/user_profile.dart';
 
 class InfoDisplayView extends StatelessWidget {
   final UserProfile? profile;

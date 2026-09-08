@@ -29,14 +29,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    // Initialize text inputs with existing user cache on mount
     final currentProfile = Provider.of<ShopProvider>(context, listen: false).profile;
     if (currentProfile != null) {
-      _firstNameController.text = currentProfile!.firstName;
+      _firstNameController.text = currentProfile.firstName;
       _lastNameController.text = currentProfile.lastName;
-      _emailController.text = currentProfile!.email;
-      _zipController.text = currentProfile!.zipCode;
-      _cityController.text = currentProfile!.city;
+      _emailController.text = currentProfile.email;
+      _zipController.text = currentProfile.zipCode;
+      _cityController.text = currentProfile.city;
       _streetController.text = currentProfile.streetAddress;
     }
   }
@@ -70,6 +69,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 _isEditing = !_isEditing;
                 // If canceling, restore previous cached text entries
                 if (!_isEditing && shopProvider.profile != null) {
+                  debugPrint(shopProvider.profile!.fullName);
                   _firstNameController.text = shopProvider.profile!.firstName;
                   _lastNameController.text = shopProvider.profile!.lastName;
                   _emailController.text = shopProvider.profile!.email;
@@ -123,8 +123,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           required city, 
                           required streetAddress
                         }) {
-                          // shopProvider.saveProfile(name, email, address);
-                          shopProvider.saveProfile;
+                          shopProvider.saveProfile(
+                            firstName: firstName,
+                            lastName: lastName,
+                            email: email,
+                            zipCode: zipCode,
+                            city: city,
+                            streetAddress: streetAddress,
+                          );
                           setState(() => _isEditing = false);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(

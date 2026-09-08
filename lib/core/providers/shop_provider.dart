@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/core/models/shipping_address.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -12,7 +13,7 @@ import 'package:flutter_app/app_config.dart';
 import 'package:flutter_app/core/models/banner_items.dart';
 import 'package:flutter_app/core/utils/num_extentions.dart';
 
-import 'package:flutter_app/features/profile/models/user_profile.dart';
+import 'package:flutter_app/core/models/user_profile.dart';
 import 'package:flutter_app/features/profile/models/order_history.dart';
 import 'package:flutter_app/features/home/models/social_review_data.dart';
 class ShopProvider with ChangeNotifier {
@@ -229,9 +230,11 @@ class ShopProvider with ChangeNotifier {
       firstName: firstName,
       lastName: lastName,
       email: email,
-      zipCode: zipCode,
-      city: city,
-      streetAddress: streetAddress,
+      address: ShippingAddress(
+        zipCode: zipCode,
+        city: city,
+        streetAddress: streetAddress,
+      )
     );
     await _saveProfileToDisk();
     notifyListeners();

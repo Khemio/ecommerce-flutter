@@ -10,7 +10,7 @@ class AppLocalizations {
     'save_btn', 'profile_saved_toast', 'order_history_shortcut', 'orders_count_suffix', 
     'order_history_title', 'sold_out', 'empty_orders', 'network_error_title', 'network_error_body', 
     'checkout_error', 'follow_us', 'field_name_last', 'field_name_first', 'field_email', 'field_address_zip',
-    'field_address_city', 'field_address_street'
+    'field_address_city', 'field_address_street', 'field_name', 'field_address',
 };
 
   // Dictionary database matrix
@@ -68,9 +68,11 @@ class AppLocalizations {
       'lang_label': 'Rendszer Nyelve',
       'profile_info_section': 'SZEMÉLYES ADATOK',
 
+      'field_name': 'Teljes Név',
       'field_name_last': 'Vezetéknév',
       'field_name_first': 'Keresztnév',
       'field_email': 'E-mail cím',
+      'field_address': 'Szállítási cím',
       'field_address_zip': 'Irányítószám',
       'field_address_city': 'Város',
       'field_address_street': 'Utca, házszám',
@@ -144,9 +146,11 @@ class AppLocalizations {
       'lang_label': 'Language',
       'profile_info_section': 'PERSONAL INFORMATION',
 
+      'field_name': 'Full Name',
       'field_name_last': 'Last Name',
       'field_name_first': 'First Name',
       'field_email': 'Email Address',
+      'field_address': 'Shipping Address',
       'field_address_zip': 'Zip',
       'field_address_city': 'City',
       'field_address_street': ' Street, Apt',

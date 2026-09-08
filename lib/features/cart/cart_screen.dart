@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter_app/core/utils/uri_extentions.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -42,9 +43,14 @@ class _CartScreenState extends State<CartScreen> {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final Map<String, dynamic> responseData = json.decode(response.body);
-        final String checkoutUrl = responseData['checkoutUrl'] ?? '';
+        // final String checkoutUrl = responseData['checkoutUrl'] ?? '';
+        final String rawCheckoutUrl = responseData['checkoutUrl'] ?? '';
 
-        if (checkoutUrl.isNotEmpty && mounted) {
+        // if (checkoutUrl.isNotEmpty && mounted) {
+        if (rawCheckoutUrl.isNotEmpty && mounted) {
+          final String checkoutUrl = rawCheckoutUrl.prefillWithProfile(provider.profile);
+
+          debugPrint("🔗 PREFILLED CHECKOUT URL: $checkoutUrl");
           // await provider.archiveCartToCompletedOrder();
           Navigator.push(
             // ignore: use_build_context_synchronously

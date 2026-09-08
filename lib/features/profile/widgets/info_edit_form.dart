@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/app_localizations.dart';
-import 'package:flutter_app/features/profile/models/user_profile.dart';
+import 'package:flutter_app/core/models/user_profile.dart';
 
 class InfoEditForm extends StatefulWidget {
   final UserProfile? initialProfile;
@@ -61,25 +61,14 @@ class _InfoEditFormState extends State<InfoEditForm> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // TextField(
-        //   controller: _nameController,
-        //   style: const TextStyle(color: Colors.black),
-        //   decoration: InputDecoration(
-        //     labelText: AppLocalizations.translate('field_name', widget.appLanguage),
-        //     labelStyle: TextStyle(color: Colors.black54),
-        //     border: OutlineInputBorder(),
-        //   ),
-        // ),
         Row(
           children: [
             Expanded(
               child: TextField(
                 controller: _lastNameController,
                 style: const TextStyle(color: Colors.black),
-                // decoration: const InputDecoration(labelText: 'Vezetéknév / Last Name', border: OutlineInputBorder()),
                 decoration: InputDecoration(
-                  // labelText: 'Last Name', 
-                  labelText: AppLocalizations.translate('filed_name_last', widget.appLanguage),
+                  labelText: AppLocalizations.translate('field_name_last', widget.appLanguage),
                   labelStyle: TextStyle(color: Colors.black54),
                   border: OutlineInputBorder()
                 ),
@@ -90,10 +79,8 @@ class _InfoEditFormState extends State<InfoEditForm> {
               child: TextField(
                 controller: _firstNameController,
                 style: const TextStyle(color: Colors.black),
-                // decoration: const InputDecoration(labelText: 'Keresztnév / First Name', border: OutlineInputBorder()),
                 decoration: InputDecoration(
-                  // labelText: 'First Name', 
-                  labelText: AppLocalizations.translate('filed_name_first', widget.appLanguage),
+                  labelText: AppLocalizations.translate('field_name_first', widget.appLanguage),
                   labelStyle: TextStyle(color: Colors.black54),
                   border: OutlineInputBorder()
                 ),
@@ -112,15 +99,6 @@ class _InfoEditFormState extends State<InfoEditForm> {
           ),
         ),
         const SizedBox(height: 16),
-        // TextField(
-        //   controller: _addressController,
-        //   style: const TextStyle(color: Colors.black),
-        //   maxLines: 2,
-        //   decoration: InputDecoration(
-        //     labelText: AppLocalizations.translate('field_address', widget.appLanguage),
-        //     labelStyle: TextStyle(color: Colors.black54),
-        //     border: OutlineInputBorder()),
-        // ),
         Row(
           children: [
             SizedBox(
@@ -129,9 +107,9 @@ class _InfoEditFormState extends State<InfoEditForm> {
                 controller: _zipController,
                 style: const TextStyle(color: Colors.black),
                 keyboardType: TextInputType.number,
-                // decoration: const InputDecoration(labelText: 'Irányítószám / Zip', border: OutlineInputBorder()),
-                decoration: const InputDecoration(
-                  labelText: 'Zip', 
+                decoration: InputDecoration(
+
+                  labelText: AppLocalizations.translate('field_address_zip', widget.appLanguage),
                   labelStyle: TextStyle(color: Colors.black54),
                   border: OutlineInputBorder(),
                 ),
@@ -142,9 +120,8 @@ class _InfoEditFormState extends State<InfoEditForm> {
               child: TextField(
                 controller: _cityController,
                 style: const TextStyle(color: Colors.black),
-                // decoration: const InputDecoration(labelText: 'Város / City', border: OutlineInputBorder()),
-                decoration: const InputDecoration(
-                  labelText: 'City', 
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.translate('field_address_city', widget.appLanguage),
                   labelStyle: TextStyle(color: Colors.black54),
                   border: OutlineInputBorder(),
                 ),
@@ -156,9 +133,8 @@ class _InfoEditFormState extends State<InfoEditForm> {
         TextField(
           controller: _streetController,
           style: const TextStyle(color: Colors.black),
-          // decoration: const InputDecoration(labelText: 'Utca, házszám / Street Address', border: OutlineInputBorder()),
-          decoration: const InputDecoration(
-            labelText: 'Street Address', 
+          decoration: InputDecoration(
+            labelText: AppLocalizations.translate('field_address_street', widget.appLanguage),
             labelStyle: TextStyle(color: Colors.black54),
             border: OutlineInputBorder(),
           ),
