@@ -7,10 +7,10 @@ class AppLocalizations {
     'explore_tab', 'bag_tab', 'profile_tab', 'retry_btn', 'quantity_label', 'no_description',
     'empty_cart', 'total_value', 'checkout_btn', 'clear_cart_title', 'clear_cart_body', 'clear_cart_cancel', 
     'clear_cart_confirm', 'cart_cleared_toast', 'profile_header', 'profile_info_section', 
-    'field_name', 'field_email', 'field_address', 'save_btn', 'profile_saved_toast', 
-    'order_history_shortcut', 'orders_count_suffix', 'order_history_title', 'sold_out',
-    'empty_orders', 'network_error_title', 'network_error_body', 'checkout_error', 
-    'follow_us',
+    'save_btn', 'profile_saved_toast', 'order_history_shortcut', 'orders_count_suffix', 
+    'order_history_title', 'sold_out', 'empty_orders', 'network_error_title', 'network_error_body', 
+    'checkout_error', 'follow_us', 'field_name_last', 'field_name_first', 'field_email', 'field_address_zip',
+    'field_address_city', 'field_address_street'
 };
 
   // Dictionary database matrix
@@ -67,9 +67,14 @@ class AppLocalizations {
       'profile_header': 'PROFIL BEÁLLÍTÁSOK',
       'lang_label': 'Rendszer Nyelve',
       'profile_info_section': 'SZEMÉLYES ADATOK',
-      'field_name': 'Név',
+
+      'field_name_last': 'Vezetéknév',
+      'field_name_first': 'Keresztnév',
       'field_email': 'E-mail cím',
-      'field_address': 'Szállítási cím (Irányítószám, Város, Utca)',
+      'field_address_zip': 'Irányítószám',
+      'field_address_city': 'Város',
+      'field_address_street': 'Utca, házszám',
+
       'save_btn': 'MENTÉS ÉS RÖGZÍTÉS',
       'profile_saved_toast': 'Profil adatok sikeresen mentve!',
       'order_history_shortcut': 'KORÁBBI RENDELÉSEK ELŐZMÉNYEI',
@@ -138,9 +143,14 @@ class AppLocalizations {
       'profile_header': 'PROFILE SETTINGS',
       'lang_label': 'Language',
       'profile_info_section': 'PERSONAL INFORMATION',
-      'field_name': 'Full Name',
+
+      'field_name_last': 'Last Name',
+      'field_name_first': 'First Name',
       'field_email': 'Email Address',
-      'field_address': 'Shipping Address (Zip, City, Street, Apt)',
+      'field_address_zip': 'Zip',
+      'field_address_city': 'City',
+      'field_address_street': ' Street, Apt',
+
       'save_btn': 'SAVE PROFILE CHANGES',
       'profile_saved_toast': 'Profile updates successfully saved!',
       'order_history_shortcut': 'PAST ORDERS HISTORY TRACKING',

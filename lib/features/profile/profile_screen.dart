@@ -18,9 +18,12 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final _nameController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _addressController = TextEditingController();
+  final _zipController = TextEditingController();
+  final _cityController = TextEditingController();
+  final _streetController = TextEditingController();
   bool _isEditing = false;
 
   @override
@@ -29,17 +32,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // Initialize text inputs with existing user cache on mount
     final currentProfile = Provider.of<ShopProvider>(context, listen: false).profile;
     if (currentProfile != null) {
-      _nameController.text = currentProfile.name;
-      _emailController.text = currentProfile.email;
-      _addressController.text = currentProfile.shippingAddress;
+      _firstNameController.text = currentProfile!.firstName;
+      _lastNameController.text = currentProfile.lastName;
+      _emailController.text = currentProfile!.email;
+      _zipController.text = currentProfile!.zipCode;
+      _cityController.text = currentProfile!.city;
+      _streetController.text = currentProfile.streetAddress;
     }
   }
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
     _emailController.dispose();
-    _addressController.dispose();
+    _zipController.dispose();
+    _cityController.dispose();
+    _streetController.dispose();
     super.dispose();
   }
 
@@ -61,9 +70,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 _isEditing = !_isEditing;
                 // If canceling, restore previous cached text entries
                 if (!_isEditing && shopProvider.profile != null) {
-                  _nameController.text = shopProvider.profile!.name;
+                  _firstNameController.text = shopProvider.profile!.firstName;
+                  _lastNameController.text = shopProvider.profile!.lastName;
                   _emailController.text = shopProvider.profile!.email;
-                  _addressController.text = shopProvider.profile!.shippingAddress;
+                  _zipController.text = shopProvider.profile!.zipCode;
+                  _cityController.text = shopProvider.profile!.city;
+                  _streetController.text = shopProvider.profile!.streetAddress;
                 }
               });
             },
@@ -103,8 +115,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     else 
                       InfoEditForm(
                         appLanguage: shopProvider.appLanguage,
-                        onSaved: (name, email, address) {
-                          shopProvider.saveProfile(name, email, address);
+                        onSaved: ({
+                          required firstName, 
+                          required lastName, 
+                          required email, 
+                          required zipCode, 
+                          required city, 
+                          required streetAddress
+                        }) {
+                          // shopProvider.saveProfile(name, email, address);
+                          shopProvider.saveProfile;
                           setState(() => _isEditing = false);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(

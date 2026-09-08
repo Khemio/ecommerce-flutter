@@ -217,8 +217,22 @@ class ShopProvider with ChangeNotifier {
   }
 
   // State mutations
-  Future<void> saveProfile(String name, String email, String shippingAddress) async {
-    _profile = UserProfile(name: name, email: email, shippingAddress: shippingAddress);
+  Future<void> saveProfile({
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String zipCode,
+    required String city,
+    required String streetAddress,
+  }) async {
+    _profile = UserProfile(
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      zipCode: zipCode,
+      city: city,
+      streetAddress: streetAddress,
+    );
     await _saveProfileToDisk();
     notifyListeners();
   }

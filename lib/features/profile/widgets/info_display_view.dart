@@ -10,9 +10,9 @@ class InfoDisplayView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final name = profile?.name.isEmpty ?? true ? '-' : profile!.name;
+    final name = profile?.fullName.isEmpty ?? true ? '-' : profile!.fullName;
     final email = profile?.email.isEmpty ?? true ? '-' : profile!.email;
-    final address = profile?.shippingAddress.isEmpty ?? true ? '-' : profile!.shippingAddress;
+    final address = profile?.fullAddress.isEmpty ?? true ? '-' : profile!.fullAddress;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

@@ -5,7 +5,15 @@ import 'package:flutter_app/features/profile/models/user_profile.dart';
 class InfoEditForm extends StatefulWidget {
   final UserProfile? initialProfile;
   final String appLanguage;
-  final Function(String name, String email, String address) onSaved;
+  final Function({
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String zipCode,
+    required String city,
+    required String streetAddress,
+  }) onSaved;
+
 
   const InfoEditForm({super.key, 
     this.initialProfile, 
@@ -18,40 +26,80 @@ class InfoEditForm extends StatefulWidget {
 }
 
 class _InfoEditFormState extends State<InfoEditForm> {
-  final _nameController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _addressController = TextEditingController();
+  final _zipController = TextEditingController();
+  final _cityController = TextEditingController();
+  final _streetController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
 
     if (widget.initialProfile != null) {
-      _nameController.text = widget.initialProfile!.name;
+      _firstNameController.text = widget.initialProfile!.firstName;
+      _lastNameController.text = widget.initialProfile!.lastName;
       _emailController.text = widget.initialProfile!.email;
-      _addressController.text = widget.initialProfile!.shippingAddress;
+      _zipController.text = widget.initialProfile!.zipCode;
+      _cityController.text = widget.initialProfile!.city;
+      _streetController.text = widget.initialProfile!.streetAddress;
     }
   }
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
     _emailController.dispose();
-    _addressController.dispose();
+    _zipController.dispose();
+    _cityController.dispose();
+    _streetController.dispose();
     super.dispose();
   }
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        TextField(
-          controller: _nameController,
-          style: const TextStyle(color: Colors.black),
-          decoration: InputDecoration(
-            labelText: AppLocalizations.translate('field_name', widget.appLanguage),
-            labelStyle: TextStyle(color: Colors.black54),
-            border: OutlineInputBorder(),
-          ),
+        // TextField(
+        //   controller: _nameController,
+        //   style: const TextStyle(color: Colors.black),
+        //   decoration: InputDecoration(
+        //     labelText: AppLocalizations.translate('field_name', widget.appLanguage),
+        //     labelStyle: TextStyle(color: Colors.black54),
+        //     border: OutlineInputBorder(),
+        //   ),
+        // ),
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _lastNameController,
+                style: const TextStyle(color: Colors.black),
+                // decoration: const InputDecoration(labelText: 'Vezetéknév / Last Name', border: OutlineInputBorder()),
+                decoration: InputDecoration(
+                  // labelText: 'Last Name', 
+                  labelText: AppLocalizations.translate('filed_name_last', widget.appLanguage),
+                  labelStyle: TextStyle(color: Colors.black54),
+                  border: OutlineInputBorder()
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: TextField(
+                controller: _firstNameController,
+                style: const TextStyle(color: Colors.black),
+                // decoration: const InputDecoration(labelText: 'Keresztnév / First Name', border: OutlineInputBorder()),
+                decoration: InputDecoration(
+                  // labelText: 'First Name', 
+                  labelText: AppLocalizations.translate('filed_name_first', widget.appLanguage),
+                  labelStyle: TextStyle(color: Colors.black54),
+                  border: OutlineInputBorder()
+                ),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 16),
         TextField(
@@ -64,14 +112,56 @@ class _InfoEditFormState extends State<InfoEditForm> {
           ),
         ),
         const SizedBox(height: 16),
+        // TextField(
+        //   controller: _addressController,
+        //   style: const TextStyle(color: Colors.black),
+        //   maxLines: 2,
+        //   decoration: InputDecoration(
+        //     labelText: AppLocalizations.translate('field_address', widget.appLanguage),
+        //     labelStyle: TextStyle(color: Colors.black54),
+        //     border: OutlineInputBorder()),
+        // ),
+        Row(
+          children: [
+            SizedBox(
+              width: 100,
+              child: TextField(
+                controller: _zipController,
+                style: const TextStyle(color: Colors.black),
+                keyboardType: TextInputType.number,
+                // decoration: const InputDecoration(labelText: 'Irányítószám / Zip', border: OutlineInputBorder()),
+                decoration: const InputDecoration(
+                  labelText: 'Zip', 
+                  labelStyle: TextStyle(color: Colors.black54),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: TextField(
+                controller: _cityController,
+                style: const TextStyle(color: Colors.black),
+                // decoration: const InputDecoration(labelText: 'Város / City', border: OutlineInputBorder()),
+                decoration: const InputDecoration(
+                  labelText: 'City', 
+                  labelStyle: TextStyle(color: Colors.black54),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
         TextField(
-          controller: _addressController,
+          controller: _streetController,
           style: const TextStyle(color: Colors.black),
-          maxLines: 2,
-          decoration: InputDecoration(
-            labelText: AppLocalizations.translate('field_address', widget.appLanguage),
+          // decoration: const InputDecoration(labelText: 'Utca, házszám / Street Address', border: OutlineInputBorder()),
+          decoration: const InputDecoration(
+            labelText: 'Street Address', 
             labelStyle: TextStyle(color: Colors.black54),
-            border: OutlineInputBorder()),
+            border: OutlineInputBorder(),
+          ),
         ),
         const SizedBox(height: 20),
 
@@ -82,9 +172,12 @@ class _InfoEditFormState extends State<InfoEditForm> {
           ),
           onPressed: () {
             widget.onSaved(
-              _nameController.text, 
-              _emailController.text, 
-              _addressController.text
+              firstName: _firstNameController.text,
+              lastName: _lastNameController.text,
+              email: _emailController.text,
+              zipCode: _zipController.text,
+              city: _cityController.text,
+              streetAddress: _streetController.text,
             );
           },
 
