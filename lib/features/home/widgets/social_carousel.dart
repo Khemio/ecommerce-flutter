@@ -3,10 +3,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
-// import 'package:cached_network_image/cached_network_image.dart';
 
-import 'package:flutter_app/app_localizations.dart';
-import 'package:flutter_app/core/providers/shop_provider.dart';
+import 'package:azkomoly_app/app_localizations.dart';
+import 'package:azkomoly_app/core/widgets/custom_image.dart';
+import 'package:azkomoly_app/core/providers/shop_provider.dart';
 
 import '../models/social_review_data.dart';
 
@@ -70,14 +70,8 @@ class SocialCarousel extends StatelessWidget {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(10),
-                        // child: CachedNetworkImage(
-                        //   imageUrl: imageUrl,
-                        //   fit: BoxFit.cover,
-                        //   errorWidget: (c, u, e) => const Icon(Icons.broken_image, size: 50),
-                        // ),
-                        child: Image.asset(
-                          // 'assets/${item.thumbnailUrl}',
-                          item.thumbnailUrl,
+                        child: CustomImage(
+                          source: item.thumbnailUrl,
                           height: double.infinity,
                           width: double.infinity,
                           fit: BoxFit.cover,

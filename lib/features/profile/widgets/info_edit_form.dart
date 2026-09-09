@@ -1,11 +1,20 @@
+import 'package:azkomoly_app/core/models/shipping_address.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/app_localizations.dart';
-import 'package:flutter_app/features/profile/models/user_profile.dart';
+import 'package:azkomoly_app/app_localizations.dart';
+import 'package:azkomoly_app/core/models/user_profile.dart';
 
 class InfoEditForm extends StatefulWidget {
   final UserProfile? initialProfile;
   final String appLanguage;
-  final Function(String name, String email, String address) onSaved;
+  final Function({
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String zipCode,
+    required String city,
+    required String streetAddress,
+  }) onSaved;
+
 
   const InfoEditForm({super.key, 
     this.initialProfile, 
@@ -18,40 +27,67 @@ class InfoEditForm extends StatefulWidget {
 }
 
 class _InfoEditFormState extends State<InfoEditForm> {
-  final _nameController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _addressController = TextEditingController();
+  final _zipController = TextEditingController();
+  final _cityController = TextEditingController();
+  final _streetController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
 
     if (widget.initialProfile != null) {
-      _nameController.text = widget.initialProfile!.name;
+      _firstNameController.text = widget.initialProfile!.firstName;
+      _lastNameController.text = widget.initialProfile!.lastName;
       _emailController.text = widget.initialProfile!.email;
-      _addressController.text = widget.initialProfile!.shippingAddress;
+      _zipController.text = widget.initialProfile!.zipCode;
+      _cityController.text = widget.initialProfile!.city;
+      _streetController.text = widget.initialProfile!.streetAddress;
     }
   }
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
     _emailController.dispose();
-    _addressController.dispose();
+    _zipController.dispose();
+    _cityController.dispose();
+    _streetController.dispose();
     super.dispose();
   }
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        TextField(
-          controller: _nameController,
-          style: const TextStyle(color: Colors.black),
-          decoration: InputDecoration(
-            labelText: AppLocalizations.translate('field_name', widget.appLanguage),
-            labelStyle: TextStyle(color: Colors.black54),
-            border: OutlineInputBorder(),
-          ),
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _lastNameController,
+                style: const TextStyle(color: Colors.black),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.translate('field_name_last', widget.appLanguage),
+                  labelStyle: TextStyle(color: Colors.black54),
+                  border: OutlineInputBorder()
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: TextField(
+                controller: _firstNameController,
+                style: const TextStyle(color: Colors.black),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.translate('field_name_first', widget.appLanguage),
+                  labelStyle: TextStyle(color: Colors.black54),
+                  border: OutlineInputBorder()
+                ),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 16),
         TextField(
@@ -64,14 +100,45 @@ class _InfoEditFormState extends State<InfoEditForm> {
           ),
         ),
         const SizedBox(height: 16),
+        Row(
+          children: [
+            SizedBox(
+              width: 100,
+              child: TextField(
+                controller: _zipController,
+                style: const TextStyle(color: Colors.black),
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+
+                  labelText: AppLocalizations.translate('field_address_zip', widget.appLanguage),
+                  labelStyle: TextStyle(color: Colors.black54),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: TextField(
+                controller: _cityController,
+                style: const TextStyle(color: Colors.black),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.translate('field_address_city', widget.appLanguage),
+                  labelStyle: TextStyle(color: Colors.black54),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
         TextField(
-          controller: _addressController,
+          controller: _streetController,
           style: const TextStyle(color: Colors.black),
-          maxLines: 2,
           decoration: InputDecoration(
-            labelText: AppLocalizations.translate('field_address', widget.appLanguage),
+            labelText: AppLocalizations.translate('field_address_street', widget.appLanguage),
             labelStyle: TextStyle(color: Colors.black54),
-            border: OutlineInputBorder()),
+            border: OutlineInputBorder(),
+          ),
         ),
         const SizedBox(height: 20),
 
@@ -81,10 +148,15 @@ class _InfoEditFormState extends State<InfoEditForm> {
             foregroundColor: Colors.white,
           ),
           onPressed: () {
+            if (!_areInputsValid()) return;
+            
             widget.onSaved(
-              _nameController.text, 
-              _emailController.text, 
-              _addressController.text
+              firstName: _firstNameController.text,
+              lastName: _lastNameController.text,
+              email: _emailController.text,
+              zipCode: _zipController.text,
+              city: _cityController.text,
+              streetAddress: _streetController.text,
             );
           },
 
@@ -93,5 +165,59 @@ class _InfoEditFormState extends State<InfoEditForm> {
       ]
     );
   }
+
+  bool _areInputsValid() {
+    String errorMsg = '';
+    final String lastNameInput = _lastNameController.text.trim();
+    final String firstNameInput = _firstNameController.text.trim();
+    final String emailInput = _emailController.text.trim();
+
+    if (lastNameInput.isEmpty || firstNameInput.isEmpty) {
+      errorMsg = AppLocalizations.translate('input_error_name', widget.appLanguage);
+      _showErrorSnackbar(context, errorMsg);
+      return false;
+    }
+
+    if (emailInput.isEmpty) {
+      errorMsg = AppLocalizations.translate('input_error_email_empty', widget.appLanguage);
+      _showErrorSnackbar(context, errorMsg);
+      return false;
+    }
+
+    final RegExp emailRegex = RegExp(
+      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+"
+    );
+    if (!emailRegex.hasMatch(emailInput)) {
+      errorMsg = AppLocalizations.translate('input_error_email_format', widget.appLanguage);
+      _showErrorSnackbar(context, errorMsg);
+      return false;
+    }
+
+    final testAddress = ShippingAddress(
+      zipCode: _zipController.text,
+      city: _cityController.text,
+      streetAddress: _streetController.text,
+    );
+
+    final String? addressValidationError = testAddress.validate();
+
+    if (addressValidationError != null) {
+      errorMsg = AppLocalizations.translate(addressValidationError, widget.appLanguage);
+      _showErrorSnackbar(context, errorMsg);
+      return false;
+    }
+
+    return true;
+  }
+
+  void _showErrorSnackbar(BuildContext context, String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.redAccent,
+      behavior: SnackBarBehavior.floating,
+    ),
+  );
+}
 
 }

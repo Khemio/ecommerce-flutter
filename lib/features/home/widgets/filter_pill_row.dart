@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:flutter_app/app_localizations.dart';
-import 'package:flutter_app/app_theme.dart';
-import 'package:flutter_app/core/providers/shop_provider.dart';
+import 'package:azkomoly_app/app_localizations.dart';
+import 'package:azkomoly_app/app_theme.dart';
+import 'package:azkomoly_app/core/providers/shop_provider.dart';
 
 //TODO: Remake dropdowns to support Themes
 class FilterPillRow extends StatelessWidget {
@@ -12,9 +12,14 @@ class FilterPillRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final shopProvider = Provider.of<ShopProvider>(context);
+    final bool canFilterType = shopProvider.isTypeFilteringEnabled;
+    final bool canFilterVendor = shopProvider.isVendorFilteringEnabled;
     
     return  Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+    // return SingleChildScrollView(
+    // scrollDirection: Axis.horizontal,
+    // padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -24,7 +29,11 @@ class FilterPillRow extends StatelessWidget {
             dropdownColor: AppTheme.brandViolet,
             underline: const SizedBox(),
             onChanged: (String? newSort) {
-              shopProvider.updateFilters(vendor: shopProvider.selectedVendorFilter, sort: newSort ?? 'None');
+              shopProvider.updateFilters(
+                productType: shopProvider.selectedTypeFilter, 
+                vendor: shopProvider.selectedVendorFilter, 
+                sort: newSort ?? 'None'
+              );
             },
             items: [
               DropdownMenuItem(
@@ -55,14 +64,54 @@ class FilterPillRow extends StatelessWidget {
             ],
           ),
 
-          DropdownButton<String>(
-            value: shopProvider.selectedVendorFilter,
-            icon: const Icon(Icons.filter_alt_outlined, color: AppTheme.backgroundWhite),
+          ?canFilterType
+          ? DropdownButton<String>(
+            value: shopProvider.selectedTypeFilter,
+            icon: Icon(Icons.filter_alt_outlined, color: canFilterType ? AppTheme.backgroundWhite : Colors.grey),
             dropdownColor: AppTheme.brandViolet,
             underline: const SizedBox(),
-            onChanged: (String? newVendor) {
-              shopProvider.updateFilters(vendor: newVendor ?? 'All', sort: shopProvider.selectedSortOrder);
-            },
+            onChanged: canFilterType
+            ? (String? newType) {
+                shopProvider.updateFilters(
+                  productType: newType ?? 'All', 
+                  vendor: shopProvider.selectedVendorFilter,
+                  sort: shopProvider.selectedSortOrder
+                );
+              }
+            : null,
+            items: shopProvider.uniqueProductTypes.map((String vendor) {
+              // return DropdownMenuItem(value: vendor, child: Text(vendor.toUpperCase(), style: TextStyle(color: AppTheme.backgroundWhite)));
+              final String displayTitle = vendor == 'All' 
+                ? AppLocalizations.translate('all_products', shopProvider.appLanguage) 
+                : vendor.toUpperCase();
+
+              return DropdownMenuItem(
+                value: vendor, 
+                child: Text(
+                    displayTitle, 
+                    style: TextStyle(color: canFilterType ? AppTheme.backgroundWhite : Colors.grey
+                  )
+                ),
+              );
+            }).toList(),
+          )
+          : null,
+
+          ?canFilterVendor
+          ? DropdownButton<String>(
+            value: shopProvider.selectedTypeFilter,
+            icon: Icon(Icons.filter_alt_outlined, color: canFilterVendor ? AppTheme.backgroundWhite : Colors.grey),
+            dropdownColor: AppTheme.brandViolet,
+            underline: const SizedBox(),
+            onChanged: canFilterVendor
+            ? (String? newVendor) {
+                shopProvider.updateFilters(
+                  productType: shopProvider.selectedTypeFilter, 
+                  vendor: newVendor ?? 'All',
+                  sort: shopProvider.selectedSortOrder
+                );
+              }
+            : null,
             items: shopProvider.uniqueVendors.map((String vendor) {
               // return DropdownMenuItem(value: vendor, child: Text(vendor.toUpperCase(), style: TextStyle(color: AppTheme.backgroundWhite)));
               final String displayTitle = vendor == 'All' 
@@ -71,10 +120,15 @@ class FilterPillRow extends StatelessWidget {
 
               return DropdownMenuItem(
                 value: vendor, 
-                child: Text(displayTitle, style: const TextStyle(color: AppTheme.backgroundWhite)),
+                child: Text(
+                    displayTitle, 
+                    style: TextStyle(color: canFilterVendor ? AppTheme.backgroundWhite : Colors.grey
+                  )
+                ),
               );
             }).toList(),
-          ),
+          )
+          : null,
         ],
       ),
     );

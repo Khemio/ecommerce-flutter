@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:flutter_app/core/providers/shop_provider.dart';
-import 'package:flutter_app/features/cart/cart.dart' show CartScreen;
+import 'package:azkomoly_app/core/providers/shop_provider.dart';
+import 'package:azkomoly_app/features/cart/cart.dart' show CartScreen;
 
 class CartButton extends StatelessWidget {
   const CartButton({super.key});

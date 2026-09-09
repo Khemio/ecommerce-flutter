@@ -1,5 +1,5 @@
-import 'package:flutter_app/core/models/banner_items.dart';
-import 'package:flutter_app/features/home/models/social_review_data.dart';
+import 'package:azkomoly_app/core/models/banner_items.dart';
+import 'package:azkomoly_app/features/home/models/social_review_data.dart';
 
 class AppLayoutConfig {
   final bool isPromoCarouselEnabled;

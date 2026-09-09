@@ -1,6 +1,7 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/core/models/product.dart';
+
+import 'package:azkomoly_app/core/models/product.dart';
+import 'package:azkomoly_app/core/widgets/custom_image.dart';
 
 class DetailHeroImage extends StatelessWidget {
   final Product product;
@@ -14,11 +15,9 @@ class DetailHeroImage extends StatelessWidget {
       width: double.infinity,
       child: Hero(
         tag: 'box_${product.id}', 
-        child: CachedNetworkImage(
-          imageUrl: product.imageUrl,
+        child: CustomImage(
+          source: product.imageUrl,
           fit: BoxFit.cover,
-          placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
-          errorWidget: (context, url, error) => const Icon(Icons.broken_image, size: 80),
         ),
       ),
     );

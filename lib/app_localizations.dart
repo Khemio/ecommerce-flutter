@@ -3,14 +3,16 @@ class AppLocalizations {
     'title', 'choose_box', 'add_to_bag', 'cart_title', 'checkout', 'select_size', 
     'box_image', 'how_much', 'description', 'default_description', 'order_success', 
     'secure_checkout', 'cart_empty', 'total', 'socials_title', 'sort_default', 
-    'price_low_high', 'price_high_low', 'all_vendors', 'lang_label','added_to_bag_msg',
+    'price_low_high', 'price_high_low', 'all_products', 'all_vendors', 'lang_label','added_to_bag_msg',
     'explore_tab', 'bag_tab', 'profile_tab', 'retry_btn', 'quantity_label', 'no_description',
     'empty_cart', 'total_value', 'checkout_btn', 'clear_cart_title', 'clear_cart_body', 'clear_cart_cancel', 
     'clear_cart_confirm', 'cart_cleared_toast', 'profile_header', 'profile_info_section', 
-    'field_name', 'field_email', 'field_address', 'save_btn', 'profile_saved_toast', 
-    'order_history_shortcut', 'orders_count_suffix', 'order_history_title', 
-    'empty_orders', 'network_error_title', 'network_error_body', 'checkout_error', 
-
+    'save_btn', 'profile_saved_toast', 'order_history_shortcut', 'orders_count_suffix', 
+    'order_history_title', 'sold_out', 'empty_orders', 'network_error_title', 'network_error_body', 
+    'checkout_error', 'follow_us', 'field_name_last', 'field_name_first', 'field_email', 'field_address_zip',
+    'field_address_city', 'field_address_street', 'field_name', 'field_address', 'input_error_name',
+    'input_error_email_empty', 'input_error_email_format', 'input_error_address_city', 'input_error_address_street', 
+    'input_error_address_zip_empty', 'input_error_address_zip_invalid', 
 };
 
   // Dictionary database matrix
@@ -37,10 +39,12 @@ class AppLocalizations {
        // Home Screen / Explore View Elements
       'choose_box': 'VÁLASSZ REJTÉLYES DOBOZT',
       'socials_title': '#AZKOMOLY · OSSZA MEG',
+      'all_products': 'MINDEN TERMÉK',
       'all_vendors': 'MINDEN MÁRKA',
       'sort_default': 'Rendezés: Alap',
       'price_low_high': 'Ár: Olcsóbbak elöl',
       'price_high_low': 'Ár: Drágábbak elöl',
+      'sold_out': 'ELFOGYOTT',
 
       // Detail Screen Page Elements
       'add_to_bag': 'DOBOZ HOZZÁADÁSA A TASAKHOZ',
@@ -65,13 +69,30 @@ class AppLocalizations {
       'profile_header': 'PROFIL BEÁLLÍTÁSOK',
       'lang_label': 'Rendszer Nyelve',
       'profile_info_section': 'SZEMÉLYES ADATOK',
-      'field_name': 'Név',
+
+      'field_name': 'Teljes Név',
+      'field_name_last': 'Vezetéknév',
+      'field_name_first': 'Keresztnév',
       'field_email': 'E-mail cím',
-      'field_address': 'Szállítási cím (Irányítószám, Város, Utca)',
+      'field_address': 'Szállítási cím',
+      'field_address_zip': 'Irányítószám',
+      'field_address_city': 'Város',
+      'field_address_street': 'Utca, házszám',
+
+      'input_error_name': 'A név mezők kitöltése kötelező',
+      'input_error_email_empty': 'E-mail cím megadása kötelező',
+      'input_error_email_format': 'Érvénytelen e-mail cím formátum',
+      'input_error_address_city': 'Város megadása kötelező',
+      'input_error_address_street': 'Utca, házszám megadása kötelező',
+      'input_error_address_zip_empty': 'Irányítószám megadása kötelező',
+      'input_error_address_zip_invalid': 'Érvénytelen irányítószám (4 számjegy szükséges)',
+
       'save_btn': 'MENTÉS ÉS RÖGZÍTÉS',
       'profile_saved_toast': 'Profil adatok sikeresen mentve!',
       'order_history_shortcut': 'KORÁBBI RENDELÉSEK ELŐZMÉNYEI',
       'orders_count_suffix': '{count} db korábbi tranzakció',
+      'follow_us': 'KÖVESS MINKET',
+
 
       // Order History Screen Page Elements
       'order_history_title': 'Rendelési Előzmények',
@@ -108,7 +129,9 @@ class AppLocalizations {
       'sort_default': 'Sort: Default',
       'price_low_high': 'Price: Low to High',
       'price_high_low': 'Price: High to Low',
-      'all_vendors': 'ALL BRANDS',
+      'all_products': 'ALL PRODUCTS',
+      'all_vendors': 'ALL VENDORS',
+      'sold_out': 'SOLD OUT',
 
       // Detail Screen Page Elements
       'add_to_bag': 'ADD MYSTERY BOX TO BAG',
@@ -133,13 +156,29 @@ class AppLocalizations {
       'profile_header': 'PROFILE SETTINGS',
       'lang_label': 'Language',
       'profile_info_section': 'PERSONAL INFORMATION',
+
       'field_name': 'Full Name',
+      'field_name_last': 'Last Name',
+      'field_name_first': 'First Name',
       'field_email': 'Email Address',
-      'field_address': 'Shipping Address (Zip, City, Street, Apt)',
+      'field_address': 'Shipping Address',
+      'field_address_zip': 'Zip',
+      'field_address_city': 'City',
+      'field_address_street': ' Street, Apt',
+
+      'input_error_name': 'Name fields are required',
+      'input_error_email_empty': 'Email is required',
+      'input_error_email_format': 'Invalid email format',
+      'input_error_address_city': 'City is required',
+      'input_error_address_street': 'Street address is required',
+      'input_error_address_zip_empty': 'Zip code is required',
+      'input_error_address_zip_invalid': 'Invalid 4-digit zip code',
+
       'save_btn': 'SAVE PROFILE CHANGES',
       'profile_saved_toast': 'Profile updates successfully saved!',
       'order_history_shortcut': 'PAST ORDERS HISTORY TRACKING',
       'orders_count_suffix': '{count} past transaction records',
+      'follow_us': 'FOLLOW US',
 
       // Order History Screen Page Elements
       'order_history_title': 'Order History',

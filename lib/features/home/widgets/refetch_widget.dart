@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_app/app_localizations.dart';
+import 'package:azkomoly_app/app_localizations.dart';
 
 class RefetchWidget extends StatelessWidget {
   final String appLanguage;

@@ -1,9 +1,9 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/core/utils/num_extentions.dart';
+import 'package:azkomoly_app/core/utils/num_extentions.dart';
+import 'package:azkomoly_app/core/widgets/custom_image.dart';
 
-import 'package:flutter_app/core/widgets/quantity_selector.dart';
-import 'package:flutter_app/features/profile/models/order_history.dart';
+import 'package:azkomoly_app/core/widgets/quantity_selector.dart';
+import 'package:azkomoly_app/features/profile/models/order_history.dart';
 
 class CartItemTile extends StatelessWidget{
   final CartItem item;
@@ -26,10 +26,9 @@ class CartItemTile extends StatelessWidget{
         leading: SizedBox(
           width: 50,
           height: 50,
-          child: CachedNetworkImage(
-            imageUrl: product.imageUrl,
+          child: CustomImage(
+            source: product.imageUrl,
             fit: BoxFit.cover,
-            errorWidget: (c, u, e) => const Icon(Icons.broken_image),
           ),
         ),
         title: Text(product.title, maxLines: 1, overflow: TextOverflow.ellipsis),

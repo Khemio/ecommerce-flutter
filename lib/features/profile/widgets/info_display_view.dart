@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/app_localizations.dart';
-import 'package:flutter_app/features/profile/models/user_profile.dart';
+import 'package:azkomoly_app/app_localizations.dart';
+import 'package:azkomoly_app/core/models/user_profile.dart';
 
 class InfoDisplayView extends StatelessWidget {
   final UserProfile? profile;
@@ -10,9 +10,9 @@ class InfoDisplayView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final name = profile?.name.isEmpty ?? true ? '-' : profile!.name;
+    final name = profile?.fullName.isEmpty ?? true ? '-' : profile!.fullName;
     final email = profile?.email.isEmpty ?? true ? '-' : profile!.email;
-    final address = profile?.shippingAddress.isEmpty ?? true ? '-' : profile!.shippingAddress;
+    final address = profile?.fullAddress.isEmpty ?? true ? '-' : profile!.fullAddress;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

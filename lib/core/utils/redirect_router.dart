@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:flutter_app/core/providers/shop_provider.dart';
-import 'package:flutter_app/features/details/detail_screen.dart';
+import 'package:azkomoly_app/core/providers/shop_provider.dart';
+import 'package:azkomoly_app/features/details/detail_screen.dart';
 
 class RedirectRouter {
   /// Parses an incoming redirect path string and handles native navigation.
