@@ -10,7 +10,9 @@ class AppLocalizations {
     'save_btn', 'profile_saved_toast', 'order_history_shortcut', 'orders_count_suffix', 
     'order_history_title', 'sold_out', 'empty_orders', 'network_error_title', 'network_error_body', 
     'checkout_error', 'follow_us', 'field_name_last', 'field_name_first', 'field_email', 'field_address_zip',
-    'field_address_city', 'field_address_street', 'field_name', 'field_address',
+    'field_address_city', 'field_address_street', 'field_name', 'field_address', 'input_error_name',
+    'input_error_email_empty', 'input_error_email_format', 'input_error_address_city', 'input_error_address_street', 
+    'input_error_address_zip_empty', 'input_error_address_zip_invalid', 
 };
 
   // Dictionary database matrix
@@ -77,11 +79,20 @@ class AppLocalizations {
       'field_address_city': 'Város',
       'field_address_street': 'Utca, házszám',
 
+      'input_error_name': 'A név mezők kitöltése kötelező',
+      'input_error_email_empty': 'E-mail cím megadása kötelező',
+      'input_error_email_format': 'Érvénytelen e-mail cím formátum',
+      'input_error_address_city': 'Város megadása kötelező',
+      'input_error_address_street': 'Utca, házszám megadása kötelező',
+      'input_error_address_zip_empty': 'Irányítószám megadása kötelező',
+      'input_error_address_zip_invalid': 'Érvénytelen irányítószám (4 számjegy szükséges)',
+
       'save_btn': 'MENTÉS ÉS RÖGZÍTÉS',
       'profile_saved_toast': 'Profil adatok sikeresen mentve!',
       'order_history_shortcut': 'KORÁBBI RENDELÉSEK ELŐZMÉNYEI',
       'orders_count_suffix': '{count} db korábbi tranzakció',
       'follow_us': 'KÖVESS MINKET',
+
 
       // Order History Screen Page Elements
       'order_history_title': 'Rendelési Előzmények',
@@ -154,6 +165,14 @@ class AppLocalizations {
       'field_address_zip': 'Zip',
       'field_address_city': 'City',
       'field_address_street': ' Street, Apt',
+
+      'input_error_name': 'Name fields are required',
+      'input_error_email_empty': 'Email is required',
+      'input_error_email_format': 'Invalid email format',
+      'input_error_address_city': 'City is required',
+      'input_error_address_street': 'Street address is required',
+      'input_error_address_zip_empty': 'Zip code is required',
+      'input_error_address_zip_invalid': 'Invalid 4-digit zip code',
 
       'save_btn': 'SAVE PROFILE CHANGES',
       'profile_saved_toast': 'Profile updates successfully saved!',

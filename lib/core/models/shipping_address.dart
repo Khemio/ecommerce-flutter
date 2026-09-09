@@ -15,14 +15,13 @@ class ShippingAddress {
     get addressParts => (zipCode: zipCode, city: city, streetAddress: streetAddress);
 
   String? validate() {
-    if (zipCode.trim().isEmpty) return 'Zip code is required';
-    if (city.trim().isEmpty) return 'City field is required';
-    if (streetAddress.trim().isEmpty) return 'Street address is required';
+    if (zipCode.trim().isEmpty) return 'input_error_address_zip_empty';
+    if (city.trim().isEmpty) return 'input_error_address_city';
+    if (streetAddress.trim().isEmpty) return 'input_error_address_street';
     
-    // Quick physical numeric constraints check for Hungarian zip lengths (4 digits)
     final hufZipRegex = RegExp(r'^\d{4}$');
     if (!hufZipRegex.hasMatch(zipCode.trim())) {
-      return 'Please enter a valid 4-digit zip code';
+      return 'input_error_address_zip_invalid';
     }
     
     return null; // Valid state

@@ -1,3 +1,4 @@
+import 'package:azkomoly_app/core/models/shipping_address.dart';
 import 'package:flutter/material.dart';
 import 'package:azkomoly_app/app_localizations.dart';
 import 'package:azkomoly_app/core/models/user_profile.dart';
@@ -147,6 +148,8 @@ class _InfoEditFormState extends State<InfoEditForm> {
             foregroundColor: Colors.white,
           ),
           onPressed: () {
+            if (!_areInputsValid()) return;
+            
             widget.onSaved(
               firstName: _firstNameController.text,
               lastName: _lastNameController.text,
@@ -162,5 +165,59 @@ class _InfoEditFormState extends State<InfoEditForm> {
       ]
     );
   }
+
+  bool _areInputsValid() {
+    String errorMsg = '';
+    final String lastNameInput = _lastNameController.text.trim();
+    final String firstNameInput = _firstNameController.text.trim();
+    final String emailInput = _emailController.text.trim();
+
+    if (lastNameInput.isEmpty || firstNameInput.isEmpty) {
+      errorMsg = AppLocalizations.translate('input_error_name', widget.appLanguage);
+      _showErrorSnackbar(context, errorMsg);
+      return false;
+    }
+
+    if (emailInput.isEmpty) {
+      errorMsg = AppLocalizations.translate('input_error_email_empty', widget.appLanguage);
+      _showErrorSnackbar(context, errorMsg);
+      return false;
+    }
+
+    final RegExp emailRegex = RegExp(
+      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+"
+    );
+    if (!emailRegex.hasMatch(emailInput)) {
+      errorMsg = AppLocalizations.translate('input_error_email_format', widget.appLanguage);
+      _showErrorSnackbar(context, errorMsg);
+      return false;
+    }
+
+    final testAddress = ShippingAddress(
+      zipCode: _zipController.text,
+      city: _cityController.text,
+      streetAddress: _streetController.text,
+    );
+
+    final String? addressValidationError = testAddress.validate();
+
+    if (addressValidationError != null) {
+      errorMsg = AppLocalizations.translate(addressValidationError, widget.appLanguage);
+      _showErrorSnackbar(context, errorMsg);
+      return false;
+    }
+
+    return true;
+  }
+
+  void _showErrorSnackbar(BuildContext context, String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.redAccent,
+      behavior: SnackBarBehavior.floating,
+    ),
+  );
+}
 
 }
