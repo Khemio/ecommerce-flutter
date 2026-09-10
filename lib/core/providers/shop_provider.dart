@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_client_sse/constants/sse_request_type_enum.dart';
+import 'package:flutter_client_sse/flutter_client_sse.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:uuid/uuid.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'dart:ui' as ui;
@@ -24,7 +27,9 @@ class ShopProvider with ChangeNotifier {
   UserProfile? _profile;
   bool _isLoading = false;
   Timer? _cartSaveTimer;
-
+  StreamSubscription? _sseStreamSubscription;
+  String? _clientID;
+  // String _clientID = const Uuid().v4();
 
   String get appLanguage => _appLanguage;
   List<Product> get products => _products;
@@ -33,17 +38,20 @@ class ShopProvider with ChangeNotifier {
   List<OrderHistoryItem> get orderHistory => _orders.values.toList();
   UserProfile? get profile => _profile;
   bool get isLoading => _isLoading;
+  String get clientId => _clientID ??= const Uuid().v4(); 
+  //   return _clientID;
+  // }
+  
+  // String get clientId => _clientID ;
 
   String _selectedTypeFilter = 'All';
   String _selectedVendorFilter = 'All';
 
-  // String _selectedCategoryFilter = 'All';
   String _selectedSortOrder = 'None'; // 'None', 'LowToHigh', 'HighToLow'
 
   String get selectedTypeFilter => _selectedTypeFilter;
   String get selectedVendorFilter => _selectedVendorFilter;
 
-  // String get selectedCategoryFilter => _selectedCategoryFilter;
   String get selectedSortOrder => _selectedSortOrder;
 
   AppLayoutConfig _layoutConfig = AppLayoutConfig(
@@ -101,13 +109,11 @@ class ShopProvider with ChangeNotifier {
     }
   }
 
-  // 1. Isolate clean, unique Product Types out of the catalog payload
   List<String> get uniqueProductTypes {
     final types = _products.map((p) => p.productType.trim()).where((t) => t.isNotEmpty).toSet().toList();
     return ['All', ...types];
   }
 
-  // 2. Isolate clean, unique Vendor/Brand tags out of the catalog payload
   List<String> get uniqueVendors {
     // Assumes you add an explicit 'vendor' String field to your Product model later
     final vendors = _products.map((p) => p.vendor.trim()).where((v) => v.isNotEmpty).toSet().toList();
@@ -193,6 +199,39 @@ class ShopProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void listenToOrderCompletion() {
+    // Cancel any previous active streams to prevent memory leaks
+    _sseStreamSubscription?.cancel();
+
+    debugPrint('Listening...');
+
+    // Connect to your permanent server SSE stream route endpoint
+    _sseStreamSubscription = SSEClient.subscribeToSSE(
+      method: SSERequestType.GET,
+      url: "${AppConfig.orderEndpoint}?clientId=$clientId",
+      header: {
+        "Accept": "text/event-stream",
+        "Cache-Control": "no-cache",
+      },
+    ).listen((event) async {
+      if (event.data != null) {
+        debugPrint("🔔 Real-time Order Payload Received via SSE: ${event.data}");
+        
+        final Map<String, dynamic> remoteOrderJson = json.decode(event.data!);
+        
+        await archiveCartToCompletedOrder(remoteOrderJson['orderId']); 
+        
+        stopListeningToOrders();
+      }
+    });
+  }
+
+  void stopListeningToOrders() {
+    _sseStreamSubscription?.cancel();
+    _sseStreamSubscription = null;
+    _clientID = null;
+  }
+  
 // Persists the current cart map configuration onto memory disk storage
   Future<void> _saveCartToDisk() async {
     final prefs = await SharedPreferences.getInstance();
@@ -247,7 +286,8 @@ class ShopProvider with ChangeNotifier {
   }
 
   //TODO: Think about the shape of the data
-  Future<void> archiveCartToCompletedOrder() async {
+  // Future<void> archiveCartToCompletedOrder() async {
+  Future<void> archiveCartToCompletedOrder(String orderId) async {
     double totalPrice = cart.fold(0, (total, item) {
       final price = item.product.price;
       return total + price * item.quantity;
@@ -255,18 +295,20 @@ class ShopProvider with ChangeNotifier {
 
     String totalAmount = totalPrice.toPrice(currency: 'HUF');
 
-    final String generatedOrderId = "AZK-${DateTime.now().millisecondsSinceEpoch}";
+    // final String generatedOrderId = "AZK-${DateTime.now().millisecondsSinceEpoch}";
 
     // Create the finalized OrderHistoryItem summary node 
     final newOrderRecord = OrderHistoryItem(
-      orderId: generatedOrderId,
+      // orderId: generatedOrderId,
+      orderId: orderId,
       timestamp: DateTime.now().toIso8601String(),
       totalAmount: totalAmount,
       items: cart,
     );
 
     // Save into our persistent map using the generated ID as the key mapping anchor
-    _orders[generatedOrderId] = newOrderRecord;
+    // _orders[generatedOrderId] = newOrderRecord;
+    _orders[orderId] = newOrderRecord;
 
     _cart.clear(); // Flush out current cart bag
     

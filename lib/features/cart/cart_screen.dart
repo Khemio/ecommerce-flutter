@@ -25,6 +25,7 @@ class _CartScreenState extends State<CartScreen> {
   Future<void> _handleCheckout(ShopProvider provider) async {
     setState(() => _isCheckingOut = true);
 
+
     try {
       final checkoutPayload = provider.cart.map((item) {
         return {
@@ -33,25 +34,27 @@ class _CartScreenState extends State<CartScreen> {
         };
       }).toList();   
 
+      debugPrint('Before request');
       final response = await http.post(
         AppConfig.checkoutEndpoint,
         headers: {
           'Content-Type': 'application/json',
+          'X-Client-Id': provider.clientId,
         },
         body: json.encode(checkoutPayload),
       );
+      debugPrint('After request');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final Map<String, dynamic> responseData = json.decode(response.body);
-        // final String checkoutUrl = responseData['checkoutUrl'] ?? '';
         final String rawCheckoutUrl = responseData['checkoutUrl'] ?? '';
 
-        // if (checkoutUrl.isNotEmpty && mounted) {
         if (rawCheckoutUrl.isNotEmpty && mounted) {
           final String checkoutUrl = rawCheckoutUrl.prefillWithProfile(provider.profile);
 
           debugPrint("🔗 PREFILLED CHECKOUT URL: $checkoutUrl");
           // await provider.archiveCartToCompletedOrder();
+          provider.listenToOrderCompletion();
           Navigator.push(
             // ignore: use_build_context_synchronously
             context,
@@ -59,7 +62,7 @@ class _CartScreenState extends State<CartScreen> {
               builder: (_) => CheckoutScreen(checkoutUrl: checkoutUrl),
             ),
           ).then((_) async {
-            await provider.archiveCartToCompletedOrder();
+            // await provider.archiveCartToCompletedOrder();
           });
 
         } else {
