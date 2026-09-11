@@ -28,8 +28,8 @@ class ShopProvider with ChangeNotifier {
   bool _isLoading = false;
   Timer? _cartSaveTimer;
   StreamSubscription? _sseStreamSubscription;
-  String? _clientID;
-  // String _clientID = const Uuid().v4();
+  // String? _clientID;
+  String? _sessionId;
 
   String get appLanguage => _appLanguage;
   List<Product> get products => _products;
@@ -38,11 +38,10 @@ class ShopProvider with ChangeNotifier {
   List<OrderHistoryItem> get orderHistory => _orders.values.toList();
   UserProfile? get profile => _profile;
   bool get isLoading => _isLoading;
-  String get clientId => _clientID ??= const Uuid().v4(); 
-  //   return _clientID;
-  // }
-  
-  // String get clientId => _clientID ;
+  String? get sessionId => _sessionId;
+  // String get clientId => _clientID ??= const Uuid().v4(); 
+
+  set sessionId(String sessionId) => _sessionId = sessionId;
 
   String _selectedTypeFilter = 'All';
   String _selectedVendorFilter = 'All';
@@ -200,15 +199,21 @@ class ShopProvider with ChangeNotifier {
   }
 
   void listenToOrderCompletion() {
-    // Cancel any previous active streams to prevent memory leaks
     _sseStreamSubscription?.cancel();
 
-    debugPrint('Listening...');
+    if (sessionId == null) {
+      debugPrint('For some reason sessionId is null');
+      return;
+    }
+
+    final url = Uri.parse(
+      '${AppConfig.orderEndpoint}?sessionId=$sessionId',
+    );
 
     // Connect to your permanent server SSE stream route endpoint
     _sseStreamSubscription = SSEClient.subscribeToSSE(
       method: SSERequestType.GET,
-      url: "${AppConfig.orderEndpoint}?clientId=$clientId",
+      url: url.toString(),
       header: {
         "Accept": "text/event-stream",
         "Cache-Control": "no-cache",
@@ -218,18 +223,28 @@ class ShopProvider with ChangeNotifier {
         debugPrint("🔔 Real-time Order Payload Received via SSE: ${event.data}");
         
         final Map<String, dynamic> remoteOrderJson = json.decode(event.data!);
+
+        final orderId = remoteOrderJson['orderId'];
+
+        if (orderId == null) {
+          return;
+        }
         
-        await archiveCartToCompletedOrder(remoteOrderJson['orderId']); 
+        await archiveCartToCompletedOrder(orderId); 
         
         stopListeningToOrders();
       }
+    },
+    onError: (error) {
+      // Handle reconnect/error.
     });
   }
 
   void stopListeningToOrders() {
     _sseStreamSubscription?.cancel();
     _sseStreamSubscription = null;
-    _clientID = null;
+    _sessionId = null;
+    // _clientID = null;
   }
   
 // Persists the current cart map configuration onto memory disk storage

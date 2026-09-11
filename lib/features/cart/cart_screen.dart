@@ -34,24 +34,25 @@ class _CartScreenState extends State<CartScreen> {
         };
       }).toList();   
 
-      debugPrint('Before request');
       final response = await http.post(
         AppConfig.checkoutEndpoint,
         headers: {
           'Content-Type': 'application/json',
-          'X-Client-Id': provider.clientId,
+          // 'X-Client-Id': provider.clientId,
         },
         body: json.encode(checkoutPayload),
       );
-      debugPrint('After request');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final Map<String, dynamic> responseData = json.decode(response.body);
+        final String sessionId = responseData['sessionId'] ?? '';
         final String rawCheckoutUrl = responseData['checkoutUrl'] ?? '';
 
-        if (rawCheckoutUrl.isNotEmpty && mounted) {
+        if (rawCheckoutUrl.isNotEmpty && sessionId.isNotEmpty && mounted) {
+          provider.sessionId = sessionId;
           final String checkoutUrl = rawCheckoutUrl.prefillWithProfile(provider.profile);
 
+          debugPrint("SESSION ID: ${provider.sessionId}");
           debugPrint("🔗 PREFILLED CHECKOUT URL: $checkoutUrl");
           // await provider.archiveCartToCompletedOrder();
           provider.listenToOrderCompletion();
