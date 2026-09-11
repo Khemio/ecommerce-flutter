@@ -3,7 +3,6 @@ import 'package:flutter_client_sse/constants/sse_request_type_enum.dart';
 import 'package:flutter_client_sse/flutter_client_sse.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import 'package:uuid/uuid.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'dart:ui' as ui;
@@ -28,8 +27,7 @@ class ShopProvider with ChangeNotifier {
   bool _isLoading = false;
   Timer? _cartSaveTimer;
   StreamSubscription? _sseStreamSubscription;
-  // String? _clientID;
-  String? _sessionId;
+  // String? _sessionId;
 
   String get appLanguage => _appLanguage;
   List<Product> get products => _products;
@@ -38,10 +36,9 @@ class ShopProvider with ChangeNotifier {
   List<OrderHistoryItem> get orderHistory => _orders.values.toList();
   UserProfile? get profile => _profile;
   bool get isLoading => _isLoading;
-  String? get sessionId => _sessionId;
-  // String get clientId => _clientID ??= const Uuid().v4(); 
+  // String? get sessionId => _sessionId;
 
-  set sessionId(String sessionId) => _sessionId = sessionId;
+  // set sessionId(String sessionId) => _sessionId = sessionId;
 
   String _selectedTypeFilter = 'All';
   String _selectedVendorFilter = 'All';
@@ -198,16 +195,16 @@ class ShopProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void listenToOrderCompletion() {
-    _sseStreamSubscription?.cancel();
-
-    if (sessionId == null) {
-      debugPrint('For some reason sessionId is null');
-      return;
-    }
+  // void listenToOrderCompletion() {
+  void listenToOrderCompletion(String sessionId) {
+    _sseStreamSubscription?.cancel(); //? This might cancel existing listener if there is a new order
 
     final url = Uri.parse(
-      '${AppConfig.orderEndpoint}?sessionId=$sessionId',
+      AppConfig.orderEndpoint.toString(),
+    ).replace(
+      queryParameters: {
+        'sessionId': sessionId,
+      },
     );
 
     // Connect to your permanent server SSE stream route endpoint
@@ -219,32 +216,43 @@ class ShopProvider with ChangeNotifier {
         "Cache-Control": "no-cache",
       },
     ).listen((event) async {
-      if (event.data != null) {
-        debugPrint("🔔 Real-time Order Payload Received via SSE: ${event.data}");
-        
-        final Map<String, dynamic> remoteOrderJson = json.decode(event.data!);
-
-        final orderId = remoteOrderJson['orderId'];
-
-        if (orderId == null) {
+        if (event.data == null ||
+            event.data!.isEmpty) {
           return;
         }
+
+        debugPrint("🔔 Real-time Order Payload Received via SSE: ${event.data}");
         
-        await archiveCartToCompletedOrder(orderId); 
-        
-        stopListeningToOrders();
+        try {
+          final Map<String, dynamic> remoteOrderJson = json.decode(event.data!);
+
+          final String? orderId = remoteOrderJson['orderId']?.toString();
+
+          if (orderId == null || orderId.isEmpty) {
+            return;
+          }
+          
+          await archiveCartToCompletedOrder(orderId); 
+          
+          stopListeningToOrders();
+        } catch (e) {
+          debugPrint(
+            'Failed processing order SSE event: $e',
+          );
+        }
+      },
+      onError: (error) {
+        // Handle reconnect/error.
+        debugPrint(
+          'Order SSE error: $error',
+        );
       }
-    },
-    onError: (error) {
-      // Handle reconnect/error.
-    });
+    );
   }
 
   void stopListeningToOrders() {
     _sseStreamSubscription?.cancel();
     _sseStreamSubscription = null;
-    _sessionId = null;
-    // _clientID = null;
   }
   
 // Persists the current cart map configuration onto memory disk storage
