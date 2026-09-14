@@ -38,7 +38,6 @@ class _CartScreenState extends State<CartScreen> {
         AppConfig.checkoutEndpoint,
         headers: {
           'Content-Type': 'application/json',
-          // 'X-Client-Id': provider.clientId,
         },
         body: json.encode(checkoutPayload),
       );
@@ -54,8 +53,7 @@ class _CartScreenState extends State<CartScreen> {
 
           debugPrint("SESSION ID: $sessionId");
           debugPrint("🔗 PREFILLED CHECKOUT URL: $checkoutUrl");
-          // await provider.archiveCartToCompletedOrder();
-          // provider.listenToOrderCompletion();
+          
           provider.listenToOrderCompletion(sessionId);
           Navigator.push(
             // ignore: use_build_context_synchronously

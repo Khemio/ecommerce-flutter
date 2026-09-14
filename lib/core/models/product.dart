@@ -30,6 +30,7 @@ class Product {
       'description': description,
       'productType': productType,
       'vendor': vendor,
+      'availableForSale': isAvailable,
       // Wrap your url back inside an array maps tree block
       'images': [
         {'url': imageUrl}
@@ -39,7 +40,6 @@ class Product {
         {
           'id': variantId,
           'sku': sku,
-          'availableForSale': isAvailable,
           'price': {
             'amount': price,
           }
@@ -59,18 +59,19 @@ class Product {
     String varId = '';
     double itemPrice = 0.0;
     String itemSku = '';
-    bool availableStatus = true;
+    // bool availableStatus = true;
 
     if (variantsList.isNotEmpty) {
       final Map<String, dynamic> firstVariant = variantsList[0] ?? {};
       varId = firstVariant['id'] ?? '';
       itemSku = firstVariant['sku'] ?? '';
       
-      availableStatus = firstVariant['availableForSale'] ?? firstVariant['isAvailable'] ?? true;
+      // availableStatus = firstVariant['availableForSale'] ?? firstVariant['isAvailable'] ?? true;
       final Map<String, dynamic> priceMap = firstVariant['price'] ?? {};
       final String itemPriceString = priceMap['amount'] ?? '0.00';
       itemPrice = double.tryParse(itemPriceString) ?? 0.0;
     }
+      // availableStatus = firstVariant['availableForSale'] ?? firstVariant['isAvailable'] ?? true;
 
     return Product(
       id: json['id'] ?? '',
@@ -82,7 +83,8 @@ class Product {
       variantId: varId,
       price: itemPrice,
       sku: itemSku,
-      isAvailable: availableStatus,
+      isAvailable: json['availableForSale'],
+      // isAvailable: availableStatus,
     );
   }
 }

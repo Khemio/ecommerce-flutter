@@ -26,6 +26,7 @@ class ShopProvider with ChangeNotifier {
   UserProfile? _profile;
   bool _isLoading = false;
   Timer? _cartSaveTimer;
+  Timer? _sseTimeoutTimer;
   StreamSubscription? _sseStreamSubscription;
   // String? _sessionId;
 
@@ -197,7 +198,8 @@ class ShopProvider with ChangeNotifier {
 
   // void listenToOrderCompletion() {
   void listenToOrderCompletion(String sessionId) {
-    _sseStreamSubscription?.cancel(); //? This might cancel existing listener if there is a new order
+    // _sseStreamSubscription?.cancel(); //? This might cancel existing listener if there is a new order
+    stopListeningToOrders();
 
     final url = Uri.parse(
       AppConfig.orderEndpoint.toString(),
@@ -206,6 +208,12 @@ class ShopProvider with ChangeNotifier {
         'sessionId': sessionId,
       },
     );
+
+    _sseTimeoutTimer = Timer(const Duration(minutes: 2), () {
+      debugPrint("⏳ SSE connection reached 2-minute timeout limit. Shutting down.");
+      stopListeningToOrders();
+      // Optional: Trigger a UI callback here to tell the user "We couldn't verify your order, checking status..."
+    });
 
     // Connect to your permanent server SSE stream route endpoint
     _sseStreamSubscription = SSEClient.subscribeToSSE(
@@ -216,30 +224,15 @@ class ShopProvider with ChangeNotifier {
         "Cache-Control": "no-cache",
       },
     ).listen((event) async {
-        if (event.data == null ||
-            event.data!.isEmpty) {
+        debugPrint('Event: ${event.event ?? "None"}');
+        if (event.event == 'heartbeat' || event.event == 'connected' || event.data == null || event.data!.isEmpty) {
           return;
         }
 
-        debugPrint("🔔 Real-time Order Payload Received via SSE: ${event.data}");
-        
-        try {
-          final Map<String, dynamic> remoteOrderJson = json.decode(event.data!);
-
-          final String? orderId = remoteOrderJson['orderId']?.toString();
-
-          if (orderId == null || orderId.isEmpty) {
-            return;
-          }
-          
-          await archiveCartToCompletedOrder(orderId); 
-          
-          stopListeningToOrders();
-        } catch (e) {
-          debugPrint(
-            'Failed processing order SSE event: $e',
-          );
+        if (event.event == 'order.completed') {  
+          handleOrderCreated(event.data!);
         }
+        
       },
       onError: (error) {
         // Handle reconnect/error.
@@ -250,7 +243,38 @@ class ShopProvider with ChangeNotifier {
     );
   }
 
+  void handleOrderCreated(String data) async {
+    try {
+      final Map<String, dynamic> remoteOrderJson = json.decode(data);
+
+      final String? orderId = remoteOrderJson['orderId']?.toString();
+      // final String? label = remoteOrderJson['label']?.toString();
+      // final String? checkoutId = remoteOrderJson['checkout_id']?.toString();
+
+      if (orderId == null || orderId.isEmpty) {
+        return;
+      }
+
+      debugPrint('OrderId: $orderId');
+      // debugPrint('Label: $label');
+      // debugPrint('CheckoutId: $checkoutId');
+      
+      await archiveCartToCompletedOrder(orderId); 
+      
+      stopListeningToOrders();
+    } catch (e) {
+      debugPrint(
+        'Failed processing order SSE event: $e',
+      );
+    }
+
+  }
+
   void stopListeningToOrders() {
+    debugPrint('Closing SSE Stream');
+    _sseTimeoutTimer?.cancel();
+    _sseTimeoutTimer = null;
+
     _sseStreamSubscription?.cancel();
     _sseStreamSubscription = null;
   }
