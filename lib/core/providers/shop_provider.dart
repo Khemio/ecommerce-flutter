@@ -15,7 +15,6 @@ import 'package:azkomoly_app/app_config.dart';
 import 'package:azkomoly_app/core/models/banner_items.dart';
 import 'package:azkomoly_app/core/models/shipping_address.dart';
 import 'package:azkomoly_app/core/models/user_profile.dart';
-import 'package:azkomoly_app/core/utils/num_extentions.dart';
 
 import 'package:azkomoly_app/features/profile/models/order_history.dart';
 import 'package:azkomoly_app/features/home/models/social_review_data.dart';
@@ -38,9 +37,6 @@ class ShopProvider with ChangeNotifier {
   List<OrderHistoryItem> get orderHistory => _orders.values.toList();
   UserProfile? get profile => _profile;
   bool get isLoading => _isLoading;
-  // String? get sessionId => _sessionId;
-
-  // set sessionId(String sessionId) => _sessionId = sessionId;
 
   String _selectedTypeFilter = 'All';
   String _selectedVendorFilter = 'All';
@@ -200,7 +196,6 @@ class ShopProvider with ChangeNotifier {
 
   // void listenToOrderCompletion() {
   void listenToSSE(String sessionId) {
-    // _sseStreamSubscription?.cancel(); //? This might cancel existing listener if there is a new order
     stopListeningToSSE();
 
     final url = Uri.parse(
