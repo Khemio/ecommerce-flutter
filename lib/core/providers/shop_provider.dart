@@ -1,3 +1,4 @@
+import 'package:azkomoly_app/core/models/remote_order.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_client_sse/constants/sse_request_type_enum.dart';
 import 'package:flutter_client_sse/flutter_client_sse.dart';
@@ -64,6 +65,7 @@ class ShopProvider with ChangeNotifier {
     _loadDataFromStorage();
   }
 
+  //TODO: Fix this: 'TypeError: 10490: type 'int' is not a subtype of type 'String''
   Future<void> _loadDataFromStorage() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -197,9 +199,9 @@ class ShopProvider with ChangeNotifier {
   }
 
   // void listenToOrderCompletion() {
-  void listenToOrderCompletion(String sessionId) {
+  void listenToSSE(String sessionId) {
     // _sseStreamSubscription?.cancel(); //? This might cancel existing listener if there is a new order
-    stopListeningToOrders();
+    stopListeningToSSE();
 
     final url = Uri.parse(
       AppConfig.orderEndpoint.toString(),
@@ -211,7 +213,7 @@ class ShopProvider with ChangeNotifier {
 
     _sseTimeoutTimer = Timer(const Duration(minutes: 2), () {
       debugPrint("⏳ SSE connection reached 2-minute timeout limit. Shutting down.");
-      stopListeningToOrders();
+      stopListeningToSSE();
       // Optional: Trigger a UI callback here to tell the user "We couldn't verify your order, checking status..."
     });
 
@@ -224,13 +226,16 @@ class ShopProvider with ChangeNotifier {
         "Cache-Control": "no-cache",
       },
     ).listen((event) async {
-        debugPrint('Event: ${event.event ?? "None"}');
-        if (event.event == 'heartbeat' || event.event == 'connected' || event.data == null || event.data!.isEmpty) {
+        if (event.data == null || event.data!.isEmpty || event.data == 'null') {
           return;
         }
 
-        if (event.event == 'order.completed') {  
-          handleOrderCreated(event.data!);
+        switch (event.event) {  
+          case 'order.created':
+            // debugPrint('Event: ${event.event}');
+            handleOrderCreated(event.data!);
+
+          default: return;
         }
         
       },
@@ -243,25 +248,23 @@ class ShopProvider with ChangeNotifier {
     );
   }
 
+
+
   void handleOrderCreated(String data) async {
     try {
       final Map<String, dynamic> remoteOrderJson = json.decode(data);
 
-      final String? orderId = remoteOrderJson['orderId']?.toString();
-      // final String? label = remoteOrderJson['label']?.toString();
-      // final String? checkoutId = remoteOrderJson['checkout_id']?.toString();
+      final remoteOrder = RemoteOrder.fromJson(remoteOrderJson);
 
-      if (orderId == null || orderId.isEmpty) {
+      if (!remoteOrder.isValid) {
         return;
       }
 
-      debugPrint('OrderId: $orderId');
-      // debugPrint('Label: $label');
-      // debugPrint('CheckoutId: $checkoutId');
+      debugPrint(remoteOrder.toString());
       
-      await archiveCartToCompletedOrder(orderId); 
+      await archiveCartToCompletedOrder(remoteOrder); 
       
-      stopListeningToOrders();
+      stopListeningToSSE();
     } catch (e) {
       debugPrint(
         'Failed processing order SSE event: $e',
@@ -270,7 +273,7 @@ class ShopProvider with ChangeNotifier {
 
   }
 
-  void stopListeningToOrders() {
+  void stopListeningToSSE() {
     debugPrint('Closing SSE Stream');
     _sseTimeoutTimer?.cancel();
     _sseTimeoutTimer = null;
@@ -332,30 +335,25 @@ class ShopProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  //TODO: Think about the shape of the data
-  // Future<void> archiveCartToCompletedOrder() async {
-  Future<void> archiveCartToCompletedOrder(String orderId) async {
-    double totalPrice = cart.fold(0, (total, item) {
-      final price = item.product.price;
-      return total + price * item.quantity;
-    });
+  Future<void> archiveCartToCompletedOrder(RemoteOrder order) async {
+    // double totalPrice = cart.fold(0, (total, item) {
+    //   final price = item.product.price;
+    //   return total + price * item.quantity;
+    // });
 
-    String totalAmount = totalPrice.toPrice(currency: 'HUF');
+    // String totalAmount = totalPrice.toPrice(currency: 'HUF');
 
     // final String generatedOrderId = "AZK-${DateTime.now().millisecondsSinceEpoch}";
 
     // Create the finalized OrderHistoryItem summary node 
-    final newOrderRecord = OrderHistoryItem(
-      // orderId: generatedOrderId,
-      orderId: orderId,
-      timestamp: DateTime.now().toIso8601String(),
-      totalAmount: totalAmount,
-      items: cart,
+    final newOrderRecord = OrderHistoryItem.fromOrder(
+      order: order,
+      cart: cart,
     );
 
     // Save into our persistent map using the generated ID as the key mapping anchor
     // _orders[generatedOrderId] = newOrderRecord;
-    _orders[orderId] = newOrderRecord;
+    _orders[newOrderRecord.orderId] = newOrderRecord;
 
     _cart.clear(); // Flush out current cart bag
     

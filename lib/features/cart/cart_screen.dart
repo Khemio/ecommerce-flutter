@@ -48,13 +48,11 @@ class _CartScreenState extends State<CartScreen> {
         final String rawCheckoutUrl = responseData['checkoutUrl'] ?? '';
 
         if (rawCheckoutUrl.isNotEmpty && sessionId.isNotEmpty && mounted) {
-          // provider.sessionId = sessionId;
           final String checkoutUrl = rawCheckoutUrl.prefillWithProfile(provider.profile);
 
-          debugPrint("SESSION ID: $sessionId");
           debugPrint("🔗 PREFILLED CHECKOUT URL: $checkoutUrl");
           
-          provider.listenToOrderCompletion(sessionId);
+          provider.listenToSSE(sessionId);
           Navigator.push(
             // ignore: use_build_context_synchronously
             context,

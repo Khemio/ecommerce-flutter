@@ -11,5 +11,5 @@ class AppConfig {
   static Uri get productsEndpoint => Uri.parse("$baseUrl/api/$apiVer/products");
   static Uri get checkoutEndpoint => Uri.parse("$baseUrl/api/$apiVer/checkout");
   static Uri get configEndpoint => Uri.parse("$baseUrl/api/$apiVer/config");
-  static Uri get orderEndpoint => Uri.parse("$baseUrl/api/$apiVer/order");
+  static Uri get orderEndpoint => Uri.parse("$baseUrl/api/$apiVer/events");
 }

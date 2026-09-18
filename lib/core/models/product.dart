@@ -1,31 +1,37 @@
 class Product {
-  final String id;
+  final String _id;
   final String title;
   final String description;
   final String productType;
   final String vendor;
   final String imageUrl;
-  final String variantId;
+  final String _variantId;
   final double price;
   final String sku;
   final bool isAvailable;
 
   Product({
-    required this.id,
+    required this._id,
     required this.title,
     required this.description,
     required this.productType,
     required this.vendor,
     required this.imageUrl,
-    required this.variantId,
+    required this._variantId,
     required this.price,
     required this.sku, 
     required this.isAvailable,
   });
 
+  String get id => Uri.parse(_id).pathSegments.last;
+  String get idLink => _id;
+
+  String get variantId => Uri.parse(_variantId).pathSegments.last;
+  String get variantIdLink => _variantId;
+
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      'id': _id,
       'title': title,
       'description': description,
       'productType': productType,
@@ -38,7 +44,7 @@ class Product {
       // Re-nest your single variants values to look like Shopify GraphQL structures
       'variants': [
         {
-          'id': variantId,
+          'id': _variantId,
           'sku': sku,
           'price': {
             'amount': price,
@@ -85,6 +91,21 @@ class Product {
       sku: itemSku,
       isAvailable: json['availableForSale'],
       // isAvailable: availableStatus,
+    );
+  }
+
+  Product copyWith({double? price}) {
+    return Product(
+      id: _id,
+      title: title,
+      description: description,
+      productType: productType,
+      vendor: vendor,
+      imageUrl: imageUrl,
+      variantId: _variantId,
+      price: price ?? this.price,
+      sku: sku,
+      isAvailable: isAvailable,
     );
   }
 }
