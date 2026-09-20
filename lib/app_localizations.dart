@@ -12,7 +12,10 @@ class AppLocalizations {
     'checkout_error', 'follow_us', 'field_name_last', 'field_name_first', 'field_email', 'field_address_zip',
     'field_address_city', 'field_address_street', 'field_name', 'field_address', 'input_error_name',
     'input_error_email_empty', 'input_error_email_format', 'input_error_address_city', 'input_error_address_street', 
-    'input_error_address_zip_empty', 'input_error_address_zip_invalid', 
+    'input_error_address_zip_empty', 'input_error_address_zip_invalid', 'order_number',
+    'confirmation_number', 'email_confirmation', 'back_to_main', 'timeout_title', 'timeout_subtitle',
+    'timeout_msg','timeout_status_check', 'timeout_status_action', 'timeout_back_to_main',
+    'payment_fail_title', 'payment_fail_subtitle', 'payment_fail_msg', 'payment_fail_back_to_main', 
 };
 
   // Dictionary database matrix
@@ -24,7 +27,6 @@ class AppLocalizations {
       'how_much': 'MENNYIT AKARSZ TE?',
       'description': 'LEÍRÁSA',
       'default_description': 'Ez az exkluzív rejtélyes doboz rendkívül válogatott utcai ruhákat és ritka tárgyakat tartalmaz, amelyek megfelelnek a prémium cseppeknek.',
-      'order_success': '🎉 Rendelés sikeresen leadva!',
       'secure_checkout': 'Biztonságos Shopify Checkout',
       'cart_empty': 'A kosarad jelenleg üres.\nMenj, adj hozzá néhány rejtélyes dobozt!',
       'total': 'Összérték:',
@@ -54,7 +56,6 @@ class AppLocalizations {
       // 'added_to_bag_msg': '{quantity} db tétel ({title}) hozzáadva a tasakhoz!',
 
       // Cart Screen Elements
-      // 'cart_title': 'A Kosarad',
       'cart_title': 'A Kosarad Tasakja',
       'empty_cart': 'A kosarad jelenleg teljesen üres.\nMenj és válassz ki egy rejtélyes dobozt!',
       'total_value': 'Teljes érték:',
@@ -64,6 +65,29 @@ class AppLocalizations {
       'clear_cart_cancel': 'Mégse',
       'clear_cart_confirm': 'Törlés',
       'cart_cleared_toast': 'Kosár sikeresen kiürítve!',
+
+      // Order Success
+      'order_success': 'Sikeres vásárlás!',
+      // 'order_success': '🎉 Rendelés sikeresen leadva!',
+      'order_number': 'RENDELÉSSZÁM: #',
+      'confirmation_number': 'Megerősítő kód: ',
+      'email_confirmation': 'A tranzakciót sikeresen rögzítettük!\nA nyugtát az Ön e-mail címére küldjük.', 
+      'back_to_main': 'VISSZA A FŐOLDALRA',
+      
+      // SSE Timeout
+      'timeout_title': 'ELLENŐRZÉS...',
+      'timeout_subtitle': 'A FIZETÉS SIKERES VOLT?',
+      'timeout_msg': 'Lehet, hogy a fizetés sikeres volt, de a rendelés visszaigazolása késik.\nKérjük, ne indítsa újra a vásárlást!',
+      'timeout_status_check': 'ELLENŐRZÉS FOLYAMATBAN...',
+      'timeout_status_action': 'RENDELÉS ÁLLAPOTÁNAK FRISSÍTÉSE',
+      'timeout_back_to_main': 'Vissza a főoldalra, később ellenőrzöm',
+
+      // Payment Failure
+      //TODO: Hungarian
+      'payment_fail_title': 'SIKERTELEN FIZETÉS',
+      'payment_fail_subtitle': 'A TRANZAKCIÓ MEGSZAKADT',
+      'payment_fail_msg': 'A fizetés sikertelen volt vagy megszakításra került a banki felületen.\nA kosarad tartalma változatlan maradt."',
+      'payment_fail_back_to_main': 'VISSZA A FŐOLDALRA',
 
       // Profile Screen Layout Elements
       'profile_header': 'PROFIL BEÁLLÍTÁSOK',
@@ -111,7 +135,6 @@ class AppLocalizations {
       'how_much': 'HOW MUCH DO YOU WANT?',
       'description': 'DESCRIPTION',
       'default_description': 'This exclusive mystery box features highly curated street clothing and rare items matching premium drops.',
-      'order_success': '🎉 Order Placed Successfully!',
       'secure_checkout': 'Secure Shopify Checkout',
       'cart_empty': 'Your cart is currently empty.\nGo add some mystery boxes!',
       'total': 'Total Value:',
@@ -151,6 +174,29 @@ class AppLocalizations {
       'clear_cart_cancel': 'Cancel',
       'clear_cart_confirm': 'Clear All',
       'cart_cleared_toast': 'Shopping bag successfully cleared!',
+
+      // Order Success
+      'order_success': 'Successful Purchase!',
+      // 'order_success': '🎉 Order Placed Successfully!',
+      'order_number': 'Order number: #',
+      'confirmation_number': 'Confirmation number: ',
+      'email_confirmation': 'The transaction was recorded successfully!\nThe receipt will be sent to your email address.',  // You will receive the receipt via email
+      'back_to_main': 'BACK TO THE MAIN PAGE',
+
+      // SSE Timeout
+      'timeout_title': 'CHECKING...',
+      'timeout_subtitle': 'PAYMENT WAS SUCCESSFUL?',
+      'timeout_msg': 'The payment may have been successful, but Order confirmation is delayed.\nPlease don’t restart your purchase!',
+      'timeout_status_check': 'INSPECTION IN PROGRESS...',
+      'timeout_status_action': 'UPDATE ORDER STATUS',
+      'timeout_back_to_main': 'Back to main page, I\'ll check later',
+
+      // Payment Failure
+      //TODO: English
+      'payment_fail_title': 'PAYMENT FAILED',
+      'payment_fail_subtitle': 'THE TRANSACTION WAS TERMINATED',
+      'payment_fail_msg': 'The payment was unsuccessful or interrupted on the bank interface.\nThe contents of your cart have remained unchanged.',
+      'payment_fail_back_to_main': 'BACK TO THE MAIN PAGE',
 
       // Profile Screen Layout Elements
       'profile_header': 'PROFILE SETTINGS',

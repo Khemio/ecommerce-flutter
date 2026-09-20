@@ -1,4 +1,7 @@
 import 'package:azkomoly_app/core/models/remote_order.dart';
+import 'package:azkomoly_app/features/cart/order_success_screen.dart';
+import 'package:azkomoly_app/features/cart/payment_failed_screen.dart';
+import 'package:azkomoly_app/features/cart/sse_timeout_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_client_sse/constants/sse_request_type_enum.dart';
 import 'package:flutter_client_sse/flutter_client_sse.dart';
@@ -194,8 +197,7 @@ class ShopProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // void listenToOrderCompletion() {
-  void listenToSSE(String sessionId) {
+  void listenToSSE(BuildContext context, String sessionId) {
     stopListeningToSSE();
 
     final url = Uri.parse(
@@ -206,10 +208,20 @@ class ShopProvider with ChangeNotifier {
       },
     );
 
+    // _sseTimeoutTimer = Timer(const Duration(seconds: 2), () {
     _sseTimeoutTimer = Timer(const Duration(minutes: 2), () {
       debugPrint("⏳ SSE connection reached 2-minute timeout limit. Shutting down.");
       stopListeningToSSE();
-      // Optional: Trigger a UI callback here to tell the user "We couldn't verify your order, checking status..."
+      if (context.mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (_) => OrderProcessingTimeoutScreen(sessionId: sessionId,),
+            // builder: (_) => PaymentFailedScreen(),
+          ),
+          (route) => route.isFirst, // Drops everything else except the root HomeScreen
+        );
+      }
     });
 
     // Connect to your permanent server SSE stream route endpoint
@@ -228,7 +240,7 @@ class ShopProvider with ChangeNotifier {
         switch (event.event) {  
           case 'order.created':
             // debugPrint('Event: ${event.event}');
-            handleOrderCreated(event.data!);
+            if (context.mounted) handleOrderCreated(context, event.data!);
 
           default: return;
         }
@@ -245,7 +257,7 @@ class ShopProvider with ChangeNotifier {
 
 
 
-  void handleOrderCreated(String data) async {
+  void handleOrderCreated(BuildContext context, String data) async {
     try {
       final Map<String, dynamic> remoteOrderJson = json.decode(data);
 
@@ -254,12 +266,22 @@ class ShopProvider with ChangeNotifier {
       if (!remoteOrder.isValid) {
         return;
       }
-
-      debugPrint(remoteOrder.toString());
       
       await archiveCartToCompletedOrder(remoteOrder); 
-      
       stopListeningToSSE();
+
+      if (context.mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (_) => OrderSuccessScreen(
+              orderNumber: remoteOrder.orderNumber.toString(),
+              confirmationNumber: remoteOrder.confirmationNumber,
+            ),
+          ),
+          (route) => route.isFirst, // Drops everything else except the root HomeScreen
+        );
+      }
     } catch (e) {
       debugPrint(
         'Failed processing order SSE event: $e',

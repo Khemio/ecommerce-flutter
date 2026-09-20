@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import 'package:azkomoly_app/app_localizations.dart';
 import 'package:azkomoly_app/core/providers/shop_provider.dart';
-import 'package:azkomoly_app/app_theme.dart';
+// import 'package:azkomoly_app/app_theme.dart';
+
+import 'payment_failed_screen.dart';
 
 class CheckoutScreen extends StatefulWidget {
   final String checkoutUrl;
@@ -17,37 +20,59 @@ class CheckoutScreen extends StatefulWidget {
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
   late final WebViewController _controller;
+  late final ShopProvider _shopProvider; // Store reference early
 
   @override
   void initState() {
     super.initState();
-    final shopProvider = context.read<ShopProvider>(); 
+    // Safely capture the provider reference once while context is valid
+    _shopProvider = context.read<ShopProvider>(); 
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (String url) {
+            final urlNormilazied = url.toLowerCase();
             // Shopify success redirection tracking rule
-            if (url.contains('thank_you') || url.contains('orders')) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    AppLocalizations.translate('order_success', shopProvider.appLanguage),
-                  ),
-                  backgroundColor: AppTheme.successColor,
-                ),
+            if (urlNormilazied.contains('thank_you') || urlNormilazied.contains('orders')) {
+              if (mounted) Navigator.pop(context); 
+                
+              return;
+            }
+
+            // 2. Failure Resolution (User cancelled or card was declined by gateway)
+            if (urlNormilazied.contains('cancel') || urlNormilazied.contains('declined') || urlNormilazied.contains('fail')) {
+              if (!mounted) return;
+
+              // Simply dismiss the webview window back to checkout/cart setup configuration screen
+              Navigator.pop(context); 
+              
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const PaymentFailedScreen()),
               );
-              // Pops back to the HomeScreen and clears navigation stack
-              Navigator.popUntil(context, (route) => route.isFirst);
+              return;
             }
           },
           
-          onNavigationRequest: (NavigationRequest request) {
+          onNavigationRequest: (NavigationRequest request) async {
             final url = request.url.toLowerCase();
+
+            // Fix for Hungarian Bank Redirects (Non-HTTP/HTTPS schemes)
+            if (!request.url.startsWith('http://') && !request.url.startsWith('https://')) {
+              final uri = Uri.parse(request.url);
+              // Safely open OTP / Telekom / banking applications installed on device
+              if (await canLaunchUrl(uri)) {
+                await launchUrl(uri, mode: LaunchMode.externalApplication);
+              }
+              return NavigationDecision.prevent;
+            }
             
-            if (!(url.contains('/cart') || url.contains('checkouts')) && url.contains('myshopify')) {
+            if (!(url.contains('/cart') || url.contains('/checkout')) && url.contains('myshopify')) {
               // Stop the webview from loading the website page
-              Navigator.popUntil(context, (route) => route.isFirst); // Pop back to HomeScreen
+              if (mounted) {
+                Navigator.popUntil(context, (route) => route.isFirst); // Pop back to HomeScreen
+              }
               return NavigationDecision.prevent; 
             }
             
@@ -60,14 +85,33 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final shopProvider = Provider.of<ShopProvider>(context); 
+    // final shopProvider = Provider.of<ShopProvider>(context); 
     
     return Scaffold(
+      // appBar: AppBar(
+      //   title: Text(
+      //     AppLocalizations.translate('secure_checkout', _shopProvider.appLanguage),
+      //   ),
+      // ),
+      // Inside your CheckoutScreen Widget build method:
       appBar: AppBar(
-        title: Text(
-          AppLocalizations.translate('secure_checkout', shopProvider.appLanguage),
+        title: GestureDetector(
+          onLongPress: () {
+            debugPrint("🛠️ Test Hook Triggered: Forcing Thank You URL Routing");
+            // Explicitly load a dummy domain containing 'fail' to trip your interceptor
+            _controller.loadRequest(Uri.parse("https://myshopify.com/thank_you"));
+          },
+          onDoubleTap: () {
+            debugPrint("🛠️ Test Hook Triggered: Forcing Failure URL Routing");
+            // Explicitly load a dummy domain containing 'fail' to trip your interceptor
+            _controller.loadRequest(Uri.parse("https://myshopify.com/fail"));
+          },
+          child: Text(
+            AppLocalizations.translate('secure_checkout', _shopProvider.appLanguage),
+          ),
         ),
       ),
+
       body: WebViewWidget(controller: _controller),
     );
   }

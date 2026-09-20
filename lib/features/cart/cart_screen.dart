@@ -52,7 +52,7 @@ class _CartScreenState extends State<CartScreen> {
 
           debugPrint("🔗 PREFILLED CHECKOUT URL: $checkoutUrl");
           
-          provider.listenToSSE(sessionId);
+          provider.listenToSSE(context, sessionId);
           Navigator.push(
             // ignore: use_build_context_synchronously
             context,
@@ -60,9 +60,7 @@ class _CartScreenState extends State<CartScreen> {
               builder: (_) => CheckoutScreen(checkoutUrl: checkoutUrl),
             ),
           );
-          // ).then((_) async {
-          //   // await provider.archiveCartToCompletedOrder();
-          // });
+
         } else {
           throw Exception('Checkout URL was empty in response');
         }
