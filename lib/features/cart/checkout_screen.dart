@@ -20,7 +20,9 @@ class CheckoutScreen extends StatefulWidget {
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
   late final WebViewController _controller;
-  late final ShopProvider _shopProvider; // Store reference early
+  late final ShopProvider _shopProvider;
+
+  bool _isNavigatingAway = false;
 
   @override
   void initState() {
@@ -31,31 +33,33 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
-          onPageStarted: (String url) {
-            final urlNormilazied = url.toLowerCase();
-            // Shopify success redirection tracking rule
-            if (urlNormilazied.contains('thank_you') || urlNormilazied.contains('orders')) {
-              if (mounted) Navigator.pop(context); 
+          // onPageStarted: (String url) {
+          //   final urlNormilazied = url.toLowerCase();
+          //   // Shopify success redirection tracking rule
+          //   if (urlNormilazied.contains('thank_you') || urlNormilazied.contains('orders')) {
+          //     if (mounted) Navigator.pop(context); 
                 
-              return;
-            }
+          //     return;
+          //   }
 
-            // 2. Failure Resolution (User cancelled or card was declined by gateway)
-            if (urlNormilazied.contains('cancel') || urlNormilazied.contains('declined') || urlNormilazied.contains('fail')) {
-              if (!mounted) return;
+          //   // 2. Failure Resolution (User cancelled or card was declined by gateway)
+          //   if (urlNormilazied.contains('cancel') || urlNormilazied.contains('declined') || urlNormilazied.contains('fail')) {
+          //     if (!mounted) return;
 
-              // Simply dismiss the webview window back to checkout/cart setup configuration screen
-              Navigator.pop(context); 
+          //     // Simply dismiss the webview window back to checkout/cart setup configuration screen
+          //     Navigator.pop(context); 
               
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const PaymentFailedScreen()),
-              );
-              return;
-            }
-          },
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(builder: (_) => const PaymentFailedScreen()),
+          //     );
+          //     return;
+          //   }
+          // },
           
           onNavigationRequest: (NavigationRequest request) async {
+            if (_isNavigatingAway) return NavigationDecision.prevent;
+
             final url = request.url.toLowerCase();
 
             // Fix for Hungarian Bank Redirects (Non-HTTP/HTTPS schemes)
@@ -67,8 +71,30 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               }
               return NavigationDecision.prevent;
             }
+
+            if (url.contains('/thank_you') || url.contains('/orders')) {
+              if (mounted) Navigator.pop(context); 
+                
+              return NavigationDecision.prevent;
+            }
+
+            // Failyre pages
+            if (url.contains('/cancel') || url.contains('declined=') || url.contains('/payment_failed')) {
+              _isNavigatingAway = true;
+
+              if (mounted) {
+                Navigator.pop(context); // Dismiss webview
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const PaymentFailedScreen()),
+                );
+              }
+              return NavigationDecision.prevent;
+            }
             
             if (!(url.contains('/cart') || url.contains('/checkout')) && url.contains('myshopify')) {
+              _isNavigatingAway = true;
+
               // Stop the webview from loading the website page
               if (mounted) {
                 Navigator.popUntil(context, (route) => route.isFirst); // Pop back to HomeScreen

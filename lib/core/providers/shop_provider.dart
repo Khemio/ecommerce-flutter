@@ -1,6 +1,5 @@
 import 'package:azkomoly_app/core/models/remote_order.dart';
 import 'package:azkomoly_app/features/cart/order_success_screen.dart';
-import 'package:azkomoly_app/features/cart/payment_failed_screen.dart';
 import 'package:azkomoly_app/features/cart/sse_timeout_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_client_sse/constants/sse_request_type_enum.dart';
@@ -197,7 +196,13 @@ class ShopProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  int _currentRetryCount = 0;
+  static const int _maxRetryAttempts = 5;
+  bool _isExplicitlyStopped = false;
+
+
   void listenToSSE(BuildContext context, String sessionId) {
+    _isExplicitlyStopped = false;
     stopListeningToSSE();
 
     final url = Uri.parse(
@@ -209,30 +214,39 @@ class ShopProvider with ChangeNotifier {
     );
 
     // _sseTimeoutTimer = Timer(const Duration(seconds: 2), () {
-    _sseTimeoutTimer = Timer(const Duration(minutes: 2), () {
-      debugPrint("⏳ SSE connection reached 2-minute timeout limit. Shutting down.");
+    _sseTimeoutTimer = Timer(const Duration(minutes: 15), () {
+      debugPrint("⏳ SSE connection reached 15-minute timeout limit. Shutting down.");
       stopListeningToSSE();
       if (context.mounted) {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
             builder: (_) => OrderProcessingTimeoutScreen(sessionId: sessionId,),
-            // builder: (_) => PaymentFailedScreen(),
           ),
           (route) => route.isFirst, // Drops everything else except the root HomeScreen
         );
       }
     });
 
-    // Connect to your permanent server SSE stream route endpoint
+    _connectToStream(context, url.toString());
+
+    
+  }
+
+  void _connectToStream(BuildContext context, String urlString) {
+    if (_isExplicitlyStopped) return;
+
     _sseStreamSubscription = SSEClient.subscribeToSSE(
       method: SSERequestType.GET,
-      url: url.toString(),
+      url: urlString,
       header: {
         "Accept": "text/event-stream",
         "Cache-Control": "no-cache",
       },
     ).listen((event) async {
+         // Reset retry counts instantly upon landing any structural message
+        _currentRetryCount = 0;
+
         if (event.data == null || event.data!.isEmpty || event.data == 'null') {
           return;
         }
@@ -240,6 +254,7 @@ class ShopProvider with ChangeNotifier {
         switch (event.event) {  
           case 'order.created':
             // debugPrint('Event: ${event.event}');
+            _isExplicitlyStopped = true;
             if (context.mounted) handleOrderCreated(context, event.data!);
 
           default: return;
@@ -247,15 +262,33 @@ class ShopProvider with ChangeNotifier {
         
       },
       onError: (error) {
-        // Handle reconnect/error.
-        debugPrint(
-          'Order SSE error: $error',
-        );
-      }
+        debugPrint("SSE Network Stream Error: $error");
+        if (context.mounted) _handleReconnection(context, urlString);
+      },
+      // onDone: () {
+      //   debugPrint("📡 SSE Connection closed by remote server.");
+      //   _handleReconnection(context, urlString);
+      // },
     );
   }
 
+  void _handleReconnection(BuildContext context, String urlString) {
+    if (_isExplicitlyStopped || _currentRetryCount >= _maxRetryAttempts) {
+      return;
+    }
 
+    _currentRetryCount++;
+    
+    // Calculate Backoff: Attempt 1 = 1s, Attempt 2 = 2s, Attempt 3 = 4s, Attempt 4 = 8s...
+    final backoffDuration = Duration(seconds: 1 << _currentRetryCount);
+    debugPrint("🔄 Reconnecting to SSE in ${backoffDuration.inSeconds} seconds... (Attempt $_currentRetryCount/$_maxRetryAttempts)");
+
+    _sseStreamSubscription?.cancel();
+    
+    Timer(backoffDuration, () {
+      _connectToStream(context, urlString);
+    });
+  }
 
   void handleOrderCreated(BuildContext context, String data) async {
     try {
@@ -292,6 +325,9 @@ class ShopProvider with ChangeNotifier {
 
   void stopListeningToSSE() {
     debugPrint('Closing SSE Stream');
+
+    _isExplicitlyStopped = true;
+    _currentRetryCount = 0;
     _sseTimeoutTimer?.cancel();
     _sseTimeoutTimer = null;
 
