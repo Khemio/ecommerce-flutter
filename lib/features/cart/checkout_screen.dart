@@ -18,44 +18,76 @@ class CheckoutScreen extends StatefulWidget {
   State<CheckoutScreen> createState() => _CheckoutScreenState();
 }
 
-class _CheckoutScreenState extends State<CheckoutScreen> {
-  late final WebViewController _controller;
-  late final ShopProvider _shopProvider;
-
+class _CheckoutScreenState extends State<CheckoutScreen> with WidgetsBindingObserver {
+  late WebViewController _controller;
+  late ShopProvider _shopProvider;
   bool _isNavigatingAway = false;
+  bool _isCheckingStatus = false;
 
   @override
   void initState() {
     super.initState();
-    // Safely capture the provider reference once while context is valid
-    _shopProvider = context.read<ShopProvider>(); 
+    // 2. Register this widget as an observer of the app lifecycle
+    WidgetsBinding.instance.addObserver(this);
+    
+    _shopProvider = context.read<ShopProvider>();
+    _initWebView();
+  }
+
+  @override
+  void dispose() {
+    // 3. Unregister the observer when the widget is destroyed to prevent memory leaks
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    // Triggered when the user switches back to your app from their banking app
+    if (state == AppLifecycleState.resumed) {
+      _verifyCheckoutStatusSilently();
+    }
+  }
+
+  /// Polls the Shopify API via your provider to check if the payment went through
+  Future<void> _verifyCheckoutStatusSilently() async {
+    // Prevent duplicate background checks running simultaneously
+    if (_isCheckingStatus || _isNavigatingAway) return;
+
+    setState(() {
+      _isCheckingStatus = true;
+    });
+
+    try {
+      // TODO: Implement this method in your ShopProvider to fetch the latest checkout status 
+      // (e.g., checking if 'completedAt' is not null or if an order ID is linked)
+      final bool isPaid = await _shopProvider.checkIfCheckoutIsCompleted(widget.checkoutId);
+
+      if (isPaid && mounted) {
+        _isNavigatingAway = true;
+        
+        // Cleanly pop the checkout webview and let the app handle the native success flow
+        Navigator.pop(context);
+        return;
+      }
+    } catch (e) {
+      debugPrint("Silent background checkout verification failed: $e");
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isCheckingStatus = false;
+        });
+      }
+    }
+  }
+
+  void _initWebView() {
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
-          // onPageStarted: (String url) {
-          //   final urlNormilazied = url.toLowerCase();
-          //   // Shopify success redirection tracking rule
-          //   if (urlNormilazied.contains('thank_you') || urlNormilazied.contains('orders')) {
-          //     if (mounted) Navigator.pop(context); 
-                
-          //     return;
-          //   }
-
-          //   // 2. Failure Resolution (User cancelled or card was declined by gateway)
-          //   if (urlNormilazied.contains('cancel') || urlNormilazied.contains('declined') || urlNormilazied.contains('fail')) {
-          //     if (!mounted) return;
-
-          //     // Simply dismiss the webview window back to checkout/cart setup configuration screen
-          //     Navigator.pop(context); 
-              
-          //     Navigator.push(
-          //       context,
-          //       MaterialPageRoute(builder: (_) => const PaymentFailedScreen()),
-          //     );
-          //     return;
-          //   }
-          // },
           
           onNavigationRequest: (NavigationRequest request) async {
             if (_isNavigatingAway) return NavigationDecision.prevent;
@@ -108,6 +140,68 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       )
       ..loadRequest(Uri.parse(widget.checkoutUrl));
   }
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   // Safely capture the provider reference once while context is valid
+  //   _shopProvider = context.read<ShopProvider>(); 
+  //   _controller = WebViewController()
+  //     ..setJavaScriptMode(JavaScriptMode.unrestricted)
+  //     ..setNavigationDelegate(
+  //       NavigationDelegate(
+          
+  //         onNavigationRequest: (NavigationRequest request) async {
+  //           if (_isNavigatingAway) return NavigationDecision.prevent;
+
+  //           final url = request.url.toLowerCase();
+
+  //           // Fix for Hungarian Bank Redirects (Non-HTTP/HTTPS schemes)
+  //           if (!request.url.startsWith('http://') && !request.url.startsWith('https://')) {
+  //             final uri = Uri.parse(request.url);
+  //             // Safely open OTP / Telekom / banking applications installed on device
+  //             if (await canLaunchUrl(uri)) {
+  //               await launchUrl(uri, mode: LaunchMode.externalApplication);
+  //             }
+  //             return NavigationDecision.prevent;
+  //           }
+
+  //           if (url.contains('/thank_you') || url.contains('/orders')) {
+  //             if (mounted) Navigator.pop(context); 
+                
+  //             return NavigationDecision.prevent;
+  //           }
+
+  //           // Failyre pages
+  //           if (url.contains('/cancel') || url.contains('declined=') || url.contains('/payment_failed')) {
+  //             _isNavigatingAway = true;
+
+  //             if (mounted) {
+  //               Navigator.pop(context); // Dismiss webview
+  //               Navigator.push(
+  //                 context,
+  //                 MaterialPageRoute(builder: (_) => const PaymentFailedScreen()),
+  //               );
+  //             }
+  //             return NavigationDecision.prevent;
+  //           }
+            
+  //           if (!(url.contains('/cart') || url.contains('/checkout')) && url.contains('myshopify')) {
+  //             _isNavigatingAway = true;
+
+  //             // Stop the webview from loading the website page
+  //             if (mounted) {
+  //               Navigator.popUntil(context, (route) => route.isFirst); // Pop back to HomeScreen
+  //             }
+  //             return NavigationDecision.prevent; 
+  //           }
+            
+  //           return NavigationDecision.navigate; // Allow normal checkout typing/clicks
+  //         },
+  //       ),
+  //     )
+  //     ..loadRequest(Uri.parse(widget.checkoutUrl));
+  // }
 
   @override
   Widget build(BuildContext context) {
