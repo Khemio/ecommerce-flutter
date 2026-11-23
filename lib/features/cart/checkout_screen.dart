@@ -130,26 +130,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       // ),
       // Inside your CheckoutScreen Widget build method:
       appBar: AppBar(
-        title: GestureDetector(
-          onLongPress: () {
-            debugPrint(
-              "🛠️ Test Hook Triggered: Forcing Thank You URL Routing",
-            );
-            // Explicitly load a dummy domain containing 'fail' to trip your interceptor
-            _controller.loadRequest(
-              Uri.parse("https://myshopify.com/thank_you"),
-            );
-          },
-          onDoubleTap: () {
-            debugPrint("🛠️ Test Hook Triggered: Forcing Failure URL Routing");
-            // Explicitly load a dummy domain containing 'fail' to trip your interceptor
-            _controller.loadRequest(Uri.parse("https://myshopify.com/fail"));
-          },
-          child: Text(
-            AppLocalizations.translate(
-              'secure_checkout',
-              _shopProvider.appLanguage,
-            ),
+        title: Text(
+          AppLocalizations.translate(
+            'secure_checkout',
+            _shopProvider.appLanguage,
           ),
         ),
       ),

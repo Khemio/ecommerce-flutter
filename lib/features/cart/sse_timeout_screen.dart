@@ -16,23 +16,6 @@ class OrderProcessingTimeoutScreen extends StatefulWidget {
 
 class _OrderProcessingTimeoutScreenState
     extends State<OrderProcessingTimeoutScreen> {
-  bool _isChecking = false;
-
-  //TODO: Implement manual checking
-  void _checkStatus() async {
-    setState(() => _isChecking = true);
-
-    // Call your shopProvider verification fetch manually to see if the proxy map updated
-    final provider = context.read<ShopProvider>();
-
-    // Simulate or hook directly to an HTTP GET verification rule on your Go proxy:
-    // e.g., await provider.checkOrderManually(widget.sessionId, context);
-    await Future.delayed(const Duration(seconds: 2));
-
-    if (!mounted) return;
-    setState(() => _isChecking = false);
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -89,22 +72,6 @@ class _OrderProcessingTimeoutScreenState
                 ),
               ),
               const SizedBox(height: 32),
-              ElevatedButton(
-                onPressed: _isChecking ? null : _checkStatus,
-                // "INSPECTION IN PROGRESS..." : “UPDATE ORDER STATUS”
-                child: Text(
-                  _isChecking
-                      ? AppLocalizations.translate(
-                          'timeout_status_check',
-                          appLanguage,
-                        )
-                      : AppLocalizations.translate(
-                          'timeout_status_action',
-                          appLanguage,
-                        ),
-                ),
-                // child: Text(_isChecking ? "ELLENŐRZÉS FOLYAMATBAN..." : "RENDELÉS ÁLLAPOTÁNAK FRISSÍTÉSE"),
-              ),
               const SizedBox(height: 12),
               TextButton(
                 onPressed: () =>

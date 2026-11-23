@@ -1,3 +1,6 @@
+// Public named parameters intentionally differ from private raw-ID fields.
+// ignore_for_file: prefer_initializing_formals
+
 /// First-variant product representation returned by ecommerce-proxy.
 class Product {
   final String _id;

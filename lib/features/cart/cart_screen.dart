@@ -46,8 +46,6 @@ class _CartScreenState extends State<CartScreen> {
             provider.profile,
           );
 
-          debugPrint("🔗 PREFILLED CHECKOUT URL: $checkoutUrl");
-
           provider.listenToSSE(context, sessionId);
           Navigator.push(
             // ignore: use_build_context_synchronously

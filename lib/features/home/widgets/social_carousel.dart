@@ -9,7 +9,7 @@ import 'package:azkomoly_app/core/widgets/custom_image.dart';
 import 'package:azkomoly_app/core/providers/shop_provider.dart';
 
 class SocialCarousel extends StatelessWidget {
-  SocialCarousel({super.key});
+  const SocialCarousel({super.key});
 
   Future<void> _launchSocialVideo(String urlString) async {
     final Uri url = Uri.parse(urlString);

@@ -485,6 +485,9 @@ class ShopProvider with ChangeNotifier {
   }
 
   void removeFromCart(String variantId) {
+    // A pending debounced save must not overwrite this newer cart state.
+    _cartSaveTimer?.cancel();
+    _cartSaveTimer = null;
     _cart.remove(variantId);
 
     _saveCartToDisk();
@@ -492,6 +495,8 @@ class ShopProvider with ChangeNotifier {
   }
 
   void clearCart() {
+    _cartSaveTimer?.cancel();
+    _cartSaveTimer = null;
     _cart.clear();
 
     _saveCartToDisk();

@@ -1,5 +1,4 @@
 class RemoteOrder {
-  // final int orderId;
   final String orderId;
   final String orderName;
   final int orderNumber;
@@ -7,7 +6,7 @@ class RemoteOrder {
   final double totalPrice;
   final String currency;
   final Map<String, LineItem> lineItems;
-  final bool _isValid;
+  final bool isValid;
 
   const RemoteOrder({
     required this.orderId,
@@ -17,10 +16,8 @@ class RemoteOrder {
     required this.totalPrice,
     required this.currency,
     required this.lineItems,
-    required bool isValid,
-  }) : _isValid = isValid;
-
-  bool get isValid => _isValid;
+    required this.isValid,
+  });
 
   factory RemoteOrder.fromJson(Map<String, dynamic> json) {
     var dataIsValid = true;
