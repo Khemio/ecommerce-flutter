@@ -10,7 +10,7 @@ class UserProfile {
     required this.firstName,
     required this.lastName,
     required this.email,
-    required this.address
+    required this.address,
   });
 
   // Compiled full-name helper getter for clean read-only layouts
@@ -27,7 +27,6 @@ class UserProfile {
   set city(String value) => address.city = value;
   set streetAddress(String value) => address.streetAddress = value;
 
-
   Map<String, dynamic> toJson() => {
     'firstName': firstName,
     'lastName': lastName,
@@ -40,9 +39,11 @@ class UserProfile {
       firstName: json['firstName'] ?? '',
       lastName: json['lastName'] ?? '',
       email: json['email'] ?? '',
-      address: json['address'] != null 
+      address: json['address'] != null
           ? ShippingAddress.fromJson(json['address'])
-          : ShippingAddress.fromJson(json), // Fallback support for older, flat caches
+          : ShippingAddress.fromJson(
+              json,
+            ), // Fallback support for older, flat caches
     );
   }
 }

@@ -17,7 +17,7 @@ class MainLayout extends StatefulWidget {
 
 class _MainLayoutState extends State<MainLayout> {
   int _currentIndex = 0;
-  
+
   // Clean viewport cache matrix
   final List<Widget> _screens = [
     const HomeScreen(),
@@ -31,12 +31,15 @@ class _MainLayoutState extends State<MainLayout> {
 
     return Scaffold(
       body: IndexedStack(
-        index: _currentIndex, // Preserves the scroll position of screens when switching tabs!
+        index:
+            _currentIndex, // Preserves the scroll position of screens when switching tabs!
         children: _screens,
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          border: Border(top: BorderSide(color: Theme.of(context).dividerColor, width: 1)),
+          border: Border(
+            top: BorderSide(color: Theme.of(context).dividerColor, width: 1),
+          ),
         ),
         child: BottomNavigationBar(
           currentIndex: _currentIndex,
@@ -48,19 +51,28 @@ class _MainLayoutState extends State<MainLayout> {
           type: BottomNavigationBarType.fixed,
           items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.explore_outlined), 
-              activeIcon: Icon(Icons.explore), 
-              label: AppLocalizations.translate('explore_tab', shopProvider.appLanguage),
+              icon: Icon(Icons.explore_outlined),
+              activeIcon: Icon(Icons.explore),
+              label: AppLocalizations.translate(
+                'explore_tab',
+                shopProvider.appLanguage,
+              ),
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_bag_outlined), 
-              activeIcon: Icon(Icons.shopping_bag), 
-              label: AppLocalizations.translate('bag_tab', shopProvider.appLanguage),
+              icon: Icon(Icons.shopping_bag_outlined),
+              activeIcon: Icon(Icons.shopping_bag),
+              label: AppLocalizations.translate(
+                'bag_tab',
+                shopProvider.appLanguage,
+              ),
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline), 
-              activeIcon: Icon(Icons.person), 
-              label: AppLocalizations.translate('profile_tab', shopProvider.appLanguage),
+              icon: Icon(Icons.person_outline),
+              activeIcon: Icon(Icons.person),
+              label: AppLocalizations.translate(
+                'profile_tab',
+                shopProvider.appLanguage,
+              ),
             ),
           ],
         ),

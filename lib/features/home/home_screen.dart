@@ -44,47 +44,56 @@ class _HomeScreenState extends State<HomeScreen> {
               'azkomoly_new_logo.webp'.toAssetPath(),
               height: 32,
               fit: BoxFit.contain,
-              errorBuilder: (context, error, stackTrace) => const Text('AZKOMOLY', style: TextStyle(fontWeight: FontWeight.bold)),
+              errorBuilder: (context, error, stackTrace) => const Text(
+                'AZKOMOLY',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         ),
-        actions: [
-          CartButton(), const SizedBox(width: 8),],
+        actions: [CartButton(), const SizedBox(width: 8)],
       ),
       body: RefreshIndicator(
         onRefresh: () => _onRefresh(context),
         child: shopProvider.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : shopProvider.products.isEmpty
+            ? const Center(child: CircularProgressIndicator())
+            : shopProvider.products.isEmpty
             ? RefetchWidget(
-              appLanguage: shopProvider.appLanguage,
-              onRefresh: _onRefresh
-            )
-            // Body 
+                appLanguage: shopProvider.appLanguage,
+                onRefresh: _onRefresh,
+              )
+            // Body
             : ListView(
-               physics: const AlwaysScrollableScrollPhysics(), // Ensures drag pull handles correctly
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: PromoCarousel(products: shopProvider.products)
-                ),
-
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                  child: Text(
-                    AppLocalizations.translate('choose_box', shopProvider.appLanguage),
-                    style: Theme.of(context).textTheme.headlineLarge
-                    
+                physics:
+                    const AlwaysScrollableScrollPhysics(), // Ensures drag pull handles correctly
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: PromoCarousel(products: shopProvider.products),
                   ),
-                ),
 
-                FilterPillRow(),
-                ProductGrid(),
-                const SizedBox(height: 20),
-                SocialCarousel(), 
-                const SizedBox(height: 40),
-            ]),
-      )
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 8.0,
+                    ),
+                    child: Text(
+                      AppLocalizations.translate(
+                        'choose_box',
+                        shopProvider.appLanguage,
+                      ),
+                      style: Theme.of(context).textTheme.headlineLarge,
+                    ),
+                  ),
+
+                  FilterPillRow(),
+                  ProductGrid(),
+                  const SizedBox(height: 20),
+                  SocialCarousel(),
+                  const SizedBox(height: 40),
+                ],
+              ),
+      ),
     );
   }
 }

@@ -10,22 +10,24 @@ class OrderProcessingTimeoutScreen extends StatefulWidget {
   const OrderProcessingTimeoutScreen({super.key, required this.sessionId});
 
   @override
-  State<OrderProcessingTimeoutScreen> createState() => _OrderProcessingTimeoutScreenState();
+  State<OrderProcessingTimeoutScreen> createState() =>
+      _OrderProcessingTimeoutScreenState();
 }
 
-class _OrderProcessingTimeoutScreenState extends State<OrderProcessingTimeoutScreen> {
+class _OrderProcessingTimeoutScreenState
+    extends State<OrderProcessingTimeoutScreen> {
   bool _isChecking = false;
 
   //TODO: Implement manual checking
   void _checkStatus() async {
     setState(() => _isChecking = true);
-    
+
     // Call your shopProvider verification fetch manually to see if the proxy map updated
     final provider = context.read<ShopProvider>();
-    
+
     // Simulate or hook directly to an HTTP GET verification rule on your Go proxy:
     // e.g., await provider.checkOrderManually(widget.sessionId, context);
-    await Future.delayed(const Duration(seconds: 2)); 
+    await Future.delayed(const Duration(seconds: 2));
 
     if (!mounted) return;
     setState(() => _isChecking = false);
@@ -67,7 +69,10 @@ class _OrderProcessingTimeoutScreenState extends State<OrderProcessingTimeoutScr
                       Text(
                         // 'PAYMENT WAS SUCCESSFUL?',
                         // "A FIZETÉS SIKERES VOLT?",
-                        AppLocalizations.translate('timeout_subtitle', appLanguage),
+                        AppLocalizations.translate(
+                          'timeout_subtitle',
+                          appLanguage,
+                        ),
                         style: theme.textTheme.titleMedium,
                         textAlign: TextAlign.center,
                       ),
@@ -88,20 +93,33 @@ class _OrderProcessingTimeoutScreenState extends State<OrderProcessingTimeoutScr
                 onPressed: _isChecking ? null : _checkStatus,
                 // "INSPECTION IN PROGRESS..." : “UPDATE ORDER STATUS”
                 child: Text(
-                  _isChecking 
-                  ? AppLocalizations.translate('timeout_status_check', appLanguage)
-                  : AppLocalizations.translate('timeout_status_action', appLanguage)
+                  _isChecking
+                      ? AppLocalizations.translate(
+                          'timeout_status_check',
+                          appLanguage,
+                        )
+                      : AppLocalizations.translate(
+                          'timeout_status_action',
+                          appLanguage,
+                        ),
                 ),
                 // child: Text(_isChecking ? "ELLENŐRZÉS FOLYAMATBAN..." : "RENDELÉS ÁLLAPOTÁNAK FRISSÍTÉSE"),
               ),
               const SizedBox(height: 12),
               TextButton(
-                onPressed: () => Navigator.popUntil(context, (route) => route.isFirst),
+                onPressed: () =>
+                    Navigator.popUntil(context, (route) => route.isFirst),
                 child: Text(
                   // "Back to main page, I'll check later",
                   // "Vissza a főoldalra, később ellenőrzöm",
-                  AppLocalizations.translate('timeout_back_to_main', appLanguage),
-                  style: TextStyle(color: AppTheme.backgroundWhite, fontWeight: FontWeight.bold),
+                  AppLocalizations.translate(
+                    'timeout_back_to_main',
+                    appLanguage,
+                  ),
+                  style: TextStyle(
+                    color: AppTheme.backgroundWhite,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],

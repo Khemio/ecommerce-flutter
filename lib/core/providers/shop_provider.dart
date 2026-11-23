@@ -20,6 +20,7 @@ import 'package:azkomoly_app/core/models/user_profile.dart';
 
 import 'package:azkomoly_app/features/profile/models/order_history.dart';
 import 'package:azkomoly_app/features/home/models/social_review_data.dart';
+
 class ShopProvider with ChangeNotifier {
   String _appLanguage = 'en';
   List<Product> _products = [];
@@ -70,11 +71,16 @@ class ShopProvider with ChangeNotifier {
       final prefs = await SharedPreferences.getInstance();
 
       final String? cachedLang = prefs.getString('user_language_pref');
-    
+
       if (cachedLang != null) {
         _appLanguage = cachedLang;
       } else {
-        final String systemLocaleCode = ui.PlatformDispatcher.instance.locale.languageCode.toLowerCase();
+        final String systemLocaleCode = ui
+            .PlatformDispatcher
+            .instance
+            .locale
+            .languageCode
+            .toLowerCase();
 
         _appLanguage = (systemLocaleCode == 'hu') ? 'hu' : 'en';
       }
@@ -94,7 +100,7 @@ class ShopProvider with ChangeNotifier {
           _orders[key] = OrderHistoryItem.fromJson(value);
         });
       }
-      
+
       // Restore User Profile Info
       final profileStr = prefs.getString('user_profile');
       if (profileStr != null) {
@@ -108,13 +114,21 @@ class ShopProvider with ChangeNotifier {
   }
 
   List<String> get uniqueProductTypes {
-    final types = _products.map((p) => p.productType.trim()).where((t) => t.isNotEmpty).toSet().toList();
+    final types = _products
+        .map((p) => p.productType.trim())
+        .where((t) => t.isNotEmpty)
+        .toSet()
+        .toList();
     return ['All', ...types];
   }
 
   List<String> get uniqueVendors {
     // Assumes you add an explicit 'vendor' String field to your Product model later
-    final vendors = _products.map((p) => p.vendor.trim()).where((v) => v.isNotEmpty).toSet().toList();
+    final vendors = _products
+        .map((p) => p.vendor.trim())
+        .where((v) => v.isNotEmpty)
+        .toSet()
+        .toList();
     return ['All', ...vendors];
   }
 
@@ -124,11 +138,15 @@ class ShopProvider with ChangeNotifier {
   List<Product> get filteredProducts {
     List<Product> output = List.from(_products);
     if (_selectedTypeFilter != 'All') {
-      output = output.where((p) => p.productType.trim() == _selectedTypeFilter).toList();
+      output = output
+          .where((p) => p.productType.trim() == _selectedTypeFilter)
+          .toList();
     }
 
     if (_selectedVendorFilter != 'All') {
-      output = output.where((p) => p.vendor.trim() == _selectedVendorFilter).toList();
+      output = output
+          .where((p) => p.vendor.trim() == _selectedVendorFilter)
+          .toList();
     }
 
     if (_selectedSortOrder == 'LowToHigh') {
@@ -143,7 +161,7 @@ class ShopProvider with ChangeNotifier {
   void updateFilters({
     required String productType,
     required String vendor,
-    required String sort
+    required String sort,
   }) {
     _selectedTypeFilter = productType;
     _selectedVendorFilter = vendor;
@@ -175,7 +193,9 @@ class ShopProvider with ChangeNotifier {
           }
         }
       } catch (error) {
-        debugPrint('Remote configuration unavailable; using local banners: $error');
+        debugPrint(
+          'Remote configuration unavailable; using local banners: $error',
+        );
       }
     }
     notifyListeners();
@@ -186,7 +206,8 @@ class ShopProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await http.get(AppConfig.productsEndpoint)
+      final response = await http
+          .get(AppConfig.productsEndpoint)
           .timeout(const Duration(seconds: 8));
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
@@ -206,76 +227,73 @@ class ShopProvider with ChangeNotifier {
   static const int _maxRetryAttempts = 5;
   bool _isExplicitlyStopped = false;
 
-
   void listenToSSE(BuildContext context, String sessionId) {
     stopListeningToSSE();
     _isExplicitlyStopped = false;
 
     final url = Uri.parse(
       AppConfig.orderEndpoint.toString(),
-    ).replace(
-      queryParameters: {
-        'sessionId': sessionId,
-      },
-    );
+    ).replace(queryParameters: {'sessionId': sessionId});
 
     // _sseTimeoutTimer = Timer(const Duration(seconds: 2), () {
     _sseTimeoutTimer = Timer(const Duration(minutes: 15), () {
-      debugPrint("⏳ SSE connection reached 15-minute timeout limit. Shutting down.");
+      debugPrint(
+        "⏳ SSE connection reached 15-minute timeout limit. Shutting down.",
+      );
       stopListeningToSSE();
       if (context.mounted) {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
-            builder: (_) => OrderProcessingTimeoutScreen(sessionId: sessionId,),
+            builder: (_) => OrderProcessingTimeoutScreen(sessionId: sessionId),
           ),
-          (route) => route.isFirst, // Drops everything else except the root HomeScreen
+          (route) =>
+              route.isFirst, // Drops everything else except the root HomeScreen
         );
       }
     });
 
     _connectToStream(context, url.toString());
-
-    
   }
 
   void _connectToStream(BuildContext context, String urlString) {
     if (_isExplicitlyStopped) return;
 
-    _sseStreamSubscription = SSEClient.subscribeToSSE(
-      method: SSERequestType.GET,
-      url: urlString,
-      header: {
-        "Accept": "text/event-stream",
-        "Cache-Control": "no-cache",
-      },
-    ).listen((event) async {
-         // Reset retry counts instantly upon landing any structural message
-        _currentRetryCount = 0;
+    _sseStreamSubscription =
+        SSEClient.subscribeToSSE(
+          method: SSERequestType.GET,
+          url: urlString,
+          header: {"Accept": "text/event-stream", "Cache-Control": "no-cache"},
+        ).listen(
+          (event) async {
+            // Reset retry counts instantly upon landing any structural message
+            _currentRetryCount = 0;
 
-        if (event.data == null || event.data!.isEmpty || event.data == 'null') {
-          return;
-        }
+            if (event.data == null ||
+                event.data!.isEmpty ||
+                event.data == 'null') {
+              return;
+            }
 
-        switch (event.event) {  
-          case 'order.created':
-            // debugPrint('Event: ${event.event}');
-            _isExplicitlyStopped = true;
-            if (context.mounted) handleOrderCreated(context, event.data!);
+            switch (event.event) {
+              case 'order.created':
+                // debugPrint('Event: ${event.event}');
+                _isExplicitlyStopped = true;
+                if (context.mounted) handleOrderCreated(context, event.data!);
 
-          default: return;
-        }
-        
-      },
-      onError: (error) {
-        debugPrint("SSE Network Stream Error: $error");
-        if (context.mounted) _handleReconnection(context, urlString);
-      },
-      // onDone: () {
-      //   debugPrint("📡 SSE Connection closed by remote server.");
-      //   _handleReconnection(context, urlString);
-      // },
-    );
+              default:
+                return;
+            }
+          },
+          onError: (error) {
+            debugPrint("SSE Network Stream Error: $error");
+            if (context.mounted) _handleReconnection(context, urlString);
+          },
+          // onDone: () {
+          //   debugPrint("📡 SSE Connection closed by remote server.");
+          //   _handleReconnection(context, urlString);
+          // },
+        );
   }
 
   void _handleReconnection(BuildContext context, String urlString) {
@@ -284,13 +302,15 @@ class ShopProvider with ChangeNotifier {
     }
 
     _currentRetryCount++;
-    
+
     // Calculate Backoff: Attempt 1 = 1s, Attempt 2 = 2s, Attempt 3 = 4s, Attempt 4 = 8s...
     final backoffDuration = Duration(seconds: 1 << _currentRetryCount);
-    debugPrint("🔄 Reconnecting to SSE in ${backoffDuration.inSeconds} seconds... (Attempt $_currentRetryCount/$_maxRetryAttempts)");
+    debugPrint(
+      "🔄 Reconnecting to SSE in ${backoffDuration.inSeconds} seconds... (Attempt $_currentRetryCount/$_maxRetryAttempts)",
+    );
 
     _sseStreamSubscription?.cancel();
-    
+
     _sseReconnectTimer?.cancel();
     _sseReconnectTimer = Timer(backoffDuration, () {
       if (!_isExplicitlyStopped) _connectToStream(context, urlString);
@@ -306,8 +326,8 @@ class ShopProvider with ChangeNotifier {
       if (!remoteOrder.isValid) {
         return;
       }
-      
-      await archiveCartToCompletedOrder(remoteOrder); 
+
+      await archiveCartToCompletedOrder(remoteOrder);
       stopListeningToSSE();
 
       if (context.mounted) {
@@ -319,15 +339,13 @@ class ShopProvider with ChangeNotifier {
               confirmationNumber: remoteOrder.confirmationNumber,
             ),
           ),
-          (route) => route.isFirst, // Drops everything else except the root HomeScreen
+          (route) =>
+              route.isFirst, // Drops everything else except the root HomeScreen
         );
       }
     } catch (e) {
-      debugPrint(
-        'Failed processing order SSE event: $e',
-      );
+      debugPrint('Failed processing order SSE event: $e');
     }
-
   }
 
   void stopListeningToSSE() {
@@ -343,18 +361,22 @@ class ShopProvider with ChangeNotifier {
     _sseStreamSubscription?.cancel();
     _sseStreamSubscription = null;
   }
-  
-// Persists the current cart map configuration onto memory disk storage
+
+  // Persists the current cart map configuration onto memory disk storage
   Future<void> _saveCartToDisk() async {
     final prefs = await SharedPreferences.getInstance();
-    final Map<String, dynamic> cartJsonMap = _cart.map((key, value) => MapEntry(key, value.toJson()));
+    final Map<String, dynamic> cartJsonMap = _cart.map(
+      (key, value) => MapEntry(key, value.toJson()),
+    );
     await prefs.setString('user_cart_cache', json.encode(cartJsonMap));
   }
 
   // Persists the current orders map configuration onto memory disk storage
   Future<void> _saveOrdersToDisk() async {
     final prefs = await SharedPreferences.getInstance();
-    final Map<String, dynamic> ordersJsonMap = _orders.map((key, value) => MapEntry(key, value.toJson()));
+    final Map<String, dynamic> ordersJsonMap = _orders.map(
+      (key, value) => MapEntry(key, value.toJson()),
+    );
     await prefs.setString('user_orders_cache', json.encode(ordersJsonMap));
   }
 
@@ -385,7 +407,7 @@ class ShopProvider with ChangeNotifier {
         zipCode: zipCode,
         city: city,
         streetAddress: streetAddress,
-      )
+      ),
     );
     await _saveProfileToDisk();
     notifyListeners();
@@ -407,18 +429,15 @@ class ShopProvider with ChangeNotifier {
 
     // final String generatedOrderId = "AZK-${DateTime.now().millisecondsSinceEpoch}";
 
-    // Create the finalized OrderHistoryItem summary node 
-    final newOrderRecord = OrderHistoryItem.fromOrder(
-      order: order,
-      cart: cart,
-    );
+    // Create the finalized OrderHistoryItem summary node
+    final newOrderRecord = OrderHistoryItem.fromOrder(order: order, cart: cart);
 
     // Save into our persistent map using the generated ID as the key mapping anchor
     // _orders[generatedOrderId] = newOrderRecord;
     _orders[newOrderRecord.orderId] = newOrderRecord;
 
     _cart.clear(); // Flush out current cart bag
-    
+
     // Atomically synchronize both updated database blocks onto device disk space
     await _saveCartToDisk();
     await _saveOrdersToDisk();
@@ -426,21 +445,22 @@ class ShopProvider with ChangeNotifier {
   }
 
   void addToCart(Product product, int quantity) {
-    final String trackingKey = product.variantId; // Might be useful: "${product.variantId}_$selectedSize"
+    final String trackingKey = product
+        .variantId; // Might be useful: "${product.variantId}_$selectedSize"
     if (_cart.containsKey(trackingKey)) {
       _cart[trackingKey]!.quantity += quantity;
     } else {
       _cart[trackingKey] = CartItem(product: product, quantity: quantity);
     }
 
-     notifyListeners(); //Update the screen UI instantly so the user sees no lag!
+    notifyListeners(); //Update the screen UI instantly so the user sees no lag!
 
     //Cancel any pending file writes if the user clicks again quickly
-    _cartSaveTimer?.cancel(); 
-    
+    _cartSaveTimer?.cancel();
+
     // Schedule the file save to happen exactly 1 second AFTER the user stops interacting
     _cartSaveTimer = Timer(const Duration(seconds: 1), () {
-      _saveCartToDisk(); 
+      _saveCartToDisk();
     });
   }
 
@@ -456,11 +476,11 @@ class ShopProvider with ChangeNotifier {
     notifyListeners();
 
     //Cancel any pending file writes if the user clicks again quickly
-    _cartSaveTimer?.cancel(); 
-    
+    _cartSaveTimer?.cancel();
+
     // Schedule the file save to happen exactly 1 second AFTER the user stops interacting
     _cartSaveTimer = Timer(const Duration(seconds: 1), () {
-      _saveCartToDisk(); 
+      _saveCartToDisk();
     });
   }
 
@@ -477,11 +497,11 @@ class ShopProvider with ChangeNotifier {
     _saveCartToDisk();
     notifyListeners();
   }
+
   @override
   void dispose() {
     _cartSaveTimer?.cancel();
     stopListeningToSSE();
     super.dispose();
   }
-
 }

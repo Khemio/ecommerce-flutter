@@ -14,10 +14,10 @@ class AppLayoutConfig {
     required this.socialReviews,
   });
 
-  AppLayoutConfig.defaultConfig({required this.promoBanners}) :
-    isPromoCarouselEnabled = true,
-    isSocialCarouselEnabled = true,
-    socialReviews = demoReviews;
+  AppLayoutConfig.defaultConfig({required this.promoBanners})
+    : isPromoCarouselEnabled = true,
+      isSocialCarouselEnabled = true,
+      socialReviews = demoReviews;
 
   factory AppLayoutConfig.fromJson(Map<String, dynamic> json) {
     return AppLayoutConfig(

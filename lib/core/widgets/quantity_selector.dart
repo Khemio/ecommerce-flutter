@@ -19,6 +19,7 @@ class QuantitySelector extends StatefulWidget {
   @override
   State<QuantitySelector> createState() => _QuantitySelectorState();
 }
+
 class _QuantitySelectorState extends State<QuantitySelector> {
   late final TextEditingController _controller;
 
@@ -32,7 +33,8 @@ class _QuantitySelectorState extends State<QuantitySelector> {
   void didUpdateWidget(covariant QuantitySelector oldWidget) {
     super.didUpdateWidget(oldWidget);
     // Sync external value changes into the field
-    if (oldWidget.value != widget.value && _controller.text != '${widget.value}') {
+    if (oldWidget.value != widget.value &&
+        _controller.text != '${widget.value}') {
       _controller.text = '${widget.value}';
       _controller.selection = TextSelection.fromPosition(
         TextPosition(offset: _controller.text.length),
@@ -60,8 +62,10 @@ class _QuantitySelectorState extends State<QuantitySelector> {
         children: [
           _SelectorButton(
             label: '-',
-            compact: widget.compact, 
-            onTap: widget.value > widget.min ? () => widget.onChanged(widget.value - 1) : null,
+            compact: widget.compact,
+            onTap: widget.value > widget.min
+                ? () => widget.onChanged(widget.value - 1)
+                : null,
           ),
           SizedBox(width: spacing),
 
@@ -71,7 +75,10 @@ class _QuantitySelectorState extends State<QuantitySelector> {
               controller: _controller,
               keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: fieldFontSize),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: fieldFontSize,
+              ),
               maxLength: 3,
               onChanged: (v) => widget.onChanged(int.tryParse(v) ?? widget.min),
               decoration: const InputDecoration(
@@ -86,14 +93,16 @@ class _QuantitySelectorState extends State<QuantitySelector> {
           SizedBox(width: spacing),
           _SelectorButton(
             label: '+',
-            compact: widget.compact, 
-            onTap: widget.value < widget.max ? () => widget.onChanged(widget.value + 1) : null,
+            compact: widget.compact,
+            onTap: widget.value < widget.max
+                ? () => widget.onChanged(widget.value + 1)
+                : null,
           ),
         ],
       ),
     );
   }
-}  
+}
 
 class _SelectorButton extends StatelessWidget {
   final String label;
@@ -125,12 +134,9 @@ class _SelectorButton extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: fontSize,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: fontSize),
         ),
       ),
     );
   }
-}   
+}

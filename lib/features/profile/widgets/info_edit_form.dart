@@ -13,13 +13,14 @@ class InfoEditForm extends StatefulWidget {
     required String zipCode,
     required String city,
     required String streetAddress,
-  }) onSaved;
+  })
+  onSaved;
 
-
-  const InfoEditForm({super.key, 
-    this.initialProfile, 
+  const InfoEditForm({
+    super.key,
+    this.initialProfile,
     required this.appLanguage,
-    required this.onSaved
+    required this.onSaved,
   });
 
   @override
@@ -58,6 +59,7 @@ class _InfoEditFormState extends State<InfoEditForm> {
     _streetController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -69,9 +71,12 @@ class _InfoEditFormState extends State<InfoEditForm> {
                 controller: _lastNameController,
                 style: const TextStyle(color: Colors.black),
                 decoration: InputDecoration(
-                  labelText: AppLocalizations.translate('field_name_last', widget.appLanguage),
+                  labelText: AppLocalizations.translate(
+                    'field_name_last',
+                    widget.appLanguage,
+                  ),
                   labelStyle: TextStyle(color: Colors.black54),
-                  border: OutlineInputBorder()
+                  border: OutlineInputBorder(),
                 ),
               ),
             ),
@@ -81,9 +86,12 @@ class _InfoEditFormState extends State<InfoEditForm> {
                 controller: _firstNameController,
                 style: const TextStyle(color: Colors.black),
                 decoration: InputDecoration(
-                  labelText: AppLocalizations.translate('field_name_first', widget.appLanguage),
+                  labelText: AppLocalizations.translate(
+                    'field_name_first',
+                    widget.appLanguage,
+                  ),
                   labelStyle: TextStyle(color: Colors.black54),
-                  border: OutlineInputBorder()
+                  border: OutlineInputBorder(),
                 ),
               ),
             ),
@@ -94,7 +102,10 @@ class _InfoEditFormState extends State<InfoEditForm> {
           controller: _emailController,
           style: const TextStyle(color: Colors.black),
           decoration: InputDecoration(
-            labelText: AppLocalizations.translate('field_email', widget.appLanguage),
+            labelText: AppLocalizations.translate(
+              'field_email',
+              widget.appLanguage,
+            ),
             labelStyle: TextStyle(color: Colors.black54),
             border: OutlineInputBorder(),
           ),
@@ -109,8 +120,10 @@ class _InfoEditFormState extends State<InfoEditForm> {
                 style: const TextStyle(color: Colors.black),
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-
-                  labelText: AppLocalizations.translate('field_address_zip', widget.appLanguage),
+                  labelText: AppLocalizations.translate(
+                    'field_address_zip',
+                    widget.appLanguage,
+                  ),
                   labelStyle: TextStyle(color: Colors.black54),
                   border: OutlineInputBorder(),
                 ),
@@ -122,7 +135,10 @@ class _InfoEditFormState extends State<InfoEditForm> {
                 controller: _cityController,
                 style: const TextStyle(color: Colors.black),
                 decoration: InputDecoration(
-                  labelText: AppLocalizations.translate('field_address_city', widget.appLanguage),
+                  labelText: AppLocalizations.translate(
+                    'field_address_city',
+                    widget.appLanguage,
+                  ),
                   labelStyle: TextStyle(color: Colors.black54),
                   border: OutlineInputBorder(),
                 ),
@@ -135,7 +151,10 @@ class _InfoEditFormState extends State<InfoEditForm> {
           controller: _streetController,
           style: const TextStyle(color: Colors.black),
           decoration: InputDecoration(
-            labelText: AppLocalizations.translate('field_address_street', widget.appLanguage),
+            labelText: AppLocalizations.translate(
+              'field_address_street',
+              widget.appLanguage,
+            ),
             labelStyle: TextStyle(color: Colors.black54),
             border: OutlineInputBorder(),
           ),
@@ -149,7 +168,7 @@ class _InfoEditFormState extends State<InfoEditForm> {
           ),
           onPressed: () {
             if (!_areInputsValid()) return;
-            
+
             widget.onSaved(
               firstName: _firstNameController.text,
               lastName: _lastNameController.text,
@@ -160,9 +179,11 @@ class _InfoEditFormState extends State<InfoEditForm> {
             );
           },
 
-          child: Text(AppLocalizations.translate('save_btn', widget.appLanguage),),
-        )
-      ]
+          child: Text(
+            AppLocalizations.translate('save_btn', widget.appLanguage),
+          ),
+        ),
+      ],
     );
   }
 
@@ -173,22 +194,31 @@ class _InfoEditFormState extends State<InfoEditForm> {
     final String emailInput = _emailController.text.trim();
 
     if (lastNameInput.isEmpty || firstNameInput.isEmpty) {
-      errorMsg = AppLocalizations.translate('input_error_name', widget.appLanguage);
+      errorMsg = AppLocalizations.translate(
+        'input_error_name',
+        widget.appLanguage,
+      );
       _showErrorSnackbar(context, errorMsg);
       return false;
     }
 
     if (emailInput.isEmpty) {
-      errorMsg = AppLocalizations.translate('input_error_email_empty', widget.appLanguage);
+      errorMsg = AppLocalizations.translate(
+        'input_error_email_empty',
+        widget.appLanguage,
+      );
       _showErrorSnackbar(context, errorMsg);
       return false;
     }
 
     final RegExp emailRegex = RegExp(
-      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+"
+      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
     );
     if (!emailRegex.hasMatch(emailInput)) {
-      errorMsg = AppLocalizations.translate('input_error_email_format', widget.appLanguage);
+      errorMsg = AppLocalizations.translate(
+        'input_error_email_format',
+        widget.appLanguage,
+      );
       _showErrorSnackbar(context, errorMsg);
       return false;
     }
@@ -202,7 +232,10 @@ class _InfoEditFormState extends State<InfoEditForm> {
     final String? addressValidationError = testAddress.validate();
 
     if (addressValidationError != null) {
-      errorMsg = AppLocalizations.translate(addressValidationError, widget.appLanguage);
+      errorMsg = AppLocalizations.translate(
+        addressValidationError,
+        widget.appLanguage,
+      );
       _showErrorSnackbar(context, errorMsg);
       return false;
     }
@@ -211,13 +244,12 @@ class _InfoEditFormState extends State<InfoEditForm> {
   }
 
   void _showErrorSnackbar(BuildContext context, String message) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(message),
-      backgroundColor: Colors.redAccent,
-      behavior: SnackBarBehavior.floating,
-    ),
-  );
-}
-
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.redAccent,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
 }

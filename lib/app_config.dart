@@ -6,9 +6,10 @@ class AppConfig {
     defaultValue: 'http://localhost:8080',
   );
 
-
   // The proxy currently has no /config endpoint. Opt in only with a compatible API.
-  static const bool enableRemoteConfig = bool.fromEnvironment('ENABLE_REMOTE_CONFIG');
+  static const bool enableRemoteConfig = bool.fromEnvironment(
+    'ENABLE_REMOTE_CONFIG',
+  );
 
   // Helper methods to programmatically construct your specific endpoints
   static Uri get productsEndpoint => Uri.parse("$baseUrl/api/$apiVer/products");

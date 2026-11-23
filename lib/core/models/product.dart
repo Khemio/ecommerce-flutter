@@ -22,7 +22,8 @@ class Product {
     required this.price,
     required this.sku,
     required this.isAvailable,
-  }) : _id = id, _variantId = variantId;
+  }) : _id = id,
+       _variantId = variantId;
 
   static String _lastPathSegment(String value) {
     final segments = Uri.tryParse(value)?.pathSegments;
@@ -41,12 +42,16 @@ class Product {
     'productType': productType,
     'vendor': vendor,
     'availableForSale': isAvailable,
-    'images': [{'url': imageUrl}],
-    'variants': [{
-      'id': _variantId,
-      'sku': sku,
-      'price': {'amount': price.toStringAsFixed(2)},
-    }],
+    'images': [
+      {'url': imageUrl},
+    ],
+    'variants': [
+      {
+        'id': _variantId,
+        'sku': sku,
+        'price': {'amount': price.toStringAsFixed(2)},
+      },
+    ],
   };
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -54,10 +59,12 @@ class Product {
     final variants = json['variants'];
     final Map<dynamic, dynamic> firstImage =
         images is List && images.isNotEmpty && images.first is Map
-            ? images.first as Map : const {};
+        ? images.first as Map
+        : const {};
     final Map<dynamic, dynamic> firstVariant =
         variants is List && variants.isNotEmpty && variants.first is Map
-            ? variants.first as Map : const {};
+        ? variants.first as Map
+        : const {};
     final rawPrice = firstVariant['price'];
     final amount = rawPrice is Map ? rawPrice['amount'] : null;
     return Product(

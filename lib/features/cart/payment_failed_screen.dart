@@ -14,7 +14,9 @@ class PaymentFailedScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.translate('payment_fail_title', appLanguage)),
+        title: Text(
+          AppLocalizations.translate('payment_fail_title', appLanguage),
+        ),
       ),
       body: SafeArea(
         child: Padding(
@@ -28,19 +30,25 @@ class PaymentFailedScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       const Icon(
-                        Icons.error_outline_rounded, 
-                        color: AppTheme.errorColor, 
+                        Icons.error_outline_rounded,
+                        color: AppTheme.errorColor,
                         size: 64,
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        AppLocalizations.translate('payment_fail_subtitle', appLanguage),
+                        AppLocalizations.translate(
+                          'payment_fail_subtitle',
+                          appLanguage,
+                        ),
                         style: theme.textTheme.titleMedium,
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        AppLocalizations.translate('payment_fail_msg', appLanguage),
+                        AppLocalizations.translate(
+                          'payment_fail_msg',
+                          appLanguage,
+                        ),
                         style: theme.textTheme.bodyMedium,
                         textAlign: TextAlign.center,
                       ),
@@ -51,7 +59,12 @@ class PaymentFailedScreen extends StatelessWidget {
               const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text(AppLocalizations.translate('payment_fail_back_to_main', appLanguage)),
+                child: Text(
+                  AppLocalizations.translate(
+                    'payment_fail_back_to_main',
+                    appLanguage,
+                  ),
+                ),
               ),
             ],
           ),

@@ -7,14 +7,12 @@ class CartItem {
   final Product product;
   int quantity;
 
-  CartItem({
-    required this.product, 
-    required this.quantity, 
-  });
+  CartItem({required this.product, required this.quantity});
 
   // Convert model directly to a Map format for disk storage conversion
   Map<String, dynamic> toJson() => {
-    'product': product.toJson(), // Assumes your Product model has a toJson() method
+    'product': product
+        .toJson(), // Assumes your Product model has a toJson() method
     'quantity': quantity,
   };
 
@@ -26,7 +24,7 @@ class CartItem {
     );
   }
 
-  CartItem copyWith({double? price,int? quantity}) {
+  CartItem copyWith({double? price, int? quantity}) {
     return CartItem(
       product: price == null ? product : product.copyWith(price: price),
       quantity: quantity ?? this.quantity,
@@ -46,11 +44,11 @@ class OrderHistoryItem {
   OrderHistoryItem({
     required this.orderId,
     required this.orderName,
-    required this.orderNumber, 
+    required this.orderNumber,
     required this.confirmationNumber,
     required this.currency,
     required this.totalAmount,
-    required this.items, 
+    required this.items,
   });
 
   Map<String, dynamic> toJson() => {
@@ -65,7 +63,9 @@ class OrderHistoryItem {
 
   factory OrderHistoryItem.fromJson(Map<String, dynamic> json) {
     var list = json['items'] as List? ?? [];
-    List<CartItem> orderItemsList = list.map((i) => CartItem.fromJson(i)).toList();
+    List<CartItem> orderItemsList = list
+        .map((i) => CartItem.fromJson(i))
+        .toList();
 
     return OrderHistoryItem(
       orderId: json['orderId'] ?? '',
@@ -78,29 +78,32 @@ class OrderHistoryItem {
     );
   }
 
-  factory OrderHistoryItem.fromOrder({required RemoteOrder order, required List<CartItem> cart}) {
+  factory OrderHistoryItem.fromOrder({
+    required RemoteOrder order,
+    required List<CartItem> cart,
+  }) {
     final lineItems = order.lineItems;
 
-    final items = cart.where((item) =>
-      lineItems.containsKey(item.product.id))
-      .map((item) {
-        final remoteVals = lineItems[item.product.id]!;
+    final items = cart
+        .where((item) => lineItems.containsKey(item.product.id))
+        .map((item) {
+          final remoteVals = lineItems[item.product.id]!;
 
           // Check if updates are needed to avoid redundant object creation
-        final priceChanged = item.product.price != remoteVals.price;
-        final quantityChanged = item.quantity != remoteVals.quantity;
+          final priceChanged = item.product.price != remoteVals.price;
+          final quantityChanged = item.quantity != remoteVals.quantity;
 
-        if (priceChanged || quantityChanged) {
-          // Use copyWith to handle final fields safely
-          return item.copyWith(
-            price: remoteVals.price, // Passes down to product.copyWith
-            quantity: remoteVals.quantity,
-          );
-        }
-        
-        return item; // Return original item if nothing changed
+          if (priceChanged || quantityChanged) {
+            // Use copyWith to handle final fields safely
+            return item.copyWith(
+              price: remoteVals.price, // Passes down to product.copyWith
+              quantity: remoteVals.quantity,
+            );
+          }
 
-      }).toList();
+          return item; // Return original item if nothing changed
+        })
+        .toList();
 
     double totalPrice = items.fold(0, (total, item) {
       final price = item.product.price;
@@ -123,6 +126,4 @@ class OrderHistoryItem {
       items: items,
     );
   }
-
-  
 }
