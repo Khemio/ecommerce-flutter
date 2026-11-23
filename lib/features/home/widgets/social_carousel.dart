@@ -8,12 +8,9 @@ import 'package:azkomoly_app/app_localizations.dart';
 import 'package:azkomoly_app/core/widgets/custom_image.dart';
 import 'package:azkomoly_app/core/providers/shop_provider.dart';
 
-import '../models/social_review_data.dart';
 
 
 class SocialCarousel extends StatelessWidget {
-  final reviews = demoReviews;  
-
   SocialCarousel({super.key});
 
   Future<void> _launchSocialVideo(String urlString) async {
@@ -29,6 +26,7 @@ class SocialCarousel extends StatelessWidget {
   Widget build(BuildContext context) {
     final shopProvider = Provider.of<ShopProvider>(context); 
     final config = shopProvider.layoutConfig;
+    final reviews = config.socialReviews;
 
     if (!config.isSocialCarouselEnabled || config.socialReviews.isEmpty) {
       return const SizedBox.shrink();
@@ -85,8 +83,8 @@ class SocialCarousel extends StatelessWidget {
                           padding: const EdgeInsets.all(4),
                           decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
                           child: item.isTikTok
-                          ? Icon(
-                            Icons.tiktok,
+                          ? FaIcon(
+                            FontAwesomeIcons.tiktok,
                             color: Colors.white,
                             size: 18,
                           ) 

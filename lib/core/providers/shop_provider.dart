@@ -30,6 +30,7 @@ class ShopProvider with ChangeNotifier {
   Timer? _cartSaveTimer;
   Timer? _sseTimeoutTimer;
   StreamSubscription? _sseStreamSubscription;
+  Timer? _sseReconnectTimer;
   // String? _sessionId;
 
   String get appLanguage => _appLanguage;
@@ -151,29 +152,33 @@ class ShopProvider with ChangeNotifier {
   }
 
   Future<void> fetchRemoteConfiguration() async {
-    try {
-      final response = await http.get(AppConfig.configEndpoint).timeout(const Duration(seconds: 3));
-      
-      if (response.statusCode == 200) {
-        final decodedData = json.decode(response.body);
-        _layoutConfig = AppLayoutConfig.fromJson(decodedData);
-        notifyListeners();
-        debugPrint("🌐 Remote app config synchronized successfully!");
-      } else {
-        _layoutConfig = AppLayoutConfig.defaultConfig(
-          promoBanners: products.sublist(0,5).map((product) {
-            return PromoBanner(
-              imageUrl: product.imageUrl,
-              redirectUrl: 'azkomoly://product/${product.id}'
-            );
-          }).toList()
+    // The current proxy has no /api/v1/config endpoint. Local banners
+    // are the default and work even with fewer than five products.
+    _layoutConfig = AppLayoutConfig.defaultConfig(
+      promoBanners: _products.take(5).map((product) {
+        return PromoBanner(
+          imageUrl: product.imageUrl,
+          redirectUrl: 'azkomoly://product/${product.id}',
         );
-      }
-    } catch (e) {
-      // Bypasses crashing completely! Falls back gracefully to your local parameters
+      }).toList(),
+    );
 
-      debugPrint("⚠️ Server config fetch failed. Using local hardware asset fallbacks. Error: $e");
+    if (AppConfig.enableRemoteConfig) {
+      try {
+        final response = await http
+            .get(AppConfig.configEndpoint)
+            .timeout(const Duration(seconds: 3));
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
+          if (data is Map<String, dynamic>) {
+            _layoutConfig = AppLayoutConfig.fromJson(data);
+          }
+        }
+      } catch (error) {
+        debugPrint('Remote configuration unavailable; using local banners: $error');
+      }
     }
+    notifyListeners();
   }
 
   Future<void> fetchProducts() async {
@@ -181,7 +186,8 @@ class ShopProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await http.get(AppConfig.productsEndpoint);
+      final response = await http.get(AppConfig.productsEndpoint)
+          .timeout(const Duration(seconds: 8));
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         _products = data.map((item) => Product.fromJson(item)).toList();
@@ -202,8 +208,8 @@ class ShopProvider with ChangeNotifier {
 
 
   void listenToSSE(BuildContext context, String sessionId) {
-    _isExplicitlyStopped = false;
     stopListeningToSSE();
+    _isExplicitlyStopped = false;
 
     final url = Uri.parse(
       AppConfig.orderEndpoint.toString(),
@@ -285,8 +291,9 @@ class ShopProvider with ChangeNotifier {
 
     _sseStreamSubscription?.cancel();
     
-    Timer(backoffDuration, () {
-      _connectToStream(context, urlString);
+    _sseReconnectTimer?.cancel();
+    _sseReconnectTimer = Timer(backoffDuration, () {
+      if (!_isExplicitlyStopped) _connectToStream(context, urlString);
     });
   }
 
@@ -330,6 +337,8 @@ class ShopProvider with ChangeNotifier {
     _currentRetryCount = 0;
     _sseTimeoutTimer?.cancel();
     _sseTimeoutTimer = null;
+    _sseReconnectTimer?.cancel();
+    _sseReconnectTimer = null;
 
     _sseStreamSubscription?.cancel();
     _sseStreamSubscription = null;
@@ -439,6 +448,7 @@ class ShopProvider with ChangeNotifier {
     if (_cart.containsKey(variantId)) {
       if (newQty <= 0) {
         removeFromCart(variantId);
+        return;
       }
       _cart[variantId]!.quantity = newQty;
     }
@@ -467,4 +477,11 @@ class ShopProvider with ChangeNotifier {
     _saveCartToDisk();
     notifyListeners();
   }
+  @override
+  void dispose() {
+    _cartSaveTimer?.cancel();
+    stopListeningToSSE();
+    super.dispose();
+  }
+
 }

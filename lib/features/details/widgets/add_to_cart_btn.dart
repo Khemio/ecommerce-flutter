@@ -4,14 +4,14 @@ import 'package:azkomoly_app/app_localizations.dart';
 import 'package:azkomoly_app/core/models/product.dart';
 
 class AddToCartBtn extends StatelessWidget {
-  final int _selectedQuantity;
+  final int selectedQuantity;
   final String appLanguage;
   final Product product;
   final Function(Product, int) onPressed;
 
   const AddToCartBtn({
     super.key, 
-    required this._selectedQuantity,
+    required this.selectedQuantity,
     required this.appLanguage, 
     required this.product, 
     required this.onPressed, 
@@ -26,13 +26,13 @@ class AddToCartBtn extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: ElevatedButton(
             style: Theme.of(context).elevatedButtonTheme.style,
-            onPressed: product.isAvailable
+            onPressed: product.isAvailable && product.variantId.isNotEmpty
               ? () {
-                onPressed(product, _selectedQuantity);
+                onPressed(product, selectedQuantity);
 
               final String basePattern = AppLocalizations.translate('added_to_bag_msg', appLanguage);
               final String snackBarMessage = basePattern
-                  .replaceAll('{quantity}', '$_selectedQuantity')
+                  .replaceAll('{quantity}', '$selectedQuantity')
                   .replaceAll('{title}', product.title);
               
               ScaffoldMessenger.of(context).showSnackBar(

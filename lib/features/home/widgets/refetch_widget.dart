@@ -4,12 +4,12 @@ import 'package:azkomoly_app/app_localizations.dart';
 
 class RefetchWidget extends StatelessWidget {
   final String appLanguage;
-  final Function(BuildContext) _onRefresh;
+  final Function(BuildContext) onRefresh;
   
   const RefetchWidget({
     super.key, 
     required this.appLanguage,
-    required this._onRefresh, 
+    required this.onRefresh, 
   });
 
   @override
@@ -46,7 +46,7 @@ class RefetchWidget extends StatelessWidget {
                   ),
                   icon: const Icon(Icons.refresh),
                   label: Text(AppLocalizations.translate('retry_btn', appLanguage)),
-                  onPressed: () => _onRefresh(context),
+                  onPressed: () => onRefresh(context),
                 ),
               ],
             ),

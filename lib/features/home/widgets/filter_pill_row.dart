@@ -20,8 +20,9 @@ class FilterPillRow extends StatelessWidget {
     // return SingleChildScrollView(
     // scrollDirection: Axis.horizontal,
     // padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Wrap(
+        spacing: 12,
+        runSpacing: 8,
         children: [
           DropdownButton<String>(
             value: shopProvider.selectedSortOrder,
@@ -64,8 +65,7 @@ class FilterPillRow extends StatelessWidget {
             ],
           ),
 
-          ?canFilterType
-          ? DropdownButton<String>(
+          if (canFilterType) DropdownButton<String>(
             value: shopProvider.selectedTypeFilter,
             icon: Icon(Icons.filter_alt_outlined, color: canFilterType ? AppTheme.backgroundWhite : Colors.grey),
             dropdownColor: AppTheme.brandViolet,
@@ -94,12 +94,10 @@ class FilterPillRow extends StatelessWidget {
                 ),
               );
             }).toList(),
-          )
-          : null,
+          ),
 
-          ?canFilterVendor
-          ? DropdownButton<String>(
-            value: shopProvider.selectedTypeFilter,
+          if (canFilterVendor) DropdownButton<String>(
+            value: shopProvider.selectedVendorFilter,
             icon: Icon(Icons.filter_alt_outlined, color: canFilterVendor ? AppTheme.backgroundWhite : Colors.grey),
             dropdownColor: AppTheme.brandViolet,
             underline: const SizedBox(),
@@ -127,8 +125,7 @@ class FilterPillRow extends StatelessWidget {
                 ),
               );
             }).toList(),
-          )
-          : null,
+          ),
         ],
       ),
     );

@@ -17,8 +17,8 @@ class RemoteOrder {
     required this.totalPrice,
     required this.currency,
     required this.lineItems,
-    required this._isValid,
-  });
+    required bool isValid,
+  }) : _isValid = isValid;
 
   bool get isValid => _isValid;
 
@@ -28,23 +28,23 @@ class RemoteOrder {
       final orderId = json['order_id']?.toString() ?? '';
 
       final orderName = json['order_name']?.toString() ?? '';
-      dataIsValid = orderName.isNotEmpty;
+      dataIsValid = dataIsValid && orderId.isNotEmpty && orderName.isNotEmpty;
 
       final orderNumber = json['order_number'] is int
           ? json['order_number'] as int
           : int.tryParse(json['order_number']?.toString() ?? '') ?? 0;
-      dataIsValid = orderNumber != 0;
+      dataIsValid = dataIsValid && orderNumber != 0;
 
       final confirmationNumber = json['confirmation_number']?.toString() ?? '';
-      dataIsValid = confirmationNumber.isNotEmpty;
+      dataIsValid = dataIsValid && confirmationNumber.isNotEmpty;
 
       final totalPrice = json['total_price'] is num
           ? (json['total_price'] as num).toDouble()
           : double.tryParse(json['total_price']?.toString() ?? '') ?? 0.0;
-      dataIsValid = totalPrice != 0.0;
+      dataIsValid = dataIsValid && totalPrice > 0;
 
       final currency = json['currency']?.toString() ?? '';
-      dataIsValid = currency.isNotEmpty;
+      dataIsValid = dataIsValid && currency.isNotEmpty;
 
       final lineItemsJson = (json['line_items'] as List?)
         ?.cast<Map<String, dynamic>>() ?? [];      
@@ -52,7 +52,9 @@ class RemoteOrder {
         for (final item in lineItemsJson)
           item['product_id']?.toString() ?? '': LineItem.fromJson(item),
       };
-      dataIsValid = lineItems.isNotEmpty;
+      dataIsValid = dataIsValid && lineItems.isNotEmpty &&
+          lineItems.keys.every((id) => id.isNotEmpty) &&
+          lineItems.values.every((item) => item.quantity > 0 && item.price >= 0 && item.variantId.isNotEmpty);
 
     return RemoteOrder(
       orderId: orderId,
