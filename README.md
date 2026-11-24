@@ -4,7 +4,21 @@ Flutter storefront for the **Azkomoly e-commerce prototype**, developed during a
 
 **Companion service:** [ecommerce-proxy](https://github.com/Khemio/ecommerce-proxy).
 
-> **Status (November 24, 2026):** The catalog/cart baseline has passed local static analysis, 11 Flutter tests, and eight user-reported runtime checks. Checkout URL creation was verified; **successful payment and the order-result lifecycle were not**. This is a portfolio prototype, not a production-ready payment integration.
+> **Status (November 24, 2026):** The catalog/cart baseline has passed local static analysis, 18 Flutter tests, eight user-reported runtime checks, and GitHub Actions CI. Checkout URL creation was verified; **successful payment and the order-result lifecycle were not**. This is a portfolio prototype, not a production-ready payment integration.
+
+## Screenshots and demo
+
+<p align="center">
+  <img src="docs/catalog.png" alt="Azkomoly catalog with mystery boxes and filters" width="230" />
+  <img src="docs/details.png" alt="Mystery box details with quantity selection and add-to-cart" width="230" />
+  <img src="docs/cart.png" alt="Cart with quantity controls and checkout button" width="230" />
+</p>
+
+<p align="center"><em>Catalog · Product details · Cart</em></p>
+
+**[Watch the 43-second storefront demo](docs/azkomoly_storefront_demo.mp4)** — browsing, sorting, selecting products, and editing the cart. The video intentionally stops before payment.
+
+See [demo details](docs/DEMO.md). These screenshots and the recording show the app on a test store; they are not evidence of successful payment.
 
 ## Verified storefront functionality
 
@@ -13,7 +27,7 @@ Flutter storefront for the **Azkomoly e-commerce prototype**, developed during a
 - Locally persisted cart, including quantity changes, removal, clearing, and app-restart recovery.
 - Customer profile and address fields; English and Hungarian interface strings.
 - Hosted Shopify checkout URL creation through the Go proxy, loaded in a Flutter WebView.
-- A focused checkout HTTP client with validation of session responses, HTTPS checkout URLs and error handling (pending verification on this branch).
+- A focused checkout HTTP client with tested request/response validation and error paths.
 - Promotional and social carousels; a safe local banner fallback when the proxy does not serve `/config`.
 
 **Checkout limitations:** `ShopProvider` can subscribe to `order.created` over SSE and show outcome screens, but order creation is not proof of payment. The current client also directly navigates from WebView/SSE callbacks; lifecycle resume verification and an authoritative payment-status lookup are not implemented. Do not treat the current success screen as verified payment confirmation.
@@ -54,10 +68,10 @@ To opt into a compatible custom `/config` endpoint, pass `--dart-define=ENABLE_R
 
 - `dart format lib test`: 0 changed files.
 - `flutter analyze`: **no issues found**.
-- `flutter test`: **11 tests passed** (product, remote-order, cart-provider, widget tests).
+- `flutter test`: **18 tests passed** (product, remote-order, cart-provider, checkout API and widget tests).
 - Runtime smoke test, reported by the project owner: **8/8 passed** (catalog/images, filters, sorting, product details, cart editing, restart persistence, remove/clear persistence, and checkout URL creation).
 
-These results were recorded **before** the portfolio-finishing changes. The new checkout API tests and CI workflow still require a local run or a successful GitHub Actions check.
+Validation includes the checkout API tests added during portfolio polish. [GitHub Actions on `main` passed](https://github.com/Khemio/ecommerce-flutter/actions/runs/45433169586), running analysis and tests on a hosted runner.
 
 These checks do **not** verify payment completion, signed webhook delivery, a bank app returning to the WebView, retries, or persistence of a pending checkout session.
 
@@ -83,13 +97,13 @@ These checks do **not** verify payment completion, signed webhook delivery, a ba
 - [Checkout state design (proposal)](docs/CHECKOUT_STATE_DESIGN.md)
 - [Testing](docs/TESTING.md)
 - [Roadmap](docs/ROADMAP.md)
-- [Demo and screenshots](docs/DEMO.md) — a short walkthrough and capture checklist; images will be added separately once available.
+- [Demo and screenshots](docs/DEMO.md) — published screenshots, edited video, and the demonstration scope.
 
 ## Portfolio demonstration
 
-The fastest demonstration is: **catalog → product details → add to cart → change quantity → restart app to confirm persistence → hosted checkout page**. This demonstrates the Flutter/Go/Shopify integration without claiming an actual payment.
+The [edited demo](docs/azkomoly_storefront_demo.mp4) focuses on **catalog → sorting → product details → add to cart → cart quantity changes**. The screenshots above show the catalog, product details, and cart. Cart persistence across app restart was checked separately during manual testing, but is not demonstrated by the edited video.
 
-See [demo and screenshot instructions](docs/DEMO.md). The repository does not yet include device screenshots; they should be added after capturing them from the running app, with personal data and tokens excluded.
+Checkout URL creation was also manually verified, but payment completion and the order lifecycle remain unfinished. Checkout footage is excluded from the published video.
 
 ## Scope and data safety
 

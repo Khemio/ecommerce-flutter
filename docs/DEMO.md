@@ -1,37 +1,40 @@
 # Portfolio demo and screenshots
 
-This is a concise walkthrough of the verified storefront, not a successful-payment demonstration.
+The media below was captured from the running Azkomoly Flutter storefront and prepared for portfolio review. It demonstrates the **catalog and cart**, not verified checkout payment.
 
-## Suggested screenshots (Android emulator or physical device)
+## Screenshots
 
-Capture these screens from the running Flutter app. **Use your own screenshots; no images are currently bundled with this document.**
+| Catalog | Product details | Cart |
+| :---: | :---: | :---: |
+| <img src="catalog.png" alt="Catalog with product cards, filters and price sorting" width="220"> | <img src="details.png" alt="Mystery-box details, price, quantity selector and add-to-bag" width="220"> | <img src="cart.png" alt="Cart quantity controls, total and checkout action" width="220"> |
+| Shopify-backed products, filters and sorting | Product details and quantity selection | Editable cart and checkout entry point |
 
-| Suggested filename | Screen | What it demonstrates |
-| --- | --- | --- |
-| `docs/images/catalog.png` | Home catalog with products | Shopify catalog integration and product images |
-| `docs/images/product-details.png` | Product details and quantity selection | Mobile UI and cart workflow |
-| `docs/images/cart.png` | Cart with more than one item | Stateful quantity editing and totals |
-| `docs/images/checkout.png` | Shopify-hosted checkout WebView | Frontend-to-Go-to-Shopify integration; checkout *creation*, not payment completion |
+## Edited demo
 
-Use 2–3 of the first three for the README. The fourth is optional and should not show customer details, email, addresses, payment credentials, checkout tokens, session IDs, or other personal/sensitive data.
+**[Watch/download the storefront demo (MP4, about 43 seconds)](azkomoly_storefront_demo.mp4)**
 
-## How to capture a clean demo
+The portrait recording focuses on:
+1. Browsing and sorting products.
+2. Opening a product and adjusting the quantity.
+3. Adding products to the bag.
+4. Editing quantities and removing cart items.
 
-1. Run `ecommerce-proxy` with a test Shopify store and sample products, and launch Flutter with the appropriate `BASE_URL` Dart define.
-2. Show catalog loading, vendor/type filtering, and price sorting.
-3. Open a product, adjust the quantity, add it to the cart, change the cart quantity, and return to the catalog.
-4. Restart the application to show local cart persistence.
-5. Optionally open the hosted checkout page. **Do not complete a real payment solely for the demo.** Do not show the app's current provisional paid/success result as verified.
+The edited clip deliberately excludes checkout/payment screens. **It does not show an app restart**; cart persistence across restart was verified separately in the owner's manual smoke test.
 
-A 30–60-second silent screen recording can demonstrate this more effectively than a slideshow. A few actual device screenshots in the README are also sufficient.
+## What is verified, and what is not
 
-## Before publishing images
+- **Verified:** 18 local Flutter tests passed; local `flutter analyze` found no issues; GitHub Actions [passed on `main`](https://github.com/Khemio/ecommerce-flutter/actions/runs/45433169586); all eight reported storefront/cart smoke checks passed, including creation of a Shopify checkout URL.
+- **Not verified:** a paid order, webhook-to-client payment confirmation, safe order archival, resumption from a banking app, or a complete checkout lifecycle. An `order.created` SSE event by itself does **not** prove payment.
 
-- Keep screenshots from one consistent device resolution and avoid giant raw image files.
-- Check the store branding/product imagery is suitable for public use and complies with the internship project's publication permissions.
-- Redact or avoid customer names, addresses, tokens, order/session IDs, and payment information.
-- Commit screenshot files separately after they have been captured, then add the image references to the README.
+The test Shopify store may be configured with a different base currency than the HUF prices displayed in Flutter. Previously captured checkout footage showed a large price discrepancy, so it is intentionally omitted until the store currency and price display are reconciled.
 
-## Reported validation
+## Media files
 
-The owner previously confirmed eight storefront/cart smoke checks, `flutter analyze` with no issues, and 11 Flutter tests passing. The new checkout request tests and GitHub Actions workflow should be run and verified before reporting their results.
+| File | Purpose |
+| --- | --- |
+| [`catalog.png`](catalog.png) | README catalog screenshot |
+| [`details.png`](details.png) | README product-details screenshot |
+| [`cart.png`](cart.png) | README cart screenshot |
+| [`azkomoly_storefront_demo.mp4`](azkomoly_storefront_demo.mp4) | Short edited portfolio video |
+
+The original media files are retained unchanged. Before reusing any screenshots publicly, confirm that product imagery/branding from the internship project can be published.

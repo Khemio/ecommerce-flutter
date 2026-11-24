@@ -11,8 +11,11 @@ Updated **November 24, 2026**. The near-term objective is a presentable portfoli
 - [x] Remove checkout URL logging that could expose user contact/address fields, hidden checkout navigation test gestures and the fake manual status-check control.
 - [x] Allow local HTTP in Android **debug** builds only.
 - [x] Add model/cart/widget tests and Dart formatting.
-- [x] Owner verification: `flutter analyze` clean, `flutter test` **11 passed**, **8/8 manual runtime checks passed**.
+- [x] Owner verification: `flutter analyze` clean, `flutter test` **18 passed**, **8/8 manual runtime checks passed**.
 - [x] Merge the cleanup work into `dev` via [PR #1](https://github.com/Khemio/ecommerce-flutter/pull/1).
+- [x] Integrate the tested baseline into `main` and add checkout HTTP error-path tests.
+- [x] Add Flutter GitHub Actions for analysis and tests ([successful run](https://github.com/Khemio/ecommerce-flutter/actions/runs/45433169586)).
+- [x] Record and publish catalog, details, cart screenshots, plus an edited short demo (see [media guide](DEMO.md)).
 
 ## Remaining: credible checkout semantics
 
@@ -26,7 +29,7 @@ Updated **November 24, 2026**. The near-term objective is a presentable portfoli
 | P1 | Test SSE and navigation races | Duplicates, connection loss, out-of-order events, inactive session, late notifications |
 | P1 | Test checkout failure/recovery | No duplicate checkout creation, retain cart on cancellation/unknown, clear error states |
 | P2 | Improve API and UI resilience | Typed responses, error handling, more variants/currencies, accessibility and narrow screens |
-| P2 | Add CI | Format, analyze, Flutter tests, and Go API contract tests |
+| P2 | Extend automated verification | Flutter analysis/tests already run in CI; add format enforcement and Go API contract tests when needed |
 
 ## Boundaries
 
