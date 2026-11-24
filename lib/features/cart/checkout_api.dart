@@ -10,10 +10,7 @@ class CheckoutSession {
   final String sessionId;
   final String checkoutUrl;
 
-  const CheckoutSession({
-    required this.sessionId,
-    required this.checkoutUrl,
-  });
+  const CheckoutSession({required this.sessionId, required this.checkoutUrl});
 }
 
 class CheckoutException implements Exception {
@@ -34,22 +31,25 @@ class CheckoutApi {
   final Uri endpoint;
 
   CheckoutApi({http.Client? client, Uri? endpoint})
-      : _client = client ?? http.Client(),
-        _ownsClient = client == null,
-        endpoint = endpoint ?? AppConfig.checkoutEndpoint;
+    : _client = client ?? http.Client(),
+      _ownsClient = client == null,
+      endpoint = endpoint ?? AppConfig.checkoutEndpoint;
 
   Future<CheckoutSession> createCheckout(List<CartItem> items) async {
     if (items.isEmpty ||
-        items.any((item) =>
-            item.quantity <= 0 || item.product.variantId.trim().isEmpty)) {
+        items.any(
+          (item) => item.quantity <= 0 || item.product.variantId.trim().isEmpty,
+        )) {
       throw const CheckoutException('Cart must contain valid items');
     }
 
     final payload = items
-        .map((item) => {
-              'variantId': item.product.variantId,
-              'quantity': item.quantity,
-            })
+        .map(
+          (item) => {
+            'variantId': item.product.variantId,
+            'quantity': item.quantity,
+          },
+        )
         .toList();
 
     try {
@@ -92,10 +92,7 @@ class CheckoutApi {
         throw const CheckoutException('Checkout URL must use HTTPS');
       }
 
-      return CheckoutSession(
-        sessionId: sessionId,
-        checkoutUrl: checkoutUrl,
-      );
+      return CheckoutSession(sessionId: sessionId, checkoutUrl: checkoutUrl);
     } on TimeoutException {
       throw const CheckoutException('Checkout request timed out');
     }

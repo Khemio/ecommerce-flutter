@@ -24,31 +24,34 @@ void main() {
 
   final cart = [CartItem(product: product, quantity: 2)];
 
-  test('creates a hosted checkout session and sends the expected payload', () async {
-    final client = MockClient((request) async {
-      expect(request.method, 'POST');
-      expect(request.url, endpoint);
-      expect(request.headers['Content-Type'], 'application/json');
-      expect(jsonDecode(request.body), [
-        {'variantId': '200', 'quantity': 2},
-      ]);
+  test(
+    'creates a hosted checkout session and sends the expected payload',
+    () async {
+      final client = MockClient((request) async {
+        expect(request.method, 'POST');
+        expect(request.url, endpoint);
+        expect(request.headers['Content-Type'], 'application/json');
+        expect(jsonDecode(request.body), [
+          {'variantId': '200', 'quantity': 2},
+        ]);
 
-      return http.Response(
-        jsonEncode({
-          'sessionId': 'session-123',
-          'checkoutUrl': 'https://store.myshopify.com/checkouts/123',
-        }),
-        200,
-      );
-    });
+        return http.Response(
+          jsonEncode({
+            'sessionId': 'session-123',
+            'checkoutUrl': 'https://store.myshopify.com/checkouts/123',
+          }),
+          200,
+        );
+      });
 
-    final api = CheckoutApi(client: client, endpoint: endpoint);
-    final session = await api.createCheckout(cart);
-    expect(session.sessionId, 'session-123');
-    expect(session.checkoutUrl, 'https://store.myshopify.com/checkouts/123');
-    api.close();
-    client.close();
-  });
+      final api = CheckoutApi(client: client, endpoint: endpoint);
+      final session = await api.createCheckout(cart);
+      expect(session.sessionId, 'session-123');
+      expect(session.checkoutUrl, 'https://store.myshopify.com/checkouts/123');
+      api.close();
+      client.close();
+    },
+  );
 
   test('rejects failed checkout responses', () async {
     final client = MockClient((_) async => http.Response('unavailable', 503));
@@ -75,10 +78,14 @@ void main() {
   });
 
   test('rejects a missing checkout session identifier', () async {
-    final client = MockClient((_) async => http.Response(
-      jsonEncode({'checkoutUrl': 'https://store.myshopify.com/checkouts/123'}),
-      200,
-    ));
+    final client = MockClient(
+      (_) async => http.Response(
+        jsonEncode({
+          'checkoutUrl': 'https://store.myshopify.com/checkouts/123',
+        }),
+        200,
+      ),
+    );
     final api = CheckoutApi(client: client, endpoint: endpoint);
 
     await expectLater(
@@ -90,13 +97,15 @@ void main() {
   });
 
   test('rejects malformed or insecure checkout URLs', () async {
-    final client = MockClient((_) async => http.Response(
-      jsonEncode({
-        'sessionId': 'session-123',
-        'checkoutUrl': 'http://store.myshopify.com/checkouts/123',
-      }),
-      200,
-    ));
+    final client = MockClient(
+      (_) async => http.Response(
+        jsonEncode({
+          'sessionId': 'session-123',
+          'checkoutUrl': 'http://store.myshopify.com/checkouts/123',
+        }),
+        200,
+      ),
+    );
     final api = CheckoutApi(client: client, endpoint: endpoint);
 
     await expectLater(
