@@ -4,12 +4,12 @@ import 'package:azkomoly_app/app_localizations.dart';
 
 class RefetchWidget extends StatelessWidget {
   final String appLanguage;
-  final Function(BuildContext) _onRefresh;
-  
+  final Function(BuildContext) onRefresh;
+
   const RefetchWidget({
-    super.key, 
+    super.key,
     required this.appLanguage,
-    required this._onRefresh, 
+    required this.onRefresh,
   });
 
   @override
@@ -24,10 +24,17 @@ class RefetchWidget extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.cloud_off_outlined, size: 64, color: Colors.grey),
+                const Icon(
+                  Icons.cloud_off_outlined,
+                  size: 64,
+                  color: Colors.grey,
+                ),
                 const SizedBox(height: 16),
                 Text(
-                  AppLocalizations.translate('network_error_title', appLanguage),
+                  AppLocalizations.translate(
+                    'network_error_title',
+                    appLanguage,
+                  ),
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
@@ -45,8 +52,10 @@ class RefetchWidget extends StatelessWidget {
                     minimumSize: const Size(160, 48),
                   ),
                   icon: const Icon(Icons.refresh),
-                  label: Text(AppLocalizations.translate('retry_btn', appLanguage)),
-                  onPressed: () => _onRefresh(context),
+                  label: Text(
+                    AppLocalizations.translate('retry_btn', appLanguage),
+                  ),
+                  onPressed: () => onRefresh(context),
                 ),
               ],
             ),
@@ -55,5 +64,4 @@ class RefetchWidget extends StatelessWidget {
       ],
     );
   }
-
 }

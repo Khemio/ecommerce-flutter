@@ -18,7 +18,8 @@ class CustomImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // 🟢 Inspect the string structure to determine the load path engine
-    final bool isNetworkImage = source.startsWith('http://') || source.startsWith('https://');
+    final bool isNetworkImage =
+        source.startsWith('http://') || source.startsWith('https://');
 
     if (isNetworkImage) {
       return CachedNetworkImage(
@@ -53,7 +54,11 @@ class CustomImage extends StatelessWidget {
       height: height,
       color: const Color(0xFFE8DDFF), // Soft purple brand tint
       child: const Center(
-        child: Icon(Icons.broken_image_outlined, color: Color(0xFF5A24B3), size: 28),
+        child: Icon(
+          Icons.broken_image_outlined,
+          color: Color(0xFF5A24B3),
+          size: 28,
+        ),
       ),
     );
 

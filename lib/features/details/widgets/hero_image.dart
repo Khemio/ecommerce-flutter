@@ -10,15 +10,12 @@ class DetailHeroImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  SizedBox(
+    return SizedBox(
       height: 350,
       width: double.infinity,
       child: Hero(
-        tag: 'box_${product.id}', 
-        child: CustomImage(
-          source: product.imageUrl,
-          fit: BoxFit.cover,
-        ),
+        tag: 'box_${product.id}',
+        child: CustomImage(source: product.imageUrl, fit: BoxFit.cover),
       ),
     );
   }

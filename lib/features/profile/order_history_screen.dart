@@ -15,14 +15,20 @@ class OrderHistoryScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          AppLocalizations.translate('order_history_title', shopProvider.appLanguage),
+          AppLocalizations.translate(
+            'order_history_title',
+            shopProvider.appLanguage,
+          ),
           style: Theme.of(context).textTheme.headlineLarge,
         ),
       ),
       body: orders.isEmpty
           ? Center(
               child: Text(
-                AppLocalizations.translate('empty_orders', shopProvider.appLanguage),
+                AppLocalizations.translate(
+                  'empty_orders',
+                  shopProvider.appLanguage,
+                ),
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.white, fontSize: 16),
               ),
@@ -32,7 +38,7 @@ class OrderHistoryScreen extends StatelessWidget {
               itemCount: orders.length,
               itemBuilder: (context, index) {
                 final order = orders[index];
-                
+
                 return Card(
                   margin: const EdgeInsets.only(bottom: 16.0),
                   child: Padding(
@@ -46,16 +52,22 @@ class OrderHistoryScreen extends StatelessWidget {
                           children: [
                             Text(
                               order.orderId,
-                              style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
                             ),
                             Text(
                               order.totalAmount,
-                              style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green,
+                              ),
                             ),
                           ],
                         ),
                         const Divider(height: 24, color: Colors.black26),
-                        
+
                         // Purchased Item Rows
                         ...order.items.map((item) {
                           return Padding(
@@ -68,12 +80,17 @@ class OrderHistoryScreen extends StatelessWidget {
                                     item.product.title,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(color: Colors.black87),
+                                    style: const TextStyle(
+                                      color: Colors.black87,
+                                    ),
                                   ),
                                 ),
                                 Text(
                                   'x${item.quantity}',
-                                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
                                 ),
                               ],
                             ),

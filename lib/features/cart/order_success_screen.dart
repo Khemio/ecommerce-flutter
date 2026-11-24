@@ -9,15 +9,15 @@ class OrderSuccessScreen extends StatelessWidget {
   final String confirmationNumber;
 
   const OrderSuccessScreen({
-    super.key, 
-    required this.orderNumber, 
-    required this.confirmationNumber
+    super.key,
+    required this.orderNumber,
+    required this.confirmationNumber,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final appLanguage = context.read<ShopProvider>().appLanguage; 
+    final appLanguage = context.read<ShopProvider>().appLanguage;
 
     return Scaffold(
       body: SafeArea(
@@ -28,7 +28,10 @@ class OrderSuccessScreen extends StatelessWidget {
             children: [
               Text(
                 // "Sikeres vásárlás!", // "Successful Purchase!"
-                AppLocalizations.translate('order_success', appLanguage).toUpperCase(),
+                AppLocalizations.translate(
+                  'order_success',
+                  appLanguage,
+                ).toUpperCase(),
                 style: theme.textTheme.headlineLarge,
                 textAlign: TextAlign.center,
               ),
@@ -39,31 +42,47 @@ class OrderSuccessScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       const Icon(
-                        Icons.check_circle_rounded, 
-                        color: AppTheme.successColor, 
+                        Icons.check_circle_rounded,
+                        color: AppTheme.successColor,
                         size: 64,
                       ),
                       const SizedBox(height: 16),
                       Text(
                         // "RENDELÉSSZÁM: #$orderNumber",
-                        AppLocalizations.translate('order_number', appLanguage) + orderNumber,
+                        AppLocalizations.translate(
+                              'order_number',
+                              appLanguage,
+                            ) +
+                            orderNumber,
                         style: theme.textTheme.titleMedium,
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 8),
                       Text(
                         // "Megerősítő kód: $confirmationNumber",
-                        AppLocalizations.translate('confirmation_number', appLanguage) + confirmationNumber,
-                        style: theme.textTheme.bodyMedium?.copyWith(color: AppTheme.deepBlack.withValues(alpha: 0.6)),
+                        AppLocalizations.translate(
+                              'confirmation_number',
+                              appLanguage,
+                            ) +
+                            confirmationNumber,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: AppTheme.deepBlack.withValues(alpha: 0.6),
+                        ),
                         textAlign: TextAlign.center,
                       ),
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: 16.0),
-                        child: Divider(color: AppTheme.deepBlack, thickness: 1.5),
+                        child: Divider(
+                          color: AppTheme.deepBlack,
+                          thickness: 1.5,
+                        ),
                       ),
                       Text(
                         // "A tranzakciót sikeresen rögzítettük! A számlát a tax platform automatikusan kiállítja.",
-                        AppLocalizations.translate('email_confirmation', appLanguage),
+                        AppLocalizations.translate(
+                          'email_confirmation',
+                          appLanguage,
+                        ),
                         style: theme.textTheme.bodyMedium,
                         textAlign: TextAlign.center,
                       ),
@@ -73,9 +92,12 @@ class OrderSuccessScreen extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               ElevatedButton(
-                onPressed: () => Navigator.popUntil(context, (route) => route.isFirst),
+                onPressed: () =>
+                    Navigator.popUntil(context, (route) => route.isFirst),
                 // child: const Text("VISSZA A FŐOLDALRA"),
-                child: Text(AppLocalizations.translate('back_to_main', appLanguage),),
+                child: Text(
+                  AppLocalizations.translate('back_to_main', appLanguage),
+                ),
               ),
             ],
           ),

@@ -31,7 +31,7 @@ class SocialReviewItem {
       return 'assets/$url';
     }
     // Fallback if only the file name was provided (e.g., 'review1.webp')
-    return 'assets/images/$url'; 
+    return 'assets/images/$url';
   }
 
   factory SocialReviewItem.fromJson(Map<String, dynamic> json) {
@@ -41,5 +41,4 @@ class SocialReviewItem {
       isTikTok: json['isTikTok'] ?? false,
     );
   }
-
 }

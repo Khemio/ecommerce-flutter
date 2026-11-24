@@ -28,7 +28,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   void initState() {
     super.initState();
     // Safely capture the provider reference once while context is valid
-    _shopProvider = context.read<ShopProvider>(); 
+    _shopProvider = context.read<ShopProvider>();
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
@@ -37,8 +37,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           //   final urlNormilazied = url.toLowerCase();
           //   // Shopify success redirection tracking rule
           //   if (urlNormilazied.contains('thank_you') || urlNormilazied.contains('orders')) {
-          //     if (mounted) Navigator.pop(context); 
-                
+          //     if (mounted) Navigator.pop(context);
+
           //     return;
           //   }
 
@@ -47,8 +47,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           //     if (!mounted) return;
 
           //     // Simply dismiss the webview window back to checkout/cart setup configuration screen
-          //     Navigator.pop(context); 
-              
+          //     Navigator.pop(context);
+
           //     Navigator.push(
           //       context,
           //       MaterialPageRoute(builder: (_) => const PaymentFailedScreen()),
@@ -56,14 +56,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           //     return;
           //   }
           // },
-          
           onNavigationRequest: (NavigationRequest request) async {
             if (_isNavigatingAway) return NavigationDecision.prevent;
 
             final url = request.url.toLowerCase();
 
             // Fix for Hungarian Bank Redirects (Non-HTTP/HTTPS schemes)
-            if (!request.url.startsWith('http://') && !request.url.startsWith('https://')) {
+            if (!request.url.startsWith('http://') &&
+                !request.url.startsWith('https://')) {
               final uri = Uri.parse(request.url);
               // Safely open OTP / Telekom / banking applications installed on device
               if (await canLaunchUrl(uri)) {
@@ -73,36 +73,45 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             }
 
             if (url.contains('/thank_you') || url.contains('/orders')) {
-              if (mounted) Navigator.pop(context); 
-                
+              if (mounted) Navigator.pop(context);
+
               return NavigationDecision.prevent;
             }
 
             // Failyre pages
-            if (url.contains('/cancel') || url.contains('declined=') || url.contains('/payment_failed')) {
+            if (url.contains('/cancel') ||
+                url.contains('declined=') ||
+                url.contains('/payment_failed')) {
               _isNavigatingAway = true;
 
               if (mounted) {
                 Navigator.pop(context); // Dismiss webview
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const PaymentFailedScreen()),
+                  MaterialPageRoute(
+                    builder: (_) => const PaymentFailedScreen(),
+                  ),
                 );
               }
               return NavigationDecision.prevent;
             }
-            
-            if (!(url.contains('/cart') || url.contains('/checkout')) && url.contains('myshopify')) {
+
+            if (!(url.contains('/cart') || url.contains('/checkout')) &&
+                url.contains('myshopify')) {
               _isNavigatingAway = true;
 
               // Stop the webview from loading the website page
               if (mounted) {
-                Navigator.popUntil(context, (route) => route.isFirst); // Pop back to HomeScreen
+                Navigator.popUntil(
+                  context,
+                  (route) => route.isFirst,
+                ); // Pop back to HomeScreen
               }
-              return NavigationDecision.prevent; 
+              return NavigationDecision.prevent;
             }
-            
-            return NavigationDecision.navigate; // Allow normal checkout typing/clicks
+
+            return NavigationDecision
+                .navigate; // Allow normal checkout typing/clicks
           },
         ),
       )
@@ -111,8 +120,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // final shopProvider = Provider.of<ShopProvider>(context); 
-    
+    // final shopProvider = Provider.of<ShopProvider>(context);
+
     return Scaffold(
       // appBar: AppBar(
       //   title: Text(
@@ -121,19 +130,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       // ),
       // Inside your CheckoutScreen Widget build method:
       appBar: AppBar(
-        title: GestureDetector(
-          onLongPress: () {
-            debugPrint("🛠️ Test Hook Triggered: Forcing Thank You URL Routing");
-            // Explicitly load a dummy domain containing 'fail' to trip your interceptor
-            _controller.loadRequest(Uri.parse("https://myshopify.com/thank_you"));
-          },
-          onDoubleTap: () {
-            debugPrint("🛠️ Test Hook Triggered: Forcing Failure URL Routing");
-            // Explicitly load a dummy domain containing 'fail' to trip your interceptor
-            _controller.loadRequest(Uri.parse("https://myshopify.com/fail"));
-          },
-          child: Text(
-            AppLocalizations.translate('secure_checkout', _shopProvider.appLanguage),
+        title: Text(
+          AppLocalizations.translate(
+            'secure_checkout',
+            _shopProvider.appLanguage,
           ),
         ),
       ),

@@ -9,13 +9,16 @@ class CartButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
     return Consumer<ShopProvider>(
       child: IconButton(
-        icon: const Icon(Icons.shopping_bag_outlined, color: Colors.black, size: 28),
+        icon: const Icon(
+          Icons.shopping_bag_outlined,
+          color: Colors.black,
+          size: 28,
+        ),
         onPressed: () => Navigator.push(
-          context, 
-          MaterialPageRoute(builder: (_) => const CartScreen())
+          context,
+          MaterialPageRoute(builder: (_) => const CartScreen()),
         ),
       ),
       builder: (context, shopProvider, staticCartIcon) {
@@ -29,11 +32,21 @@ class CartButton extends StatelessWidget {
                 top: 4,
                 child: Container(
                   padding: const EdgeInsets.all(4),
-                  decoration: const BoxDecoration(color: Colors.redAccent, shape: BoxShape.circle),
-                  constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                  decoration: const BoxDecoration(
+                    color: Colors.redAccent,
+                    shape: BoxShape.circle,
+                  ),
+                  constraints: const BoxConstraints(
+                    minWidth: 18,
+                    minHeight: 18,
+                  ),
                   child: Text(
                     '${shopProvider.cart.length}',
-                    style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ),

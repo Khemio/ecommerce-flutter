@@ -8,19 +8,19 @@ import 'package:azkomoly_app/core/providers/shop_provider.dart';
 class SummaryPanel extends StatelessWidget {
   const SummaryPanel({
     super.key,
-    required this._isCheckingOut, 
-    required this._totalPrice, 
-    required this._onCheckoutPressed, 
+    required this.isCheckingOut,
+    required this.totalPrice,
+    required this.onCheckoutPressed,
   });
 
-  final bool _isCheckingOut;
-  final double _totalPrice;
-  final Function(ShopProvider) _onCheckoutPressed;
+  final bool isCheckingOut;
+  final double totalPrice;
+  final void Function(ShopProvider) onCheckoutPressed;
 
   @override
   Widget build(BuildContext context) {
-    final shopProvider = Provider.of<ShopProvider>(context); 
-    
+    final shopProvider = Provider.of<ShopProvider>(context);
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -35,12 +35,12 @@ class SummaryPanel extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  AppLocalizations.translate('total', shopProvider.appLanguage), 
-                  style: Theme.of(context).textTheme.titleMedium
+                  AppLocalizations.translate('total', shopProvider.appLanguage),
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
                 Text(
-                  _totalPrice.toPrice(currency: 'HUF'), 
-                  style: Theme.of(context).textTheme.titleMedium
+                  totalPrice.toPrice(currency: 'HUF'),
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
               ],
             ),
@@ -50,29 +50,36 @@ class SummaryPanel extends StatelessWidget {
                 backgroundColor: Colors.deepPurple,
                 foregroundColor: Colors.white,
                 minimumSize: const Size(double.infinity, 54),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
-              onPressed: _isCheckingOut 
-                ? null 
-                : () => _onCheckoutPressed(shopProvider),
-              child: _isCheckingOut
+              onPressed: isCheckingOut
+                  ? null
+                  : () => onCheckoutPressed(shopProvider),
+              child: isCheckingOut
                   ? const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2.5,
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2.5,
+                      ),
+                    )
+                  : Text(
+                      AppLocalizations.translate(
+                        'checkout',
+                        shopProvider.appLanguage,
+                      ),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  )
-                : Text(
-                    AppLocalizations.translate('checkout', shopProvider.appLanguage),
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
             ),
           ],
         ),
       ),
     );
   }
-
 }

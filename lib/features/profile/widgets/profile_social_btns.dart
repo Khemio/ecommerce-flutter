@@ -43,14 +43,18 @@ class ProfileSocialButtons extends StatelessWidget {
           Text(
             // 'KÖVESS MINKET / FOLLOW US',
             AppLocalizations.translate('follow_us', appLanguage),
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+              color: Colors.black,
+            ),
           ),
           const SizedBox(height: 16),
           // Wrap(
-            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            // spacing: 10.0,       // Horizontal gap spacing between pills
-            // runSpacing: 10.0,    // Vertical gap spacing if an element wraps to line 2
-            // alignment: WrapAlignment.start,
+          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          // spacing: 10.0,       // Horizontal gap spacing between pills
+          // runSpacing: 10.0,    // Vertical gap spacing if an element wraps to line 2
+          // alignment: WrapAlignment.start,
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -60,7 +64,8 @@ class ProfileSocialButtons extends StatelessWidget {
                 color: Colors.black,
                 onTap: () => _launchSocialUrl(
                   // nativeUrl: 'snssdk1128://user/profile/azkomoly.hu',
-                  nativeUrl: 'tiktok://user?username=azkomoly.hu', // Fixed for iOS + Android
+                  nativeUrl:
+                      'tiktok://user?username=azkomoly.hu', // Fixed for iOS + Android
                   webFallbackUrl: 'https://www.tiktok.com/@azkomoly.hu',
                 ),
               ),
@@ -70,7 +75,7 @@ class ProfileSocialButtons extends StatelessWidget {
                 color: const Color(0xFFE1306C),
                 onTap: () => _launchSocialUrl(
                   // nativeUrl: 'instagram://media?id=azkomoly.hu',
-                  nativeUrl: 'instagram://user?username=azkomoly.hu', 
+                  nativeUrl: 'instagram://user?username=azkomoly.hu',
                   webFallbackUrl: 'https://www.instagram.com/azkomoly.hu',
                 ),
               ),
@@ -80,7 +85,8 @@ class ProfileSocialButtons extends StatelessWidget {
                 color: const Color(0xFF1877F2),
                 onTap: () => _launchSocialUrl(
                   nativeUrl: 'fb://page/61590505527795',
-                  webFallbackUrl: 'https://www.facebook.com/people/AZKOMOLYhu/61590505527795/',
+                  webFallbackUrl:
+                      'https://www.facebook.com/people/AZKOMOLYhu/61590505527795/',
                 ),
               ),
               _buildSocialPill(
@@ -88,7 +94,8 @@ class ProfileSocialButtons extends StatelessWidget {
                 // label: 'Youtube',
                 color: Colors.red,
                 onTap: () => _launchSocialUrl(
-                  nativeUrl: 'youtube://www.youtube.com/@AzKomolyHungary', // Safe cross-platform URI
+                  nativeUrl:
+                      'youtube://www.youtube.com/@AzKomolyHungary', // Safe cross-platform URI
                   webFallbackUrl: 'https://www.youtube.com/@AzKomolyHungary',
                 ),
               ),
@@ -100,9 +107,9 @@ class ProfileSocialButtons extends StatelessWidget {
   }
 
   Widget _buildSocialPill({
-    required FaIconData icon, 
-    String? label, 
-    required Color color, 
+    required FaIconData icon,
+    String? label,
+    required Color color,
     required VoidCallback onTap,
   }) {
     return GestureDetector(
@@ -118,12 +125,16 @@ class ProfileSocialButtons extends StatelessWidget {
           children: [
             FaIcon(icon, color: color, size: 20),
             ?label != null ? const SizedBox(width: 6) : null,
-            ?label != null 
-              ? Text(
-                label,
-                style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12),
-              )
-              : null,
+            ?label != null
+                ? Text(
+                    label,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  )
+                : null,
           ],
         ),
       ),

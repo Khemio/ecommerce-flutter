@@ -1,5 +1,4 @@
 class RemoteOrder {
-  // final int orderId;
   final String orderId;
   final String orderName;
   final int orderNumber;
@@ -7,7 +6,7 @@ class RemoteOrder {
   final double totalPrice;
   final String currency;
   final Map<String, LineItem> lineItems;
-  final bool _isValid;
+  final bool isValid;
 
   const RemoteOrder({
     required this.orderId,
@@ -17,42 +16,47 @@ class RemoteOrder {
     required this.totalPrice,
     required this.currency,
     required this.lineItems,
-    required this._isValid,
+    required this.isValid,
   });
 
-  bool get isValid => _isValid;
-
   factory RemoteOrder.fromJson(Map<String, dynamic> json) {
-      var dataIsValid = true;
-      
-      final orderId = json['order_id']?.toString() ?? '';
+    var dataIsValid = true;
 
-      final orderName = json['order_name']?.toString() ?? '';
-      dataIsValid = orderName.isNotEmpty;
+    final orderId = json['order_id']?.toString() ?? '';
 
-      final orderNumber = json['order_number'] is int
-          ? json['order_number'] as int
-          : int.tryParse(json['order_number']?.toString() ?? '') ?? 0;
-      dataIsValid = orderNumber != 0;
+    final orderName = json['order_name']?.toString() ?? '';
+    dataIsValid = dataIsValid && orderId.isNotEmpty && orderName.isNotEmpty;
 
-      final confirmationNumber = json['confirmation_number']?.toString() ?? '';
-      dataIsValid = confirmationNumber.isNotEmpty;
+    final orderNumber = json['order_number'] is int
+        ? json['order_number'] as int
+        : int.tryParse(json['order_number']?.toString() ?? '') ?? 0;
+    dataIsValid = dataIsValid && orderNumber != 0;
 
-      final totalPrice = json['total_price'] is num
-          ? (json['total_price'] as num).toDouble()
-          : double.tryParse(json['total_price']?.toString() ?? '') ?? 0.0;
-      dataIsValid = totalPrice != 0.0;
+    final confirmationNumber = json['confirmation_number']?.toString() ?? '';
+    dataIsValid = dataIsValid && confirmationNumber.isNotEmpty;
 
-      final currency = json['currency']?.toString() ?? '';
-      dataIsValid = currency.isNotEmpty;
+    final totalPrice = json['total_price'] is num
+        ? (json['total_price'] as num).toDouble()
+        : double.tryParse(json['total_price']?.toString() ?? '') ?? 0.0;
+    dataIsValid = dataIsValid && totalPrice > 0;
 
-      final lineItemsJson = (json['line_items'] as List?)
-        ?.cast<Map<String, dynamic>>() ?? [];      
-      final Map<String, LineItem> lineItems = {
-        for (final item in lineItemsJson)
-          item['product_id']?.toString() ?? '': LineItem.fromJson(item),
-      };
-      dataIsValid = lineItems.isNotEmpty;
+    final currency = json['currency']?.toString() ?? '';
+    dataIsValid = dataIsValid && currency.isNotEmpty;
+
+    final lineItemsJson =
+        (json['line_items'] as List?)?.cast<Map<String, dynamic>>() ?? [];
+    final Map<String, LineItem> lineItems = {
+      for (final item in lineItemsJson)
+        item['product_id']?.toString() ?? '': LineItem.fromJson(item),
+    };
+    dataIsValid =
+        dataIsValid &&
+        lineItems.isNotEmpty &&
+        lineItems.keys.every((id) => id.isNotEmpty) &&
+        lineItems.values.every(
+          (item) =>
+              item.quantity > 0 && item.price >= 0 && item.variantId.isNotEmpty,
+        );
 
     return RemoteOrder(
       orderId: orderId,
@@ -62,7 +66,7 @@ class RemoteOrder {
       totalPrice: totalPrice,
       currency: currency,
       lineItems: lineItems,
-      isValid: dataIsValid
+      isValid: dataIsValid,
     );
   }
 
@@ -70,36 +74,35 @@ class RemoteOrder {
   String toString() {
     final out = StringBuffer();
 
-      out.writeln('OrderId: $orderId');
-      out.writeln('Order Name: $orderName');
-      out.writeln('Order Number: $orderNumber');
-      out.writeln('Confirmation Number: $confirmationNumber');
-      out.writeln('Total Price: $totalPrice');
-      out.writeln('Currency: $currency');
-      out.writeln('Line Items: ');
-      for (final itemKey in lineItems.keys) {
-        out.writeln('itemKey: $itemKey');
-        out.writeln(lineItems[itemKey].toString());
-      }
+    out.writeln('OrderId: $orderId');
+    out.writeln('Order Name: $orderName');
+    out.writeln('Order Number: $orderNumber');
+    out.writeln('Confirmation Number: $confirmationNumber');
+    out.writeln('Total Price: $totalPrice');
+    out.writeln('Currency: $currency');
+    out.writeln('Line Items: ');
+    for (final itemKey in lineItems.keys) {
+      out.writeln('itemKey: $itemKey');
+      out.writeln(lineItems[itemKey].toString());
+    }
 
-      return out.toString().trimRight();
+    return out.toString().trimRight();
   }
 }
 
 class LineItem {
   final String productId;
-	final String variantId;
-	final String title;
+  final String variantId;
+  final String title;
   final int quantity;
   final double price;
-  
 
   LineItem({
-    required this.quantity, 
-    required this.price, 
-    required this.productId, 
-    required this.variantId, 
-    required this.title
+    required this.quantity,
+    required this.price,
+    required this.productId,
+    required this.variantId,
+    required this.title,
   });
 
   factory LineItem.fromJson(Map<String, dynamic> json) {
@@ -114,7 +117,7 @@ class LineItem {
         : double.tryParse(json['price']?.toString() ?? '') ?? 0.0;
 
     return LineItem(
-      productId: productId ,
+      productId: productId,
       variantId: variantId,
       title: title,
       quantity: quantity,
@@ -125,13 +128,12 @@ class LineItem {
   @override
   String toString() {
     final out = StringBuffer();
-        out.writeln('Product ID: $productId');
-        out.writeln('Variant ID: $variantId');
-        out.writeln('Title: $title');
-        out.writeln('Item Price: $price');
-        out.writeln('Item Quantity: $quantity');
-      
+    out.writeln('Product ID: $productId');
+    out.writeln('Variant ID: $variantId');
+    out.writeln('Title: $title');
+    out.writeln('Item Price: $price');
+    out.writeln('Item Quantity: $quantity');
 
-      return out.toString().trimRight();
+    return out.toString().trimRight();
   }
 }

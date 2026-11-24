@@ -15,6 +15,7 @@ class DetailScreen extends StatefulWidget {
   @override
   State<DetailScreen> createState() => _DetailScreenState();
 }
+
 class _DetailScreenState extends State<DetailScreen> {
   int _selectedQuantity = 1;
 
@@ -26,7 +27,7 @@ class _DetailScreenState extends State<DetailScreen> {
       appBar: AppBar(
         //? Is is product type what we should be displaying?
         title: Text(widget.product.productType.toUpperCase()),
-        actions: [CartButton(), const SizedBox(width: 8),],
+        actions: [CartButton(), const SizedBox(width: 8)],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -38,19 +39,18 @@ class _DetailScreenState extends State<DetailScreen> {
               product: widget.product,
               onQuantityChanged: (newQuant) {
                 setState(() => _selectedQuantity = newQuant);
-              }
+              },
             ),
           ],
         ),
       ),
-      
-      
+
       bottomNavigationBar: AddToCartBtn(
         selectedQuantity: _selectedQuantity,
         appLanguage: shopProvider.appLanguage,
-        product: widget.product, 
-        onPressed: shopProvider.addToCart, 
-      )
+        product: widget.product,
+        onPressed: shopProvider.addToCart,
+      ),
     );
   }
 }

@@ -12,13 +12,12 @@ class DetailBody extends StatefulWidget {
   const DetailBody({
     super.key,
     required this.appLanguage,
-    required this.product, 
+    required this.product,
     required this.onQuantityChanged,
   });
 
   @override
   State<DetailBody> createState() => _DetailBodyState();
-
 }
 
 class _DetailBodyState extends State<DetailBody> {
@@ -64,8 +63,11 @@ class _DetailBodyState extends State<DetailBody> {
           const SizedBox(height: 8),
 
           Text(
-            widget.product.description.isEmpty 
-                ? AppLocalizations.translate('default_description', widget.appLanguage)
+            widget.product.description.isEmpty
+                ? AppLocalizations.translate(
+                    'default_description',
+                    widget.appLanguage,
+                  )
                 : widget.product.description,
             style: const TextStyle(fontSize: 16, height: 1.5),
           ),
