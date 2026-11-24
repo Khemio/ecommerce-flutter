@@ -1,10 +1,8 @@
-import 'dart:convert';
 import 'package:azkomoly_app/core/utils/uri_extentions.dart';
-import 'package:http/http.dart' as http;
+import 'package:azkomoly_app/features/cart/checkout_api.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:azkomoly_app/app_config.dart';
 import 'package:azkomoly_app/app_localizations.dart';
 import 'package:azkomoly_app/app_theme.dart';
 import 'package:azkomoly_app/core/providers/shop_provider.dart';
@@ -20,48 +18,34 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
+  final CheckoutApi _checkoutApi = CheckoutApi();
   bool _isCheckingOut = false;
 
+  @override
+  void dispose() {
+    _checkoutApi.close();
+    super.dispose();
+  }
+
   Future<void> _handleCheckout(ShopProvider provider) async {
+    if (_isCheckingOut || provider.cart.isEmpty) return;
     setState(() => _isCheckingOut = true);
 
     try {
-      final checkoutPayload = provider.cart.map((item) {
-        return {"variantId": item.product.variantId, "quantity": item.quantity};
-      }).toList();
+      final session = await _checkoutApi.createCheckout(provider.cart);
+      if (!mounted) return;
 
-      final response = await http.post(
-        AppConfig.checkoutEndpoint,
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode(checkoutPayload),
+      final checkoutUrl = session.checkoutUrl.prefillWithProfile(
+        provider.profile,
       );
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final Map<String, dynamic> responseData = json.decode(response.body);
-        final String sessionId = responseData['sessionId'] ?? '';
-        final String rawCheckoutUrl = responseData['checkoutUrl'] ?? '';
-
-        if (rawCheckoutUrl.isNotEmpty && sessionId.isNotEmpty && mounted) {
-          final String checkoutUrl = rawCheckoutUrl.prefillWithProfile(
-            provider.profile,
-          );
-
-          provider.listenToSSE(context, sessionId);
-          Navigator.push(
-            // ignore: use_build_context_synchronously
-            context,
-            MaterialPageRoute(
-              builder: (_) => CheckoutScreen(checkoutUrl: checkoutUrl),
-            ),
-          );
-        } else {
-          throw Exception('Checkout URL was empty in response');
-        }
-      } else {
-        throw Exception(
-          'Server error: ${response.statusCode} - ${response.body}',
-        );
-      }
+      provider.listenToSSE(context, session.sessionId);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => CheckoutScreen(checkoutUrl: checkoutUrl),
+        ),
+      );
     } catch (e) {
       debugPrint("CHECKOUT ERROR LOG: $e");
       if (mounted) {
