@@ -1,96 +1,86 @@
 # ecommerce-flutter
 
-Flutter storefront for the **Azkomoly e-commerce prototype**, developed as part of an internship project. The app presents a Shopify-backed catalog, manages a local cart and customer profile, and launches Shopify's hosted checkout through a Go API proxy.
+Flutter storefront for the **Azkomoly e-commerce prototype**, developed during an internship. It uses a Go proxy for Shopify catalog and checkout-session operations and a hosted Shopify checkout WebView.
 
-**Companion repository:** [ecommerce-proxy](https://github.com/Khemio/ecommerce-proxy). The two repositories form one prototype, but have separate build, release, and runtime responsibilities.
+**Companion service:** [ecommerce-proxy](https://github.com/Khemio/ecommerce-proxy).
 
-> **Status (reviewed 2026-11-14):** Work-in-progress prototype, **not a production-ready payment application**. `main` is the older storefront baseline. Checkout-session tracking, webhook-driven order notifications, and result screens exist on `dev`; the `appLifecycle` branch has an additional *unfinished* checkout-resume experiment. Some inspected code is likely to fail static analysis or compilation. Documentation of non-default branches does not imply those changes are merged or working end to end.
+> **Status (November 24, 2026):** The catalog/cart baseline has passed local static analysis, 11 Flutter tests, and eight user-reported runtime checks. Checkout URL creation was verified; **successful payment and the order-result lifecycle were not**. This is a portfolio prototype, not a production-ready payment integration.
 
-## Features
+## Verified storefront functionality
 
-- Product catalog loaded from a Go proxy, with product-type/vendor filters and price ordering.
-- Product details, quantity selection, cart operations, and local cart persistence.
-- Shopify-hosted checkout inside a Flutter WebView, including URL-based profile prefilling.
-- Customer profile/address editing, English/Hungarian UI strings, and locally saved order history.
-- Remotely configurable promotional/social UI widgets (client implementation; the companion proxy currently has **no** `/api/v1/config` route).
-- **On `dev` only:** checkout session IDs, order SSE listener, an order-success screen, a failure screen, and a delayed-confirmation screen.
-- **On `appLifecycle` only:** a work-in-progress `WidgetsBindingObserver` that attempts to re-check checkout after the app resumes from an external banking app.
+- Shopify-backed catalog, images, vendor and product-type filters, and price sorting.
+- Product details, quantity selection, and adding products to the cart.
+- Locally persisted cart, including quantity changes, removal, clearing, and app-restart recovery.
+- Customer profile and address fields; English and Hungarian interface strings.
+- Hosted Shopify checkout URL creation through the Go proxy, loaded in a Flutter WebView.
+- Promotional and social carousels; a safe local banner fallback when the proxy does not serve `/config`.
 
-## Architecture at a glance
+**Checkout limitations:** `ShopProvider` can subscribe to `order.created` over SSE and show outcome screens, but order creation is not proof of payment. The current client also directly navigates from WebView/SSE callbacks; lifecycle resume verification and an authoritative payment-status lookup are not implemented. Do not treat the current success screen as verified payment confirmation.
+
+## Architecture
 
 ```text
-Flutter UI (Home / Cart / Profile)
-       |
-       v
-ShopProvider (ChangeNotifier): catalog, cart, profile, history, language
-       |
-       +---- HTTP JSON ------> ecommerce-proxy (Go) ----> Shopify Storefront API
-       |                          |                        (products, cart creation)
-       |                          +---- hosted checkout URL
-       |
-       +---- WebView -------------------------------> Shopify-hosted checkout
-       |
-       +---- SSE (`dev`) ---> proxy checkout session <--- Shopify order webhook
-       |
-       +---- SharedPreferences (device-local data)
+Flutter (Home / Product details / Cart / Profile)
+    |
+    +-- ShopProvider (catalog, cart, preferences, local order history)
+    |        +-- SharedPreferences (device-local)
+    |        +-- HTTP/JSON --> ecommerce-proxy (Go) --> Shopify Storefront API
+    |        +-- SSE order.created <--- ecommerce-proxy <--- Shopify webhook
+    |
+    +-- CheckoutScreen (WebView) --> Shopify-hosted checkout
 ```
 
-Shopify, not Flutter or the Go proxy, handles payment entry and payment processing. The Go development branch correlates webhook notifications with app sessions; it does not establish a verified **paid** state in the current event contract.
+Shopify handles payment processing. The Flutter app and Go proxy do not process card details.
 
 ## Getting started
 
-### Prerequisites
+Prerequisites: a Flutter SDK compatible with `pubspec.yaml` (Dart `^3.12.2`), an Android/iOS development environment when testing the WebView, and the companion Go proxy configured with Shopify Storefront credentials.
 
-- Flutter SDK compatible with the Dart constraint in `pubspec.yaml` (currently `^3.12.2` on `dev`).
-- An Android/iOS development environment for the WebView-based checkout flow.
-- Running [ecommerce-proxy](https://github.com/Khemio/ecommerce-proxy) with Shopify Storefront credentials. Use its `dev` branch to inspect the session/SSE prototype; `main` does not implement those endpoints.
+Run the **proxy's `main` branch** on port 8080. Its current public API supports products, checkout creation with `sessionId`, SSE, and the Shopify webhook. It does not expose `/api/v1/config` or an authoritative checkout-status lookup.
 
-### Run
-
-```sh
-git clone https://github.com/Khemio/ecommerce-flutter.git
-cd ecommerce-flutter
-git checkout dev  # checkout/SSE prototype; not guaranteed to build
+```powershell
 flutter pub get
+flutter analyze
+flutter test
 flutter run --dart-define=BASE_URL=http://10.0.2.2:8080
 ```
 
-`BASE_URL` is a **compile-time** Dart define. `10.0.2.2` reaches the host from the standard Android emulator. For an iOS simulator, `http://localhost:8080` is commonly suitable; for a physical device, use a reachable host/LAN address. The current code's default is a developer-specific `http://192.168.100.46:8080`; override it rather than assuming that address works.
+`10.0.2.2` reaches the host computer from the standard Android emulator. For a physical phone use a reachable local-network address; for iOS simulator, `localhost` may work. `BASE_URL` is a compile-time Dart define and defaults to `http://localhost:8080`. Android debug builds allow local HTTP for testing; release deployments should use HTTPS.
 
-```sh
-flutter analyze
-flutter test
-```
+To opt into a compatible custom `/config` endpoint, pass `--dart-define=ENABLE_REMOTE_CONFIG=true`. Otherwise the client builds local promotional banners from the available products and does not request the unsupported endpoint.
 
-These are verification commands, **not reported passing results**. The existing `test/widget_test.dart` is Flutter's template counter test, not a valid test of this storefront. The inspected branches have known potential compile and flow defects; see the roadmap.
+## Verification
 
-Local insecure HTTP may require additional platform-specific development configuration; use HTTPS for actual deployments. Do not ship real Shopify Admin credentials or webhook secrets inside the Flutter app.
+- `dart format lib test`: 0 changed files.
+- `flutter analyze`: **no issues found**.
+- `flutter test`: **11 tests passed** (product, remote-order, cart-provider, widget tests).
+- Runtime smoke test, reported by the project owner: **8/8 passed** (catalog/images, filters, sorting, product details, cart editing, restart persistence, remove/clear persistence, and checkout URL creation).
+
+These checks do **not** verify payment completion, signed webhook delivery, a bank app returning to the WebView, retries, or persistence of a pending checkout session.
 
 ## Code layout
 
 | Location | Responsibility |
 | --- | --- |
-| `lib/main.dart` | Initializes `ChangeNotifierProvider<ShopProvider>` and `MaterialApp` |
-| `lib/features/main_layout.dart` | Bottom-navigation home/cart/profile shell with `IndexedStack` |
-| `lib/core/providers/shop_provider.dart` | Catalog fetching, cart, filters, preferences, order history; also SSE and navigation on `dev` |
-| `lib/core/models/` | Products, profile/address, banners; remote order model on `dev` |
-| `lib/features/home/` | Catalog, filters, promotions, social widgets |
-| `lib/features/details/` | Product detail and add-to-cart UI |
-| `lib/features/cart/` | Cart creation, checkout WebView, order outcomes on `dev` |
-| `lib/features/profile/` | Local profile and order history |
-| `lib/app_config.dart` | Client API paths and base URL |
-| `lib/app_localizations.dart` | English/Hungarian translations |
-| `lib/core/utils/` | URL prefilling, banner routing, formatters |
+| `lib/main.dart` | Sets up the app and `ShopProvider` |
+| `lib/features/main_layout.dart` | Home/cart/profile navigation |
+| `lib/core/providers/shop_provider.dart` | Catalog, cart, local preferences, and current SSE hooks |
+| `lib/core/models/` | Product, remote-order, profile, and UI models |
+| `lib/features/home/` | Catalog, filters, promotion/social carousels |
+| `lib/features/details/` | Product display and add-to-cart |
+| `lib/features/cart/` | Cart, hosted checkout, and provisional result screens |
+| `lib/features/profile/` | Profile and local order history |
+| `test/` | Focused Flutter tests |
 
 ## Documentation
 
-- [Architecture](docs/ARCHITECTURE.md) — implemented components, data storage, navigation responsibilities.
-- [API integration](docs/API_INTEGRATION.md) — current client/server JSON, SSE and webhook semantics.
-- [Checkout state design](docs/CHECKOUT_STATE_DESIGN.md) — proposed state-driven routing and lifecycle recovery.
-- [Branch review](docs/BRANCHES.md) — concrete branch divergence and checkout maturity.
-- [Testing](docs/TESTING.md) — test strategy and scenario matrix.
-- [Roadmap](docs/ROADMAP.md) — prioritized defects and realistic next steps.
+- [Architecture](docs/ARCHITECTURE.md)
+- [API integration](docs/API_INTEGRATION.md)
+- [Branch history](docs/BRANCHES.md)
+- [Checkout state design (proposal)](docs/CHECKOUT_STATE_DESIGN.md)
+- [Testing](docs/TESTING.md)
+- [Roadmap](docs/ROADMAP.md)
 
-## Security and scope
+## Scope and data safety
 
-This is a demonstrator, not a hardened shopping app: order history and profile are stored locally in `SharedPreferences`; there is no account-based history sync, documented authentication, or verified order-status recovery API. Avoid calling an order *paid* merely because a checkout URL redirected or an `order.created` event arrived. Validate payment status on the backend and make duplicate or delayed notifications safe before using the flow for real purchases.
+This is a demonstrator, not a hardened commerce gateway. Profile, cart, and order history live in device-local `SharedPreferences`; there is no authenticated multi-device order history or recoverable verified-payment state. The remaining checkout work must distinguish confirmed payment, order creation, canceled/failed, and unknown/pending outcomes, and must never clear the cart or display paid success based solely on an SSE event or URL substring.

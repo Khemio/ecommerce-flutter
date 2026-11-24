@@ -1,71 +1,31 @@
-# Branch review and implementation status
+# Branch history and integration status
 
-Review date: **2026-11-14**. Branch heads below are the commits inspected, not a promise that GitHub has not moved since.
+Updated **November 24, 2026**. The earlier November 14 source review was made before the Flutter cleanup and before the Go proxy's session/SSE features reached its `main` branch.
 
-| Branch | Inspected head | Purpose / state |
-| --- | --- | --- |
-| `main` | `b344798` | Existing storefront and basic WebView checkout; no SSE or dedicated order-result screens |
-| `dev` | `74ca5b6` | Remote order model, `sessionId` checkout, SSE + timeout, order-success/payment-failure screens, order history synchronization |
-| `appLifecycle` | `129cb7a` | One commit beyond `dev`: introduces app lifecycle resume hook and attempted silent payment verification (WIP, currently references missing symbols) |
+| Branch | Role |
+| --- | --- |
+| `main` | Default release/portfolio branch; the proposed integration includes the tested `dev` implementation and updated documentation |
+| `dev` | Main development baseline; includes Flutter cleanup PR #1 and the initial checkout SSE / result-screen implementation |
+| `cleanup/cv-ready` | Completed cleanup branch, merged into `dev` by [PR #1](https://github.com/Khemio/ecommerce-flutter/pull/1) |
+| `appLifecycle` | Historical unfinished experiment with app-resume checkout verification, **not merged** |
 
-`main` and `dev` have **diverged**: comparison shows `dev` 8 commits ahead and 4 behind `main`. `appLifecycle` is 1 commit ahead and 0 behind `dev`. Against `main`, `appLifecycle` is 9 ahead and 4 behind. These counts reflect the review snapshot.
+## Verified cleanup
 
-## Key feature changes
+- Fixed named-argument compilation errors, unsafe product parsing, vendor filtering, and empty/short catalog banner fallback.
+- Corrected SSE startup ordering and canceled subscriptions/reconnection timers on stop/dispose. **SSE delivery and payment-result correctness have not been tested end to end.**
+- Fixed cart persistence when remove/clear races with a pending debounced save.
+- Removed sensitive prefilled checkout URL logging, test-only checkout gestures, and the unimplemented manual-check button.
+- Added product, remote-order, cart-provider, and widget tests; formatted Dart files and enabled HTTP in Android **debug builds only**.
+- Owner-reported checks: **zero analyzer issues, eleven passing tests, eight passing runtime smoke-test scenarios**.
 
-| Feature | `main` | `dev` | `appLifecycle` |
-| --- | --- | --- | --- |
-| Catalog, cart, profile, local history | Yes | Yes | Yes |
-| Checkout response requires `sessionId` | No | Yes | Yes |
-| `order.created` SSE subscription | No | Code present (startup logic defect) | Same code |
-| Dedicated order success/failure/timeout screens | No | Yes | Yes |
-| Local archive built from remote order payload | No | Yes | Yes |
-| External payment-app URI handling | Limited | Yes | Yes |
-| App resume observer | No | No | Yes, incomplete |
-| Real payment-status GET endpoint | No | No | No |
-| State-derived navigation coordinator | No | No | No |
+## Remaining unfinished checkout work
 
-## Notable findings
+The current `dev` checkout flow requires a nonempty `sessionId` and `checkoutUrl` from `POST /api/v1/checkout`, then opens Shopify's hosted checkout and subscribes to `GET /api/v1/events?sessionId=...`. The Go proxy `main` now exposes this contract; it did not when the older branch documentation was written.
 
-### Likely block: SSE startup is disabled by its own stop call
+The `order.created` SSE event represents an order-creation notification, **not verified payment**. Flutter still has competing WebView/SSE navigation callbacks and archives/clears the local cart on the order-created path. This is unsafe for a production checkout. There is no payment-status read endpoint for resume/retry reconciliation.
 
-`ShopProvider.listenToSSE` in `dev` and `appLifecycle` executes:
+The `appLifecycle` branch references a missing `widget.checkoutId` and unimplemented `ShopProvider.checkIfCheckoutIsCompleted()`; it must not be merged as-is. See [the state-driven checkout proposal](CHECKOUT_STATE_DESIGN.md) and [roadmap](ROADMAP.md).
 
-```dart
-_isExplicitlyStopped = false;
-stopListeningToSSE(); // sets _isExplicitlyStopped = true
-// ...
-_connectToStream(context, url.toString()); // immediately returns when stopped
-```
+## Integration policy
 
-Cancel the previous subscription **before** resetting the stop flag. Add a unit test that asserts one SSE connection opens for a new checkout. This defect is visible by inspection, not inferred from a network test.
-
-### Likely build failure in `appLifecycle`
-
-`CheckoutScreen` has only a `checkoutUrl` constructor field, but its resume hook references `widget.checkoutId`. It also calls `ShopProvider.checkIfCheckoutIsCompleted`, a method not found in the inspected provider. The branch should remain WIP until both the session identity and a real lookup contract exist.
-
-### Additional static-analysis candidates
-
-- In `Product`, the constructor declares `this._id` and `this._variantId`, while its `fromJson` and `copyWith` call sites pass `id:` and `variantId:`. Reconcile the named-argument API and use `flutter analyze` to catch errors.
-- `SummaryPanel`'s constructor declares named parameters `_isCheckingOut`, `_totalPrice`, `_onCheckoutPressed`, whereas `CartScreen` passes `isCheckingOut`, `totalPrice`, `onCheckoutPressed`. Align their public names.
-- `RemoteOrder` declares `required this._isValid` but `RemoteOrder.fromJson` invokes the constructor with `isValid:`; align that named argument too.
-- The template `test/widget_test.dart` expects a counter and is not representative of `MyApp` (which also needs a `ShopProvider` ancestor).
-
-### Runtime correctness issues
-
-- `RemoteOrder.fromJson` repeatedly *overwrites* its `dataIsValid` Boolean, so a valid final `line_items` array can mask missing earlier required fields. Validate with a conjunction or explicit per-field failures.
-- `OrderHistoryItem.fromOrder` keys line items by product ID and only includes products that were in the local cart; multiple variants of one product can collide. Reconstruct the receipt from server-authoritative line items by variant/order-line ID.
-- SSE and WebView both perform imperative navigation, allowing races. WebView 'thank you' URL is not an authoritative payment signal.
-- SSE retry timers are not held and canceled on stop/dispose; provider also has no observed `dispose()` cleanup for the timers/subscription.
-- A timed-out order's manual status button is a placeholder, so a user cannot recover a delayed success.
-- `fetchRemoteConfiguration` calls an endpoint that neither inspected proxy branch registers. For non-200 responses it constructs a fallback from `products.sublist(0,5)` even if fewer than five items exist; the catch logs the resulting error.
-- The current client logs the full prefilled Shopify checkout URL, potentially including customer PII in the query string.
-
-## Merge strategy
-
-1. Preserve `main` as a known historical baseline; do **not** merge `appLifecycle` unmodified.
-2. Establish a clean integration branch from the intended base, resolve divergence with `main`, and repair compile-level issues.
-3. Verify proxy `dev` and client API contracts together; remove the proxy's fake `order.created` test event.
-4. Extract the checkout coordinator and add tests before enabling checkout-success navigation.
-5. Merge to `main` only when `flutter analyze`, targeted tests, and a documented manual device checkout flow pass.
-
-`ecommerce-proxy` has its own `docs/DEVELOPMENT_BRANCHES.md`, which should be updated if the two branches' API contracts are changed.
+Bring the tested development baseline and this documentation together on a dedicated integration branch, review the pull request, and merge into `main` only after confirming the combined tree. Do not interpret the storefront smoke test as verification of payment, webhooks, or bank redirects.

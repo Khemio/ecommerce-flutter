@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 
 class PromoCarousel extends StatelessWidget {
   final List<Product> products;
-  
+
   const PromoCarousel({super.key, required this.products});
 
   @override
@@ -17,7 +17,7 @@ class PromoCarousel extends StatelessWidget {
     final config = Provider.of<ShopProvider>(context).layoutConfig;
 
     if (!config.isPromoCarouselEnabled || config.promoBanners.isEmpty) {
-      return const SizedBox.shrink(); 
+      return const SizedBox.shrink();
     }
 
     return CarouselSlider(
@@ -46,5 +46,4 @@ class PromoCarousel extends StatelessWidget {
       }).toList(),
     );
   }
-
 }

@@ -29,7 +29,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    final currentProfile = Provider.of<ShopProvider>(context, listen: false).profile;
+    final currentProfile = Provider.of<ShopProvider>(
+      context,
+      listen: false,
+    ).profile;
     if (currentProfile != null) {
       _firstNameController.text = currentProfile.firstName;
       _lastNameController.text = currentProfile.lastName;
@@ -55,15 +58,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final shopProvider = Provider.of<ShopProvider>(context);
 
-    String transactionSubtitlePattern = AppLocalizations.translate('orders_count_suffix', shopProvider.appLanguage);
-    String displaySubtitle = transactionSubtitlePattern.replaceAll('{count}', '${shopProvider.orderHistory.length}');
+    String transactionSubtitlePattern = AppLocalizations.translate(
+      'orders_count_suffix',
+      shopProvider.appLanguage,
+    );
+    String displaySubtitle = transactionSubtitlePattern.replaceAll(
+      '{count}',
+      '${shopProvider.orderHistory.length}',
+    );
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.translate('profile_header', shopProvider.appLanguage),),
+        title: Text(
+          AppLocalizations.translate(
+            'profile_header',
+            shopProvider.appLanguage,
+          ),
+        ),
         actions: [
           IconButton(
-            icon: Icon(_isEditing ? Icons.close : Icons.edit_note, color: Colors.black, size: 28),
+            icon: Icon(
+              _isEditing ? Icons.close : Icons.edit_note,
+              color: Colors.black,
+              size: 28,
+            ),
             onPressed: () {
               setState(() {
                 _isEditing = !_isEditing;
@@ -79,7 +97,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 }
               });
             },
-          )
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -98,11 +116,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          AppLocalizations.translate('profile_info_section', shopProvider.appLanguage),
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black),
+                          AppLocalizations.translate(
+                            'profile_info_section',
+                            shopProvider.appLanguage,
+                          ),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: Colors.black,
+                          ),
                         ),
                         if (!_isEditing)
-                          const Icon(Icons.lock_outline, size: 16, color: Colors.grey),
+                          const Icon(
+                            Icons.lock_outline,
+                            size: 16,
+                            color: Colors.grey,
+                          ),
                       ],
                     ),
                     const SizedBox(height: 20),
@@ -110,38 +139,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     if (!_isEditing)
                       InfoDisplayView(
                         appLanguage: shopProvider.appLanguage,
-                        profile: shopProvider.profile
+                        profile: shopProvider.profile,
                       )
-                    else 
+                    else
                       InfoEditForm(
                         appLanguage: shopProvider.appLanguage,
-                        onSaved: ({
-                          required firstName, 
-                          required lastName, 
-                          required email, 
-                          required zipCode, 
-                          required city, 
-                          required streetAddress
-                        }) {
-                          shopProvider.saveProfile(
-                            firstName: firstName,
-                            lastName: lastName,
-                            email: email,
-                            zipCode: zipCode,
-                            city: city,
-                            streetAddress: streetAddress,
-                          );
-                          setState(() => _isEditing = false);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                AppLocalizations.translate('profile_saved_toast', shopProvider.appLanguage), 
-                              )
-                            ),
-                          );
-                        }
-                      )
-                    ],
+                        onSaved:
+                            ({
+                              required firstName,
+                              required lastName,
+                              required email,
+                              required zipCode,
+                              required city,
+                              required streetAddress,
+                            }) {
+                              shopProvider.saveProfile(
+                                firstName: firstName,
+                                lastName: lastName,
+                                email: email,
+                                zipCode: zipCode,
+                                city: city,
+                                streetAddress: streetAddress,
+                              );
+                              setState(() => _isEditing = false);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    AppLocalizations.translate(
+                                      'profile_saved_toast',
+                                      shopProvider.appLanguage,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                      ),
+                  ],
                 ),
               ),
             ),
@@ -149,18 +182,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             Card(
               child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                leading: const Icon(Icons.history_toggle_off, color: Colors.black, size: 28),                // title: const Text('ORDER HISTORY', style: TextStyle(fontWeight: FontWeight.bold)),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 8,
+                ),
+                leading: const Icon(
+                  Icons.history_toggle_off,
+                  color: Colors.black,
+                  size: 28,
+                ), // title: const Text('ORDER HISTORY', style: TextStyle(fontWeight: FontWeight.bold)),
                 title: Text(
-                  AppLocalizations.translate('order_history_title', shopProvider.appLanguage), 
-                  style: TextStyle(fontWeight: FontWeight.bold)
+                  AppLocalizations.translate(
+                    'order_history_title',
+                    shopProvider.appLanguage,
+                  ),
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 subtitle: Text(displaySubtitle),
-                trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black),
+                trailing: const Icon(
+                  Icons.arrow_forward_ios,
+                  color: Colors.black,
+                ),
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const OrderHistoryScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => const OrderHistoryScreen(),
+                    ),
                   );
                 },
               ),
@@ -168,7 +216,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             const SizedBox(height: 24),
 
-            ProfileSocialButtons(appLanguage: shopProvider.appLanguage), 
+            ProfileSocialButtons(appLanguage: shopProvider.appLanguage),
           ],
         ),
       ),

@@ -10,6 +10,12 @@
 		<string>instagram</string>
 		<string>fb</string>
 		<string>youtube</string>
+		<string>otpbank</string>
+		<string>simplepay</string>
+		<string>khbank</string>
+		<string>erstebank</string>
+		<string>barion</string>
+		<string>revolut</string>
 	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>

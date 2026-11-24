@@ -1,24 +1,26 @@
 # Integration with `ecommerce-proxy`
 
-> `ecommerce-flutter` `dev`/`appLifecycle` expects the proxy's **development** checkout-session/SSE contract. The proxy's `main` branch supports browsing and cart creation but **does not** offer `sessionId`, `/events`, or `/shopify/webhook`. The apps are therefore not checkout-compatible if Flutter `dev` is pointed at proxy `main`.
+Updated **November 24, 2026** against the `main` branches of the Go proxy and the cleaned-up Flutter client. Checkout URL creation was smoke-tested; **payment completion and webhook/SSE end-to-end behavior were not**.
 
-## Configuration
+## Compatibility
 
-`lib/app_config.dart` defines `apiVer = 'v1'` and `BASE_URL` via `String.fromEnvironment`; the default currently is `http://192.168.100.46:8080`.
+| Client operation | API path | Proxy `main` support |
+| --- | --- | --- |
+| Products | `GET /api/v1/products` | Yes |
+| Product detail | `GET /api/v1/product/{product_id}` | Yes |
+| Create checkout | `POST /api/v1/checkout` | Yes: `sessionId` and `checkoutUrl` |
+| Order notifications | `GET /api/v1/events?sessionId=...` | Yes: SSE |
+| Shopify webhook | `POST /api/v1/shopify/webhook` | Yes: HMAC verification |
+| Promotional configuration | `GET /api/v1/config` | **No**; Flutter uses a local fallback |
+| Authoritative payment/status reconciliation | Not defined | **No** |
 
-| Flutter call | URL | Proxy `main` | Proxy `dev` |
-| --- | --- | --- | --- |
-| Products | `GET /api/v1/products` | Yes | Yes |
-| Promotional layout | `GET /api/v1/config` | No | No (not found in registered routes) |
-| Create checkout | `POST /api/v1/checkout` | Yes, without `sessionId` | Yes, with `sessionId` |
-| Order notifications | `GET /api/v1/events?sessionId=...` | No | Yes (SSE) |
-| Shopify webhook | `POST /api/v1/shopify/webhook` | No | Yes (Shopify-to-proxy only) |
+The Go proxy now provides the session/SSE API on `main` (unlike the earlier November 14 review). The Flutter client's default base URL is `http://localhost:8080`; override via `--dart-define=BASE_URL=...`. The Android emulator reaches the Windows host via `10.0.2.2`.
 
-A config 404 currently triggers a client fallback; it should be an explicit feature flag or a server endpoint, not assumed to exist. Product JSON is a Shopify-derived flattened shape; the UI reads the **first** variant and first image.
+## Products
 
-## Create a checkout
+`GET /api/v1/products` returns a JSON array of flattened Shopify-derived products. The client reads `id`, `title`, `description`, `productType`, `vendor`, `availableForSale`, `images[]`, and the **first** `variants[]` item, including `id`, nullable `sku`, and `price.amount`. It does not currently provide a multiple-variant picker. Missing image and SKU values are handled safely; parsed prices use `double` in this prototype.
 
-Flutter sends a JSON array using the current `CartScreen._handleCheckout()` implementation:
+## Checkout creation
 
 ```http
 POST /api/v1/checkout
@@ -27,66 +29,46 @@ Content-Type: application/json
 [{"variantId":"49175344709849","quantity":2}]
 ```
 
-It sends `product.variantId`, the **last path segment** of the Shopify GID, not the full GID. The proxy normalizes numeric IDs for Shopify. In proxy `dev`, a successful response has the general form:
+The client sends the last segment of the Shopify variant GID. The Go proxy validates each line, creates a Shopify cart and returns a session identifier and hosted checkout URL, including fields resembling:
 
 ```json
 {
+  "sessionId": "uuid-from-proxy",
   "id": "gid://shopify/Cart/example",
   "checkoutUrl": "https://example.myshopify.com/cart/c/example",
   "totalQuantity": 2,
-  "sessionId": "a-uuid-generated-by-proxy",
   "attributes": []
 }
 ```
 
-`CartScreen` requires nonempty `sessionId` and `checkoutUrl`, optionally prefills name/email/address using `CheckoutPrefiller`, starts the SSE listener, and pushes the WebView. Proxy `main` returns a checkout URL but lacks `sessionId`, so this client rejects that otherwise successful response.
+Flutter requires nonempty `sessionId` and `checkoutUrl`, starts the SSE listener, and opens `CheckoutScreen` (WebView). Checkout URL creation and navigation were manually smoke-tested; **no payment was performed as part of that test**.
 
-**Note:** URL parameters contain personal contact/address data and may appear in logs/history. Limit debug logging of prefilled URLs (the current client prints them). Ensure the checkout URL remains on a trusted hosted Shopify domain before opening it.
+Profile prefilling may place customer name/address/email into URL query parameters. The previous full checkout-URL debug log was removed. Avoid logging or exposing these URLs elsewhere.
 
-## Order notifications over SSE (`dev`)
-
-Client connects to:
+## SSE order notification
 
 ```http
 GET /api/v1/events?sessionId=<uuid>
 Accept: text/event-stream
 ```
 
-Proxy `dev` registers this endpoint and sends heartbeats. After correlating a Shopify webhook to the stored session, it writes an SSE event resembling:
+The proxy can correlate a signed Shopify order webhook to an in-memory session and send an event:
 
 ```text
 event: order.created
 data: {"order_id":"123","order_name":"#1001","order_number":1001,"confirmation_number":"ABC123","total_price":"100.00","currency":"HUF","line_items":[{"product_id":"10","variant_id":"20","title":"Example","quantity":2,"price":"50.00"}]}
-
 ```
 
-The client parses this via `RemoteOrder.fromJson`, then archives local history and clears the cart. The proxy carries the `go_session_id` cart attribute into Shopify's order webhook for correlation; this correlation is maintained **in process memory**, not a durable database.
+**An `order.created` event is not a `paid` event.** The current event contract does not prove successful payment. The proxy may lose session state on restart or multi-instance routing, and the client still makes order-history/cart mutations and route transitions from this provisional event. Do not demonstrate or describe these as verified payment completion.
 
-**Important distinctions:**
+The first SSE startup/stop-ordering defect and timer cleanup were fixed in Flutter, but reconnection, duplicates, webhook-before-subscribe, and payment outcomes need integration tests.
 
-- `order.created` is an **order creation event**, not proof that `financial_status` is paid. The current proxy webhook maps financial status from Shopify but does not pass it in its SSE `OrderEvent`.
-- Proxy `dev` unconditionally invokes `testSSEDelayed(sessionID)` and emits a **fake** `order.created` event after roughly five seconds. This must be disabled or gated to explicit testing before validating purchases.
-- A disconnect, process restart, multiple proxy instances, expired session, or client never starting SSE can leave the outcome unknown.
-- The client has a 15-minute timeout screen, but its manual-check button currently only delays locally and does not query the proxy.
-- No reliable checkout-status lookup endpoint was found on the inspected proxy branch. **Do not add it to API docs as implemented.**
+## Configuration
 
-## Proposed reconciliation contract (not implemented)
+`/api/v1/config` is not available on the Go proxy. Flutter now builds a local promotion set from up to five products, including empty catalogs, by default. Only a compatible experimental backend should be used with `--dart-define=ENABLE_REMOTE_CONFIG=true`.
 
-Introduce an authenticated, session-scoped endpoint such as:
+## Required future backend contract
 
-```http
-GET /api/v1/checkout/status?sessionId=<uuid>
-```
+Define a secured, session-scoped status lookup with clear `pending`, `confirmed`, `failed` and `unknown` semantics and a server-verified criterion for `confirmed`. The URL, endpoint, response schema, and authorization are **not yet implemented**. The checkout coordinator should reconcile on redirect, app resume, timeout, reconnect, and restart. Cart archival and success UI must be idempotent and follow verification.
 
-Return a documented, idempotent status for at least `pending`, `confirmed`, `failed`, or `unknown` with a verified order identity and update timestamp, **without** exposing PII or admin credentials. `confirmed` must have explicit server-side criteria (for example, a Shopify-confirmed payment/financial status, if that is the product requirement). The session identifier must not be treated as sufficient authorization for sensitive details.
-
-The client should reconcile on app resume, WebView completion/redirect, SSE disconnect, manual retry, and cold start. Return an unknown/pending state rather than asserting failure when no fresh server signal is available.
-
-## Integration verification checklist
-
-1. Start proxy `dev` with a test Shopify store and webhook secret; remove or feature-gate simulated SSE events.
-2. Fetch products with Flutter and verify price strings/variant ID parsing, zero products, and unavailable products.
-3. Create checkout and confirm `sessionId` and valid `checkoutUrl` are returned.
-4. Confirm SSE actually subscribes, then test webhook-before-subscription and after-subscription ordering.
-5. Test successful *verified* payment, bank app return, cancellation, no redirect, network loss, expiration, repeated events, and duplicate resume callbacks.
-6. Confirm cart/history change exactly once and that reopening the app recovers a pending checkout without fabricating success.
+See [Checkout state design](CHECKOUT_STATE_DESIGN.md) and [Roadmap](ROADMAP.md).

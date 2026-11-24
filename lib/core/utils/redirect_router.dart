@@ -13,7 +13,7 @@ class RedirectRouter {
 
     final uri = Uri.parse(redirectUrl);
     final String scheme = uri.scheme; // e.g., 'azkomoly'
-    final String host = uri.host;     // e.g., 'product', 'tab', 'vendor'
+    final String host = uri.host; // e.g., 'product', 'tab', 'vendor'
 
     if (scheme != 'azkomoly') {
       debugPrint("⚠️ Unsupported URL scheme: $scheme");
@@ -28,19 +28,26 @@ class RedirectRouter {
           final String targetProductId = uri.pathSegments.join('/');
           targetProductId.replaceFirst('/', '//');
           debugPrint(targetProductId);
-          
-          final shopProvider = Provider.of<ShopProvider>(context, listen: false);
-          
+
+          final shopProvider = Provider.of<ShopProvider>(
+            context,
+            listen: false,
+          );
+
           // 2. Find the matching Product entity out of your active memory data state cache
           final productMatch = shopProvider.products.firstWhere(
             (p) => p.id == targetProductId,
-            orElse: () => shopProvider.products.firstWhere((p) => p.variantId == targetProductId),
+            orElse: () => shopProvider.products.firstWhere(
+              (p) => p.variantId == targetProductId,
+            ),
           );
 
           // 3. Smoothly push the user directly onto your fluid animated detail viewing screen!
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => DetailScreen(product: productMatch)),
+            MaterialPageRoute(
+              builder: (_) => DetailScreen(product: productMatch),
+            ),
           );
         }
         break;
@@ -53,7 +60,9 @@ class RedirectRouter {
       case 'vendor':
         // PREPARED FOR THE FUTURE ROADMAP VENDOR STORES LAYER:
         // Navigator.push(context, MaterialPageRoute(builder: (_) => VendorStoreScreen(vendorId: uri.pathSegments[0])));
-        debugPrint("🚀 Multi-Vendor Store View Ready to Mount for Vendor: ${uri.pathSegments[0]}");
+        debugPrint(
+          "🚀 Multi-Vendor Store View Ready to Mount for Vendor: ${uri.pathSegments[0]}",
+        );
         break;
 
       default:

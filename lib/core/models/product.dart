@@ -1,88 +1,99 @@
+// Public named parameters intentionally differ from private raw-ID fields.
+// ignore_for_file: prefer_initializing_formals
+
+/// First-variant product representation returned by ecommerce-proxy.
 class Product {
-  final String id;
+  final String _id;
   final String title;
   final String description;
   final String productType;
   final String vendor;
   final String imageUrl;
-  final String variantId;
+  final String _variantId;
   final double price;
   final String sku;
   final bool isAvailable;
 
   Product({
-    required this.id,
+    required String id,
     required this.title,
     required this.description,
     required this.productType,
     required this.vendor,
     required this.imageUrl,
-    required this.variantId,
+    required String variantId,
     required this.price,
-    required this.sku, 
+    required this.sku,
     required this.isAvailable,
-  });
+  }) : _id = id,
+       _variantId = variantId;
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'title': title,
-      'description': description,
-      'productType': productType,
-      'vendor': vendor,
-      // Wrap your url back inside an array maps tree block
-      'images': [
-        {'url': imageUrl}
-      ],
-      // Re-nest your single variants values to look like Shopify GraphQL structures
-      'variants': [
-        {
-          'id': variantId,
-          'sku': sku,
-          'availableForSale': isAvailable,
-          'price': {
-            'amount': price,
-          }
-        }
-      ]
-    };
+  static String _lastPathSegment(String value) {
+    final segments = Uri.tryParse(value)?.pathSegments;
+    return segments == null || segments.isEmpty ? value : segments.last;
   }
 
-  // Map the JSON keys cleanly to flat properties your UI can read effortlessly
+  String get id => _lastPathSegment(_id);
+  String get idLink => _id;
+  String get variantId => _lastPathSegment(_variantId);
+  String get variantIdLink => _variantId;
+
+  Map<String, dynamic> toJson() => {
+    'id': _id,
+    'title': title,
+    'description': description,
+    'productType': productType,
+    'vendor': vendor,
+    'availableForSale': isAvailable,
+    'images': [
+      {'url': imageUrl},
+    ],
+    'variants': [
+      {
+        'id': _variantId,
+        'sku': sku,
+        'price': {'amount': price.toStringAsFixed(2)},
+      },
+    ],
+  };
+
   factory Product.fromJson(Map<String, dynamic> json) {
-    // Safely extract the first image URL or fall back to an empty placeholder string
-    final List<dynamic> imagesList = json['images'] ?? [];
-    final String firstImageUrl = imagesList.isNotEmpty ? imagesList[0]['url'] ?? '' : '';
-
-    // Safely pull variables out of the first available product variant item
-    final List<dynamic> variantsList = json['variants'] ?? [];
-    String varId = '';
-    double itemPrice = 0.0;
-    String itemSku = '';
-    bool availableStatus = true;
-
-    if (variantsList.isNotEmpty) {
-      final Map<String, dynamic> firstVariant = variantsList[0] ?? {};
-      varId = firstVariant['id'] ?? '';
-      itemSku = firstVariant['sku'] ?? '';
-      
-      availableStatus = firstVariant['availableForSale'] ?? firstVariant['isAvailable'] ?? true;
-      final Map<String, dynamic> priceMap = firstVariant['price'] ?? {};
-      final String itemPriceString = priceMap['amount'] ?? '0.00';
-      itemPrice = double.tryParse(itemPriceString) ?? 0.0;
-    }
-
+    final images = json['images'];
+    final variants = json['variants'];
+    final Map<dynamic, dynamic> firstImage =
+        images is List && images.isNotEmpty && images.first is Map
+        ? images.first as Map
+        : const {};
+    final Map<dynamic, dynamic> firstVariant =
+        variants is List && variants.isNotEmpty && variants.first is Map
+        ? variants.first as Map
+        : const {};
+    final rawPrice = firstVariant['price'];
+    final amount = rawPrice is Map ? rawPrice['amount'] : null;
     return Product(
-      id: json['id'] ?? '',
-      title: json['title'] ?? 'Unnamed Product',
-      description: json['description'] ?? '',
-      productType: json['productType'] ?? '',
-      vendor: json['vendor'] ?? '',
-      imageUrl: firstImageUrl,
-      variantId: varId,
-      price: itemPrice,
-      sku: itemSku,
-      isAvailable: availableStatus,
+      id: json['id']?.toString() ?? '',
+      title: json['title']?.toString() ?? 'Unnamed Product',
+      description: json['description']?.toString() ?? '',
+      productType: json['productType']?.toString() ?? '',
+      vendor: json['vendor']?.toString() ?? '',
+      imageUrl: firstImage['url']?.toString() ?? '',
+      variantId: firstVariant['id']?.toString() ?? '',
+      price: double.tryParse(amount?.toString() ?? '') ?? 0.0,
+      sku: firstVariant['sku']?.toString() ?? '',
+      isAvailable: json['availableForSale'] == true,
     );
   }
+
+  Product copyWith({double? price}) => Product(
+    id: _id,
+    title: title,
+    description: description,
+    productType: productType,
+    vendor: vendor,
+    imageUrl: imageUrl,
+    variantId: _variantId,
+    price: price ?? this.price,
+    sku: sku,
+    isAvailable: isAvailable,
+  );
 }

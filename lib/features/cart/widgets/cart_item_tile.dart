@@ -5,7 +5,7 @@ import 'package:azkomoly_app/core/widgets/custom_image.dart';
 import 'package:azkomoly_app/core/widgets/quantity_selector.dart';
 import 'package:azkomoly_app/features/profile/models/order_history.dart';
 
-class CartItemTile extends StatelessWidget{
+class CartItemTile extends StatelessWidget {
   final CartItem item;
   final Function(String) onDelete;
   final Function(String, int) onQuantityChange;
@@ -26,13 +26,16 @@ class CartItemTile extends StatelessWidget{
         leading: SizedBox(
           width: 50,
           height: 50,
-          child: CustomImage(
-            source: product.imageUrl,
-            fit: BoxFit.cover,
-          ),
+          child: CustomImage(source: product.imageUrl, fit: BoxFit.cover),
         ),
-        title: Text(product.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-        subtitle: Text((product.price * item.quantity).toPrice(currency: 'HUF')),
+        title: Text(
+          product.title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        subtitle: Text(
+          (product.price * item.quantity).toPrice(currency: 'HUF'),
+        ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -41,7 +44,8 @@ class CartItemTile extends StatelessWidget{
               min: 1,
               max: 99,
               compact: true,
-              onChanged: (newQty) => onQuantityChange(product.variantId, newQty),
+              onChanged: (newQty) =>
+                  onQuantityChange(product.variantId, newQty),
             ),
 
             IconButton(
@@ -49,9 +53,8 @@ class CartItemTile extends StatelessWidget{
               onPressed: () => onDelete(product.variantId),
             ),
           ],
-        )
+        ),
       ),
     );
   }
-
 }
