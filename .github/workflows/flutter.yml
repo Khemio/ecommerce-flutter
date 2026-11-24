@@ -1,0 +1,24 @@
+name: Flutter checks
+
+on:
+  pull_request:
+  push:
+    branches: [main, dev]
+
+jobs:
+  analyze-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Static analysis
+        # Latest stable Flutter can introduce SDK-wide informational deprecations.
+        # Keep errors and warnings fatal; show info notices without failing CI.
+        run: flutter analyze --no-fatal-infos
+      - name: Unit and widget tests
+        run: flutter test
